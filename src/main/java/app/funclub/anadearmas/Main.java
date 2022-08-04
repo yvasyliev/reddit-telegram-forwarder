@@ -111,9 +111,10 @@ public class Main {
                         try {
                             ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
                         } catch (TelegramApiRequestException e) {
-                            if (e.getApiResponse().contains("PHOTO_INVALID_DIMENSIONS")) {
-                                ANA_DE_ARMAS_FANBOT.sendDocument(photoUrl, link.getTitle());
+                            if (!e.getApiResponse().contains("PHOTO_INVALID_DIMENSIONS")) {
+                                throw e;
                             }
+                            ANA_DE_ARMAS_FANBOT.sendDocument(photoUrl, link.getTitle());
                         }
                     } else {
                         throw new UnhandledDataFormatException("Unknown data format: " + child);
