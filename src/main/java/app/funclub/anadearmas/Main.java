@@ -63,62 +63,7 @@ public class Main {
             for (Thing<Link> child : children) {
                 Link link = child.getData();
                 if (link.getCreated() > created) {
-                    if (link.getUrlOverriddenByDest().endsWith(".gif")) {
-                        String gifUrl = link.getPreview()
-                                .getImages()
-                                .get(0)
-                                .getVariants()
-                                .getMp4()
-                                .getSource()
-                                .getUrl();
-
-                        ANA_DE_ARMAS_FANBOT.sendGif(gifUrl, link.getTitle());
-                    } else if (link.getGalleryData() != null) {
-                        List<String> photoUrls = link.getGalleryData()
-                                .getItems()
-                                .stream()
-                                .map(Item::getMediaId)
-                                .map(mediaId -> link.getMediaMetadata().get(mediaId))
-                                .map(Metadata::getP)
-                                .map(Collection::stream)
-                                .map(stream -> stream.max(Comparator.comparingInt(Resolution::getWidth)))
-                                .filter(Optional::isPresent)
-                                .map(Optional::get)
-                                .map(Resolution::getUrl)
-                                .collect(Collectors.toList());
-                        ANA_DE_ARMAS_FANBOT.sendMultiplePhotos(photoUrls, link.getTitle());
-                    } else if (link.getMedia() != null && link.getMedia().getRedditVideo() != null) {
-                        String videoUrl = link.getMedia().getRedditVideo().getFallbackUrl();
-                        ANA_DE_ARMAS_FANBOT.sendVideo(videoUrl, link.getTitle());
-                    } else if (link.getPreview() != null && link.getPreview().getRedditVideoPreview() != null && !"t2_dy21ymq9".equals(link.getAuthorFullname())) {
-                        String videoUrl = link.getPreview().getRedditVideoPreview().getFallbackUrl();
-                        ANA_DE_ARMAS_FANBOT.sendVideo(videoUrl, link.getTitle());
-                    } else if ("youtube.com".equals(link.getDomain())) {
-                        String text = link.getTitle() + "\n\n" + link.getUrlOverriddenByDest();
-                        ANA_DE_ARMAS_FANBOT.sendText(text);
-                    } else if (link.getUrlOverriddenByDest().endsWith(".jpg1")) {
-                        String photoUrl = link.getUrlOverriddenByDest().substring(0, link.getUrlOverriddenByDest().length() - 1);
-                        ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
-                    } else if (link.getUrlOverriddenByDest().endsWith(".jpg") || link.getUrlOverriddenByDest().endsWith(".png")) {
-                        String photoUrl = link.getPreview()
-                                .getImages()
-                                .get(0)
-                                .getSource()
-                                .getUrl();
-
-                        photoUrl = photoUrl.contains("auto=webp") ? link.getUrlOverriddenByDest() : photoUrl;
-
-                        try {
-                            ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
-                        } catch (TelegramApiRequestException e) {
-                            if (!e.getApiResponse().contains("PHOTO_INVALID_DIMENSIONS")) {
-                                throw e;
-                            }
-                            ANA_DE_ARMAS_FANBOT.sendDocument(photoUrl, link.getTitle());
-                        }
-                    } else {
-                        throw new UnhandledDataFormatException("Unknown data format: " + child);
-                    }
+                    handlePost(link);
 
                     created = link.getCreated();
                     sleep(10000);
@@ -142,6 +87,67 @@ public class Main {
             if (!PROPERTIES.isEmpty()) {
                 ignoringException(() -> write(PROPERTIES));
             }
+        }
+    }
+
+    private static void handlePost(Link link) throws TelegramApiException, IOException, UnhandledDataFormatException {
+        if (link.getUrlOverriddenByDest().endsWith(".gif")) {
+            String gifUrl = link.getPreview()
+                    .getImages()
+                    .get(0)
+                    .getVariants()
+                    .getMp4()
+                    .getSource()
+                    .getUrl();
+
+            ANA_DE_ARMAS_FANBOT.sendGif(gifUrl, link.getTitle());
+        } else if (link.getGalleryData() != null) {
+            List<String> photoUrls = link.getGalleryData()
+                    .getItems()
+                    .stream()
+                    .map(Item::getMediaId)
+                    .map(mediaId -> link.getMediaMetadata().get(mediaId))
+                    .map(Metadata::getP)
+                    .map(Collection::stream)
+                    .map(stream -> stream.max(Comparator.comparingInt(Resolution::getWidth)))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(Resolution::getUrl)
+                    .collect(Collectors.toList());
+            ANA_DE_ARMAS_FANBOT.sendMultiplePhotos(photoUrls, link.getTitle());
+        } else if (link.getMedia() != null && link.getMedia().getRedditVideo() != null) {
+            String videoUrl = link.getMedia().getRedditVideo().getFallbackUrl();
+            ANA_DE_ARMAS_FANBOT.sendVideo(videoUrl, link.getTitle());
+        } else if (link.getPreview() != null && link.getPreview().getRedditVideoPreview() != null && !"t2_dy21ymq9".equals(link.getAuthorFullname())) {
+            String videoUrl = link.getPreview().getRedditVideoPreview().getFallbackUrl();
+            ANA_DE_ARMAS_FANBOT.sendVideo(videoUrl, link.getTitle());
+        } else if ("youtube.com".equals(link.getDomain())) {
+            String text = link.getTitle() + "\n\n" + link.getUrlOverriddenByDest();
+            ANA_DE_ARMAS_FANBOT.sendText(text);
+        } else if (link.getUrlOverriddenByDest().endsWith(".jpg1")) {
+            String photoUrl = link.getUrlOverriddenByDest().substring(0, link.getUrlOverriddenByDest().length() - 1);
+            ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
+        } else if (link.getUrlOverriddenByDest().endsWith(".jpg") || link.getUrlOverriddenByDest().endsWith(".png")) {
+            String photoUrl = link.getPreview()
+                    .getImages()
+                    .get(0)
+                    .getSource()
+                    .getUrl();
+
+            photoUrl = photoUrl.contains("auto=webp") ? link.getUrlOverriddenByDest() : photoUrl;
+
+            try {
+                ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
+            } catch (TelegramApiRequestException e) {
+                if (!e.getApiResponse().contains("PHOTO_INVALID_DIMENSIONS")) {
+                    throw e;
+                }
+                ANA_DE_ARMAS_FANBOT.sendDocument(photoUrl, link.getTitle());
+            }
+        } else if (link.getCrosspostParentList() != null && !link.getCrosspostParentList().isEmpty()) {
+            handlePost(link.getCrosspostParentList().get(0));
+        } else {
+            throw new UnhandledDataFormatException("Unknown data format: " + link);
         }
     }
 
