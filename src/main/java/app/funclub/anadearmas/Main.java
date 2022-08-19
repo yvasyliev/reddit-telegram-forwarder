@@ -114,7 +114,23 @@ public class Main {
                     .map(Optional::get)
                     .map(Resolution::getUrl)
                     .collect(Collectors.toList());
-            ANA_DE_ARMAS_FANBOT.sendMultiplePhotos(photoUrls, link.getTitle());
+
+            boolean manyPhotos = photoUrls.size() > 10;
+            List<String> photoUrlsPage = manyPhotos ? photoUrls.subList(0, 10) : photoUrls;
+
+            ANA_DE_ARMAS_FANBOT.sendMultiplePhotos(photoUrlsPage, link.getTitle());
+
+            if (manyPhotos) {
+                photoUrls.removeAll(photoUrlsPage);
+                do {
+                    sleep(10000);
+                    int size = photoUrls.size();
+                    int toIndex = Math.min(size, 10);
+                    photoUrlsPage = photoUrls.subList(0, toIndex);
+                    ANA_DE_ARMAS_FANBOT.sendMultiplePhotos(photoUrlsPage, null);
+                    photoUrls.removeAll(photoUrlsPage);
+                } while (!photoUrls.isEmpty());
+            }
         } else if (link.getMedia() != null && link.getMedia().getRedditVideo() != null) {
             String videoUrl = link.getMedia().getRedditVideo().getFallbackUrl();
             ANA_DE_ARMAS_FANBOT.sendVideo(videoUrl, link.getTitle());
