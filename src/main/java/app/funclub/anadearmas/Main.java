@@ -155,7 +155,7 @@ public class Main {
             try {
                 ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
             } catch (TelegramApiRequestException e) {
-                if (!e.getApiResponse().contains("PHOTO_INVALID_DIMENSIONS")) {
+                if (!e.getApiResponse().contains("PHOTO_INVALID_DIMENSIONS") && !e.getApiResponse().endsWith("too big for a photo")) {
                     throw e;
                 }
                 ANA_DE_ARMAS_FANBOT.sendDocument(photoUrl, link.getTitle());
