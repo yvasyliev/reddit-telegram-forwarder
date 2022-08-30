@@ -137,7 +137,7 @@ public class Main {
         } else if (link.getPreview() != null && link.getPreview().getRedditVideoPreview() != null && !"t2_dy21ymq9".equals(link.getAuthorFullname())) {
             String videoUrl = link.getPreview().getRedditVideoPreview().getFallbackUrl();
             ANA_DE_ARMAS_FANBOT.sendVideo(videoUrl, link.getTitle());
-        } else if ("youtube.com".equals(link.getDomain())) {
+        } else if ("youtube.com".equals(link.getDomain()) || "youtu.be".equals(link.getDomain())) {
             String text = link.getTitle() + "\n\n" + link.getUrlOverriddenByDest();
             ANA_DE_ARMAS_FANBOT.sendText(text);
         } else if (link.getUrlOverriddenByDest().endsWith(".jpg1")) {
