@@ -162,6 +162,8 @@ public class Main {
             }
         } else if (link.getCrosspostParentList() != null && !link.getCrosspostParentList().isEmpty()) {
             handlePost(link.getCrosspostParentList().get(0));
+        } else if ("link".equals(link.getPostHint())) {
+            ANA_DE_ARMAS_FANBOT.sendText(link.getTitle() + "\n" + link.getUrlOverriddenByDest());
         } else {
             throw new UnhandledDataFormatException("Unknown data format: " + link);
         }
