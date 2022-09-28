@@ -66,11 +66,11 @@ public class Main {
                     handlePost(link);
 
                     created = link.getCreated();
+                    PROPERTIES.setProperty("created", String.valueOf(created));
+                    ignoringException(() -> write(PROPERTIES));
                     sleep(10000);
                 }
             }
-
-            PROPERTIES.setProperty("created", String.valueOf(created));
 
         } catch (TelegramApiException | IOException e) {
             e.printStackTrace();
@@ -83,10 +83,6 @@ public class Main {
         } catch (UnhandledDataFormatException e) {
             e.printStackTrace();
             ignoringException(() -> ANA_DE_ARMAS_FANBOT.sendDeveloperMessage(e.getMessage()));
-        } finally {
-            if (!PROPERTIES.isEmpty()) {
-                ignoringException(() -> write(PROPERTIES));
-            }
         }
     }
 
