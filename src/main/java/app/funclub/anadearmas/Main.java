@@ -139,7 +139,7 @@ public class Main {
         } else if (link.getUrlOverriddenByDest().endsWith(".jpg1")) {
             String photoUrl = link.getUrlOverriddenByDest().substring(0, link.getUrlOverriddenByDest().length() - 1);
             ANA_DE_ARMAS_FANBOT.sendPhoto(photoUrl, link.getTitle());
-        } else if (link.getUrlOverriddenByDest().endsWith(".jpg") || link.getUrlOverriddenByDest().endsWith(".png")) {
+        } else if (link.getUrlOverriddenByDest().endsWith(".jpg") || link.getUrlOverriddenByDest().endsWith(".png") || link.getUrlOverriddenByDest().endsWith("jpeg")) {
             String photoUrl = link.getPreview()
                     .getImages()
                     .get(0)
