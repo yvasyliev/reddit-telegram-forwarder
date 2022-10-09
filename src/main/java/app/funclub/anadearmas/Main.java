@@ -161,7 +161,7 @@ public class Main {
         } else if ("link".equals(link.getPostHint())) {
             ANA_DE_ARMAS_FANBOT.sendText(link.getTitle() + "\n" + link.getUrlOverriddenByDest());
         } else {
-            throw new UnhandledDataFormatException("Unknown data format: " + link);
+            throw new UnhandledDataFormatException("Could not handle post. Created: " + link.getCreated() + ", URL: " + link.getUrlOverriddenByDest());
         }
     }
 
