@@ -11,43 +11,11 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <project.descriptorRef>jar-with-dependencies</project.descriptorRef>
     </properties>
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                <version>2.4</version>-->
-<!--                <configuration>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <addClasspath>true</addClasspath>-->
-<!--                            <mainClass>app.funclub.anadearmas.Main</mainClass>-->
-<!--                            <classpathPrefix>dependency-jars/</classpathPrefix>-->
-<!--                        </manifest>-->
-<!--                    </archive>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <version>2.5.1</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>copy-dependencies</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>copy-dependencies</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <outputDirectory>-->
-<!--                                ${project.build.directory}/dependency-jars/-->
-<!--                            </outputDirectory>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -67,11 +35,55 @@
                                 </manifest>
                             </archive>
                             <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                                <descriptorRef>${project.descriptorRef}</descriptorRef>
                             </descriptorRefs>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>scp-to-remote</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- keyfile+passphrase or  password, choose one -->
+                                <!--
+                                <scp localFile="${project.basedir}/target/qos-spark-1.0.jar"
+                                  remoteToFile="root@192.168.203.156:/usr/sanss" verbose="true"
+                                  keyfile="C:\Users\shengw\.ssh\192.168.203.156\id_rsa"
+                                  passphrase="">
+                                </scp>
+                                 -->
+                                <scp localFile="${project.basedir}/target/${project.build.finalName}-${project.descriptorRef}.jar"
+                                     remoteToFile="${remoteToFile}" verbose="true"
+                                     password="${password}" trust="true">
+                                </scp>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <!-- libraries for scp impl      -->
+                <!-- antrun doesn't use os's scp -->
+                <dependencies>
+                    <dependency>
+                        <groupId>com.jcraft</groupId>
+                        <artifactId>jsch</artifactId>
+                        <version>0.1.55</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-jsch</artifactId>
+                        <version>1.10.12</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -86,8 +98,8 @@
             <groupId>com.github.masecla</groupId>
             <artifactId>reddit4j</artifactId>
             <version>1.0.0</version>
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${project.basedir}/libs/Reddit4J-1.0.0-jar-with-dependencies.jar</systemPath>-->
+            <!--            <scope>system</scope>-->
+            <!--            <systemPath>${project.basedir}/libs/Reddit4J-1.0.0-jar-with-dependencies.jar</systemPath>-->
         </dependency>
     </dependencies>
 </project>
