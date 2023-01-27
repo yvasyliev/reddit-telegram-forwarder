@@ -91,7 +91,7 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
     }
 
     private void processRedditPost(Link link) throws TelegramApiException, IOException, UnhandledDataFormatException, InterruptedException {
-        if (link.getUrlOverriddenByDest().endsWith(".gif")) {
+        if (isGif(link)) {
             String gifUrl = link.getPreview()
                     .getImages()
                     .get(0)
@@ -167,6 +167,11 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
         } else {
             throw new UnhandledDataFormatException("Could not handle post. Created: " + link.getCreated() + ", URL: " + link.getUrlOverriddenByDest());
         }
+    }
+
+    private boolean isGif(Link link) {
+        return link.getUrlOverriddenByDest().endsWith(".gif")
+                && link.getPreview().getImages().get(0).getVariants().getMp4() != null;
     }
 
     private void sendGif(String gifUrl, String text, boolean hasSpoiler) throws TelegramApiException, IOException {
