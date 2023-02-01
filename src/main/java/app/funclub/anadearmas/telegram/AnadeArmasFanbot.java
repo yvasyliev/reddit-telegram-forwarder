@@ -116,20 +116,20 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
                     .collect(Collectors.toList());
 
             boolean manyPhotos = photoUrls.size() > 10;
-            List<String> photoUrlsPage = manyPhotos ? photoUrls.subList(0, 10) : photoUrls;
+            boolean isNsfw = "nsfw".equals(link.getThumbnail());
+            for (int i = 1; !photoUrls.isEmpty(); i++) {
+                int toIndex = Math.min(photoUrls.size(), 10);
+                List<String> photoUrlsPage = photoUrls.subList(0, toIndex);
 
-            sendMultiplePhotos(photoUrlsPage, link.getTitle(), "nsfw".equals(link.getThumbnail()));
+                String text = link.getTitle() + (manyPhotos ? " (part " + i + ")" : "");
+                if (photoUrlsPage.size() == 1) {
+                    sendPhoto(photoUrlsPage.get(0), text, isNsfw);
+                } else {
+                    sendMultiplePhotos(photoUrlsPage, text, isNsfw);
+                }
 
-            if (manyPhotos) {
                 photoUrls.removeAll(photoUrlsPage);
-                do {
-                    TimeUnit.SECONDS.sleep(10);
-                    int size = photoUrls.size();
-                    int toIndex = Math.min(size, 10);
-                    photoUrlsPage = photoUrls.subList(0, toIndex);
-                    sendMultiplePhotos(photoUrlsPage, null, "nsfw".equals(link.getThumbnail()));
-                    photoUrls.removeAll(photoUrlsPage);
-                } while (!photoUrls.isEmpty());
+                TimeUnit.SECONDS.sleep(10);
             }
         } else if (link.getMedia() != null && link.getMedia().getRedditVideo() != null) {
             String videoUrl = link.getMedia().getRedditVideo().getFallbackUrl();
