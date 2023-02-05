@@ -164,7 +164,7 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
             processRedditPost(link.getCrosspostParentList().get(0));
         } else if ("link".equals(link.getPostHint())) {
             sendText(link.getTitle() + "\n" + link.getUrlOverriddenByDest());
-        } else {
+        } else if (!"vimeo.com".equals(link.getDomain())) {
             throw new UnhandledDataFormatException("Could not handle post. Created: " + link.getCreated() + ", URL: " + link.getUrlOverriddenByDest());
         }
     }
