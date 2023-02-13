@@ -1,6 +1,5 @@
 package app.funclub.anadearmas.telegram;
 
-import app.funclub.anadearmas.exceptions.UnhandledDataFormatException;
 import com.github.masecla.RedditClient;
 import com.github.masecla.objects.reddit.Item;
 import com.github.masecla.objects.reddit.Link;
@@ -27,8 +26,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,23 +71,12 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
                     TimeUnit.SECONDS.sleep(10);
                 }
             }
-        } catch (TelegramApiException | IOException | UnhandledDataFormatException | InterruptedException e) {
-            String message = e.getMessage();
-            try {
-                if (!(e instanceof UnhandledDataFormatException)) {
-                    try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
-                        e.printStackTrace(printWriter);
-                        message = stringWriter.toString();
-                    }
-                }
-                sendDeveloperMessage(message);
-            } catch (TelegramApiException | IOException ex) {
-                throw new RuntimeException(ex);
-            }
+        } catch (TelegramApiException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void processRedditPost(Link link) throws TelegramApiException, IOException, UnhandledDataFormatException, InterruptedException {
+    private void processRedditPost(Link link) throws TelegramApiException, IOException, InterruptedException {
         if (isGif(link)) {
             String gifUrl = link.getPreview()
                     .getImages()
@@ -165,7 +151,7 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
         } else if ("link".equals(link.getPostHint())) {
             sendText(link.getTitle() + "\n" + link.getUrlOverriddenByDest());
         } else {
-            throw new UnhandledDataFormatException("Could not handle post. Created: " + link.getCreated() + ", URL: " + link.getUrlOverriddenByDest());
+            sendDeveloperMessage("Could not handle post. Created: " + link.getCreated() + ", URL: " + link.getUrlOverriddenByDest());
         }
     }
 
