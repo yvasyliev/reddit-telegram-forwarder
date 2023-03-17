@@ -1,4 +1,4 @@
-package app.funclub.anadearmas.properties;
+package com.github.yvasyliev.properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

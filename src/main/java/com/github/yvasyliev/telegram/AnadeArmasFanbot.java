@@ -1,7 +1,7 @@
-package app.funclub.anadearmas.telegram;
+package com.github.yvasyliev.telegram;
 
-import app.funclub.anadearmas.exceptions.UnhandledDataFormatException;
-import app.funclub.anadearmas.exceptions.VideoUrlParseException;
+import com.github.yvasyliev.exceptions.UnhandledDataFormatException;
+import com.github.yvasyliev.exceptions.VideoUrlParseException;
 import com.github.masecla.RedditClient;
 import com.github.masecla.objects.reddit.Item;
 import com.github.masecla.objects.reddit.Link;

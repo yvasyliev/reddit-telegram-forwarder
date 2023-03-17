@@ -1,7 +1,7 @@
-package app.funclub.anadearmas;
+package com.github.yvasyliev;
 
-import app.funclub.anadearmas.config.AppConfig;
-import app.funclub.anadearmas.telegram.AnadeArmasFanbot;
+import com.github.yvasyliev.config.AppConfig;
+import com.github.yvasyliev.telegram.AnadeArmasFanbot;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 

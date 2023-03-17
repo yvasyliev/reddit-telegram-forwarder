@@ -1,4 +1,4 @@
-package app.funclub.anadearmas.exceptions;
+package com.github.yvasyliev.exceptions;
 
 public class UnhandledDataFormatException extends Exception {
     public UnhandledDataFormatException(String message) {

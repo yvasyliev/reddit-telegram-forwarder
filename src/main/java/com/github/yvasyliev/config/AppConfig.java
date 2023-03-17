@@ -1,7 +1,7 @@
-package app.funclub.anadearmas.config;
+package com.github.yvasyliev.config;
 
-import app.funclub.anadearmas.properties.AppProperties;
-import app.funclub.anadearmas.telegram.AnadeArmasFanbot;
+import com.github.yvasyliev.properties.AppProperties;
+import com.github.yvasyliev.telegram.AnadeArmasFanbot;
 import com.github.masecla.RedditClient;
 import com.github.masecla.config.RedditClientConfig;
 import com.github.masecla.config.ScriptClientConfig;
