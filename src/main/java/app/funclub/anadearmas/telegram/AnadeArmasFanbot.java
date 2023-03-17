@@ -1,6 +1,7 @@
 package app.funclub.anadearmas.telegram;
 
 import app.funclub.anadearmas.exceptions.UnhandledDataFormatException;
+import app.funclub.anadearmas.exceptions.VideoUrlParseException;
 import com.github.masecla.RedditClient;
 import com.github.masecla.objects.reddit.Item;
 import com.github.masecla.objects.reddit.Link;
@@ -8,6 +9,8 @@ import com.github.masecla.objects.reddit.Metadata;
 import com.github.masecla.objects.reddit.Resolution;
 import com.github.masecla.objects.reddit.Thing;
 import com.github.masecla.objects.response.GetSubredditNewResponse;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -74,7 +77,8 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
                     TimeUnit.SECONDS.sleep(10);
                 }
             }
-        } catch (TelegramApiException | IOException | UnhandledDataFormatException | InterruptedException e) {
+        } catch (TelegramApiException | IOException | UnhandledDataFormatException | InterruptedException |
+                 VideoUrlParseException e) {
             String message = e.getMessage();
             try {
                 if (!(e instanceof UnhandledDataFormatException)) {
@@ -90,7 +94,7 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
         }
     }
 
-    private void processRedditPost(Link link) throws TelegramApiException, IOException, UnhandledDataFormatException, InterruptedException {
+    private void processRedditPost(Link link) throws TelegramApiException, IOException, UnhandledDataFormatException, InterruptedException, VideoUrlParseException {
         if (isGif(link)) {
             String gifUrl = link.getPreview()
                     .getImages()
@@ -131,6 +135,9 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
                 photoUrls.removeAll(photoUrlsPage);
                 TimeUnit.SECONDS.sleep(10);
             }
+        } else if (link.isVideo()) {
+            String videoUrl = parseVideoUrl(link.getUrl());
+            sendVideo(videoUrl, link.getTitle(), "nsfw".equals(link.getThumbnail()));
         } else if (link.getMedia() != null && link.getMedia().getRedditVideo() != null) {
             String videoUrl = link.getMedia().getRedditVideo().getFallbackUrl();
             sendVideo(videoUrl, link.getTitle(), "nsfw".equals(link.getThumbnail()));
@@ -167,6 +174,18 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
         } else if (!"vimeo.com".equals(link.getDomain())) {
             throw new UnhandledDataFormatException("Could not handle post. Created: " + link.getCreated() + ", URL: " + link.getUrlOverriddenByDest());
         }
+    }
+
+    private String parseVideoUrl(String redditPostUrl) throws IOException, VideoUrlParseException {
+        String url = "https://rapidsave.com/info?url=" + redditPostUrl;
+        Element element = Jsoup.connect(url)
+                .get()
+                .select("div.download-info a")
+                .first();
+        if (element == null) {
+            throw new VideoUrlParseException("Failed to parse video URL: " + url);
+        }
+        return element.attr("href");
     }
 
     private boolean isGif(Link link) {
