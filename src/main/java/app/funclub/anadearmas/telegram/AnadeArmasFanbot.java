@@ -232,6 +232,7 @@ public class AnadeArmasFanbot extends TelegramLongPollingBot {
                     .video(new InputFile(inputStream, fileName))
                     .caption(text)
                     .hasSpoiler(hasSpoiler)
+                    .supportsStreaming(true)
                     .build();
 
             execute(sendVideo);
