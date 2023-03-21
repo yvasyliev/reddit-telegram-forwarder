@@ -1,71 +1,126 @@
 package com.github.yvasyliev.config;
 
-import com.github.yvasyliev.properties.AppProperties;
-import com.github.yvasyliev.telegram.AnadeArmasFanbot;
-import com.github.masecla.RedditClient;
-import com.github.masecla.config.RedditClientConfig;
-import com.github.masecla.config.ScriptClientConfig;
-import com.github.masecla.objects.app.script.Credentials;
-import com.github.masecla.objects.app.script.PersonalUseScript;
-import com.github.masecla.objects.app.script.UserAgent;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.yvasyliev.dto.RedditAccessToken;
+import com.github.yvasyliev.factories.RedditAccessTokenFactory;
+import com.github.yvasyliev.properties.AppData;
+import com.github.yvasyliev.service.reddit.RedditPostService;
+import com.github.yvasyliev.service.reddit.RedditVideoDownloader;
+import com.github.yvasyliev.service.reddit.api.GetRedditAccessToken;
+import com.github.yvasyliev.service.reddit.api.GetSubredditNew;
+import com.github.yvasyliev.service.reddit.api.Request;
+import com.github.yvasyliev.telegram.NOPRepeaterChain;
+import com.github.yvasyliev.telegram.RepeatGif;
+import com.github.yvasyliev.telegram.RepeatMultiplePhotos;
+import com.github.yvasyliev.telegram.RepeatNestedPost;
+import com.github.yvasyliev.telegram.RepeatPhoto;
+import com.github.yvasyliev.telegram.RepeatText;
+import com.github.yvasyliev.telegram.RepeatVideo;
+import com.github.yvasyliev.telegram.SubredditPostRepeaterChain;
+import com.github.yvasyliev.telegram.TelegramRepeaterBot;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 
+import java.net.http.HttpClient;
 import java.util.Properties;
 
 @Configuration
+@PropertySource("file:app_data.properties")
 public class AppConfig {
-    @Bean
-    public String appPropertiesPath() {
-        return "config.properties";
+    @Bean(initMethod = "load", destroyMethod = "store")
+    public Properties appData() {
+        return new AppData();
     }
 
     @Bean
-    public Properties appProperties() {
-        return new AppProperties();
+    public TelegramRepeaterBot telegramRepeaterBot(@Value("${BOT_TOKEN}") String botToken) {
+        return new TelegramRepeaterBot(botToken);
     }
 
     @Bean
-    public PersonalUseScript personalUseScript() {
-        return new PersonalUseScript(
-                appProperties().getProperty("clientId"),
-                appProperties().getProperty("clientSecret")
-        );
+    public FactoryBean<RedditAccessToken> redditAccessTokenFactory() {
+        return new RedditAccessTokenFactory();
     }
 
     @Bean
-    public UserAgent userAgent() {
-        return new UserAgent(
-                appProperties().getProperty("appName"),
-                appProperties().getProperty("version"),
-                appProperties().getProperty("redditUsername")
-        );
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public RedditAccessToken redditAccessToken() throws Exception {
+        return redditAccessTokenFactory().getObject();
+    }
+
+    @Bean(initMethod = "initializeRequest")
+    public Request<RedditAccessToken> getRedditAccessToken() {
+        return new GetRedditAccessToken();
     }
 
     @Bean
-    public Credentials credentials() {
-        return new Credentials(
-                appProperties().getProperty("username"),
-                appProperties().getProperty("password")
-        );
+    public String userAgent(@Value("${REDDIT_USERNAME}") String redditUsername) {
+        return "java:reddit-telegram-repeater:2.0.0  (by /u/" + redditUsername + ")";
     }
 
     @Bean
-    public RedditClientConfig redditClientConfig() {
-        return new ScriptClientConfig(
-                personalUseScript(),
-                userAgent(),
-                credentials()
-        );
+    public HttpClient httpClient() {
+        return HttpClient.newHttpClient();
     }
 
     @Bean
-    public RedditClient redditClient() {
-        return new RedditClient(redditClientConfig());
+    public Request<JsonNode> getSubredditNew() {
+        return new GetSubredditNew();
     }
 
     @Bean
-    public AnadeArmasFanbot anadeArmasFanbot() {
-        return new AnadeArmasFanbot();
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public RedditPostService redditPostService() {
+        return new RedditPostService();
+    }
+
+    @Bean(name = {"repeatNestedPost", "subredditPostRepeaterChain"})
+    public SubredditPostRepeaterChain repeatNestedPost() {
+        return new RepeatNestedPost(repeatText());
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain repeatText() {
+        return new RepeatText(repeatPhoto());
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain repeatPhoto() {
+        return new RepeatPhoto(repeatMultiplePhotos());
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain repeatMultiplePhotos() {
+        return new RepeatMultiplePhotos(repeatGif());
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain repeatGif() {
+        return new RepeatGif(repeatVideo());
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain repeatVideo() {
+        return new RepeatVideo(nopRepeaterChain());
+    }
+
+    @Bean
+    public RedditVideoDownloader redditVideoDownloader() {
+        return new RedditVideoDownloader();
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain nopRepeaterChain() {
+        return new NOPRepeaterChain();
     }
 }
