@@ -1,4 +1,5 @@
 # Project exclude paths
 /target/
 .idea
-config.properties
+app_data.properties
+*.log
