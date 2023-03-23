@@ -37,23 +37,15 @@ Repeats Subreddit posts to Telegram.
    ```
     * The application relies on environment variables to extract subreddit data and repeat it to Telegram:
 
-      <table>
-         <tr>
-            <th>Variable</th>
-            <th>Required</th>
-            <th>Default value</th>
-            <th>Description</th>
-            <th>Example</th>
-         </tr>
-         <tr>
-            <td>`BOT_TOKEN`</td>
-         </tr>
-      </table>
-      |            Variable            | Required | Default value | Description                                                         |
-      |:------------------------------:|:--------:|:-------------:|:--------------------------------------------------------------------|
-      |          `BOT_TOKEN`           |  `true`  |       -       | Telegram bot token                                                  |
-      |         `BOT_USERNAME`         |  `true`  |       -       | Telegram bot username                                               |
-      |          `CHANNEL_ID`          |  `true`  |       -       | Telegram channel ID. Subreddit posts will be sent here.             |
-      |         `DEVELOPER_ID`         |  `true`  |       -       | Telegram profile ID. Bot will error logs messages directly to user. |
-      | `PREVIOUS_REDDIT_POST_CREATED` | `false`  |       0       | Created time of last subreddit post.                                |
-      |       `REDDIT_CLIENT_ID`       |     |     |     |
+      |            Variable            | Required | Default value | Description                                                         | Example                                          |
+      |:------------------------------:|:--------:|:-------------:|:--------------------------------------------------------------------|:-------------------------------------------------|
+      |          `BOT_TOKEN`           |  `true`  |       -       | Telegram bot token                                                  | `4336854599:BBFqVLRq9ixVdxORFWQgaSywzCfRo5-tBus` |
+      |         `BOT_USERNAME`         |  `true`  |       -       | Telegram bot username                                               | `SubredditResenderBot`                           |
+      |          `CHANNEL_ID`          |  `true`  |       -       | Telegram channel ID. Subreddit posts will be sent here.             | `-1001572613876`                                 |
+      |         `DEVELOPER_ID`         |  `true`  |       -       | Telegram profile ID. Bot will error logs messages directly to user. | `280538130`                                      |
+      | `PREVIOUS_REDDIT_POST_CREATED` | `false`  |       0       | Created time of last subreddit post.                                | `1679385633`                                     |
+      |       `REDDIT_CLIENT_ID`       |  `true`  |       -       | Reddit `client_id`                                                  | `pW134F0XNuueG4W78x9uGA`                         |
+      |    `DREDDIT_CLIENT_SECRET`     |  `true`  |       -       | Reddit client `secret`                                              | `fsdT6VkTgf1WMfSW6Pd5t4DRvfVueB`                 |
+      |       `DREDDIT_PASSWORD`       |  `true`  |       -       | Reddit profile password                                             | `ETD1fqx%cfk6odj#boj`                            |
+      |       `DREDDIT_USERNAME`       |  `true`  |       -       | Reddit profile username                                             | `RedditProfileUsername000`                       |
+      |          `SUBREDDIT`           |  `true`  |       -       | Subreddit name                                                      | `SubredditName`                                  |
