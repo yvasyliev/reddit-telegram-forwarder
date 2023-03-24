@@ -39,7 +39,7 @@ jobs:
       - name: Check tag
         id: check_tag
         run: |
-          [[ "2.0.0" =~ ${{ env.TAG }} ]] && echo "match=true" >> $GITHUB_OUTPUT || echo "match=false" >> $GITHUB_OUTPUT
+          [[ "2.0.0" =~ "${{ env.TAG }}" ]] && echo "match=true" >> $GITHUB_OUTPUT || echo "match=false" >> $GITHUB_OUTPUT
       - name: Validate tag
         if: steps.create_tag.outputs.match == 'true'
         run: |
