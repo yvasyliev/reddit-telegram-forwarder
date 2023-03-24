@@ -8,12 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,49 +35,23 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramRepeaterBot telegramRepeaterBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         if (data.has("gallery_data")) {
             try {
                 var hasSpoiler = hasSpoiler(data);
                 var photoUrlsPages = extractPhotoUrlsPages(data);
                 for (var i = 0; i < photoUrlsPages.size(); i++) {
-                    var photos = new LinkedHashMap<String, InputStream>();
-                    for (String photoUrl : photoUrlsPages.get(i)) {
-                        photos.put(
-                                photoUrl.substring(photoUrl.lastIndexOf('/') + 1),
-                                new URL(photoUrl).openStream()
-                        );
-                    }
-
+                    var photoUrls = photoUrlsPages.get(i);
                     var text = buildText(data.get("title").textValue(), i + 1, photoUrlsPages.size());
-                    if (photos.size() == 1) {
-                        var photo = photos
-                                .entrySet()
-                                .stream()
-                                .findFirst()
-                                .get();
-                        telegramRepeaterBot.sendPhoto(
-                                photo.getValue(),
-                                photo.getKey(),
-                                text,
-                                hasSpoiler
-                        );
-                    } else {
-                        telegramRepeaterBot.sendMultiplePhotos(
-                                photos,
-                                text,
-                                hasSpoiler
-                        );
-                    }
 
-                    for (InputStream inputStream : photos.values()) {
-                        if (inputStream != null) {
-                            inputStream.close();
-                        }
+                    if (photoUrls.size() == 1) {
+                        telegramSenderBot.sendPhoto(photoUrls.get(0), text, hasSpoiler);
+                    } else {
+                        telegramSenderBot.sendMultiplePhotos(photoUrls, text, hasSpoiler);
                     }
                 }
-                appData.setProperty("created", data.get("created").asText());
-            } catch (TelegramApiException | IOException e) {
+                appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
+            } catch (TelegramApiException e) {
                 LOGGER.error(
                         "Failed to send multiple Photos. Created: {}, URL: {}",
                         data.get("created").intValue(),
@@ -90,7 +60,7 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramRepeaterBot);
+            super.repeatRedditPost(data, telegramSenderBot);
         }
     }
 
@@ -100,7 +70,7 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
                 .range(0, photoUrls.size())
                 .boxed()
                 .collect(Collectors.groupingBy(
-                        i -> i % pageSize,
+                        i -> i / pageSize,
                         Collectors.mapping(photoUrls::get, Collectors.toList())
                 ))
                 .values()
@@ -130,9 +100,9 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
         var text = originalText;
 
         if (totalPages > 1) {
-            text = "(" + pageNumber + "/" + totalPages + ")";
+            text = "%d/%d".formatted(pageNumber, totalPages);
             if (originalText != null && !originalText.isEmpty()) {
-                text = originalText + " " + text;
+                text = "%s %s".formatted(originalText, text);
             }
         }
 

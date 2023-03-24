@@ -18,7 +18,7 @@ public class NOPRepeaterChain extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramRepeaterBot telegramRepeaterBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         if (!ignoredDomains.contains(data.get("domain").textValue())) {
             LOGGER.error(
                     "Post was not repeated. Created: {}, URL: {}",

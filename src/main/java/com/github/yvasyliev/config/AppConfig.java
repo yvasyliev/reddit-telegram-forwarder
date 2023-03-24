@@ -18,7 +18,12 @@ import com.github.yvasyliev.telegram.RepeatPhoto;
 import com.github.yvasyliev.telegram.RepeatText;
 import com.github.yvasyliev.telegram.RepeatVideo;
 import com.github.yvasyliev.telegram.SubredditPostRepeaterChain;
+import com.github.yvasyliev.telegram.TelegramLoggerBot;
+import com.github.yvasyliev.telegram.TelegramLoggerBotImpl;
 import com.github.yvasyliev.telegram.TelegramRepeaterBot;
+import com.github.yvasyliev.telegram.TelegramRepeaterBotImpl;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
+import com.github.yvasyliev.telegram.TelegramSenderBotImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -38,7 +43,17 @@ public class AppConfig {
 
     @Bean
     public TelegramRepeaterBot telegramRepeaterBot(@Value("${BOT_TOKEN}") String botToken) {
-        return new TelegramRepeaterBot(botToken);
+        return new TelegramRepeaterBotImpl(botToken);
+    }
+
+    @Bean
+    public TelegramSenderBot telegramSenderBot(@Value("${BOT_TOKEN}") String botToken) {
+        return new TelegramSenderBotImpl(botToken);
+    }
+
+    @Bean
+    public TelegramLoggerBot telegramLoggerBot(@Value("${BOT_TOKEN}") String botToken) {
+        return new TelegramLoggerBotImpl(botToken);
     }
 
     @Bean
@@ -59,7 +74,7 @@ public class AppConfig {
 
     @Bean
     public String userAgent(@Value("${REDDIT_USERNAME}") String redditUsername) {
-        return "java:reddit-telegram-repeater:2.0.0  (by /u/" + redditUsername + ")";
+        return "java:reddit-telegram-repeater:2.0.0  (by /u/%s)".formatted(redditUsername);
     }
 
     @Bean

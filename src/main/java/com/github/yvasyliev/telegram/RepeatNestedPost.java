@@ -14,14 +14,14 @@ public class RepeatNestedPost extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramRepeaterBot telegramRepeaterBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         if (data.has("crosspost_parent_list")) {
             subredditPostRepeaterChain.repeatRedditPost(
                     data.get("crosspost_parent_list").get(0),
-                    telegramRepeaterBot
+                    telegramSenderBot
             );
         } else {
-            super.repeatRedditPost(data, telegramRepeaterBot);
+            super.repeatRedditPost(data, telegramSenderBot);
         }
     }
 }

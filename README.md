@@ -27,7 +27,6 @@ Repeats Subreddit posts to Telegram.
    -DBOT_USERNAME=${BOT_USERNAME} \
    -DCHANNEL_ID=${CHANNEL_ID} \
    -DDEVELOPER_ID=${DEVELOPER_ID} \
-   -DPREVIOUS_REDDIT_POST_CREATED=${PREVIOUS_REDDIT_POST_CREATED} \
    -DREDDIT_CLIENT_ID=${REDDIT_CLIENT_ID} \
    -DREDDIT_CLIENT_SECRET=${REDDIT_CLIENT_SECRET} \
    -DREDDIT_PASSWORD=${REDDIT_PASSWORD} \
@@ -43,7 +42,6 @@ Repeats Subreddit posts to Telegram.
       |         `BOT_USERNAME`         |  `true`  |       -       | Telegram bot username                                               | `SubredditResenderBot`                           |
       |          `CHANNEL_ID`          |  `true`  |       -       | Telegram channel ID. Subreddit posts will be sent here.             | `-1001572613876`                                 |
       |         `DEVELOPER_ID`         |  `true`  |       -       | Telegram profile ID. Bot will error logs messages directly to user. | `280538130`                                      |
-      | `PREVIOUS_REDDIT_POST_CREATED` | `false`  |       0       | Created time of last subreddit post.                                | `1679385633`                                     |
       |       `REDDIT_CLIENT_ID`       |  `true`  |       -       | Reddit `client_id`                                                  | `pW134F0XNuueG4W78x9uGA`                         |
       |    `DREDDIT_CLIENT_SECRET`     |  `true`  |       -       | Reddit client `secret`                                              | `fsdT6VkTgf1WMfSW6Pd5t4DRvfVueB`                 |
       |       `DREDDIT_PASSWORD`       |  `true`  |       -       | Reddit profile password                                             | `ETD1fqx%cfk6odj#boj`                            |

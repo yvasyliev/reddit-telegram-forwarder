@@ -1,7 +1,7 @@
 package com.github.yvasyliev.appenders;
 
-import com.github.yvasyliev.config.ApplicationContextHolder;
-import com.github.yvasyliev.telegram.TelegramRepeaterBot;
+import com.github.yvasyliev.config.AppConfig;
+import com.github.yvasyliev.telegram.TelegramLoggerBot;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
@@ -14,6 +14,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
@@ -23,9 +24,12 @@ import java.io.StringWriter;
 
 @Plugin(name = "TelegramBotAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TelegramBotAppender extends AbstractAppender {
+    private final TelegramLoggerBot telegramLoggerBot;
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
+        var applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        this.telegramLoggerBot = applicationContext.getBean(TelegramLoggerBot.class);
     }
 
     @PluginFactory
@@ -40,14 +44,10 @@ public class TelegramBotAppender extends AbstractAppender {
         try {
             var stackTrace = getStackTrace(event.getThrown());
             if (stackTrace != null) {
-                formattedMessage += "\n" + stackTrace;
+                formattedMessage = "%s\n%s".formatted(formattedMessage, stackTrace);
             }
 
-            var telegramRepeaterBot = ApplicationContextHolder
-                    .getInstance()
-                    .getApplicationContext()
-                    .getBean(TelegramRepeaterBot.class);
-            telegramRepeaterBot.sendDeveloperMessage(formattedMessage);
+            telegramLoggerBot.log(formattedMessage);
         } catch (TelegramApiException | IOException e) {
             throw new RuntimeException(e);
         }

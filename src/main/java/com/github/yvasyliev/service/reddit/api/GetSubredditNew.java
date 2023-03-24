@@ -32,8 +32,9 @@ public class GetSubredditNew implements Request<JsonNode> {
     @Override
     public JsonNode execute() throws IOException, InterruptedException {
         var redditAccessToken = applicationContext.getBean(RedditAccessToken.class);
-        var authorization = "Bearer " + redditAccessToken.token();
-        var request = HttpRequest.newBuilder(URI.create("https://oauth.reddit.com/r/" + subreddit + "/new"))
+        var authorization = "Bearer %s".formatted(redditAccessToken.token());
+        var api = "https://oauth.reddit.com/r/%s/new?raw_json=1".formatted(subreddit);
+        var request = HttpRequest.newBuilder(URI.create(api))
                 .header("Authorization", authorization)
                 .header("User-Agent", userAgent)
                 .GET()
