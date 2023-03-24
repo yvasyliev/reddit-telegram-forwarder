@@ -5,8 +5,8 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
         <RollingFile name="roll-by-time-and-size"
-                     fileName="telegram-deezer-client.log"
-                     filePattern="telegram-deezer-client.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
+                     fileName="reddit-telegram-repeater.log"
+                     filePattern="reddit-telegram-repeater.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
                      ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
@@ -16,7 +16,7 @@
             </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="" maxDepth="1000000">
-                    <IfFileName glob="telegram-deezer-client.*.log.gz"/>
+                    <IfFileName glob="reddit-telegram-repeater.*.log.gz"/>
                     <IfLastModified age="30m"/>
                 </Delete>
             </DefaultRolloverStrategy>
