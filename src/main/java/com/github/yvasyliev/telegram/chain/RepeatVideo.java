@@ -1,8 +1,9 @@
-package com.github.yvasyliev.telegram;
+package com.github.yvasyliev.telegram.chain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.exceptions.VideoUrlParseException;
 import com.github.yvasyliev.service.reddit.RedditVideoDownloader;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,22 +29,22 @@ public class RepeatVideo extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramRepeaterBot telegramRepeaterBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         try {
             var videoUrl = extractVideoUrl(data);
             if (videoUrl != null) {
                 var filename = videoUrl.substring(videoUrl.lastIndexOf('/') + 1);
                 try (var inputStream = new URL(videoUrl).openStream()) {
-                    telegramRepeaterBot.sendVideo(
+                    telegramSenderBot.sendVideo(
                             inputStream,
                             filename,
                             data.get("title").textValue(),
                             hasSpoiler(data)
                     );
                 }
-                appData.setProperty("created", data.get("created").asText());
+                appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             } else {
-                super.repeatRedditPost(data, telegramRepeaterBot);
+                super.repeatRedditPost(data, telegramSenderBot);
             }
         } catch (IOException | VideoUrlParseException | TelegramApiException e) {
             LOGGER.error(
@@ -57,7 +58,8 @@ public class RepeatVideo extends SubredditPostRepeaterChain {
 
     private String extractVideoUrl(JsonNode data) throws IOException, VideoUrlParseException {
         if (data.get("is_video").booleanValue()) {
-            return redditVideoDownloader.getVideoDownloadUrl(data.get("url").textValue());
+            var redditPostUrl = "https://www.reddit.com%s".formatted(data.get("permalink").textValue());
+            return redditVideoDownloader.getVideoDownloadUrl(redditPostUrl);
         }
 
         if (data.has("media")) {

@@ -27,9 +27,10 @@
         <Root level="ALL">
             <AppenderRef ref="stdout"/>
             <AppenderRef ref="roll-by-time-and-size"/>
-            <AppenderRef ref="telegramBotAppender"/>
+<!--            <AppenderRef ref="telegramBotAppender"/>-->
         </Root>
         <Logger name="org.springframework" level="off"/>
         <Logger name="org.apache.http" level="off"/>
+        <Logger name="telegramBotAppender" level="error"/>
     </Loggers>
 </Configuration>

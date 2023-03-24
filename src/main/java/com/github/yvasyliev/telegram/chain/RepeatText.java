@@ -1,6 +1,7 @@
-package com.github.yvasyliev.telegram;
+package com.github.yvasyliev.telegram.chain;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,15 @@ public class RepeatText extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramRepeaterBot telegramRepeaterBot) {
-        if ("link".equals(data.get("post_hint").textValue()) || youtubeDomains.contains(data.get("domain").textValue())) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+        if (isTextPost(data)) {
             try {
-                telegramRepeaterBot.sendText(data.get("title").textValue() + "\n" + data.get("url_overridden_by_dest").textValue());
-                appData.setProperty("created", data.get("created").asText());
+                var text = "%s\n%s".formatted(
+                        data.get("title").textValue(),
+                        data.get("url_overridden_by_dest").textValue()
+                );
+                telegramSenderBot.sendText(text);
+                appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             } catch (TelegramApiException e) {
                 LOGGER.error(
                         "Failed to send text. Created: {}, URL: {}",
@@ -40,7 +45,12 @@ public class RepeatText extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramRepeaterBot);
+            super.repeatRedditPost(data, telegramSenderBot);
         }
+    }
+
+    private boolean isTextPost(JsonNode data) {
+        return data.has("post_hint") && "link".equals(data.get("post_hint").textValue())
+                || data.has("domain") && youtubeDomains.contains(data.get("domain").textValue());
     }
 }

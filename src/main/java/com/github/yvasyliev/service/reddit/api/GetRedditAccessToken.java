@@ -41,7 +41,8 @@ public class GetRedditAccessToken implements Request<RedditAccessToken> {
     private String userAgent;
 
     public void initializeRequest() {
-        var authorization = "Basic " + Base64.getEncoder().encodeToString((redditClientId + ":" + redditClientSecret).getBytes(StandardCharsets.UTF_8));
+        var credentials = "%s:%s".formatted(redditClientId, redditClientSecret);
+        var authorization = "Basic %s".formatted(Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8)));
         var payload = Map.of(
                 "grant_type", "password",
                 "username", redditUsername,
@@ -70,7 +71,7 @@ public class GetRedditAccessToken implements Request<RedditAccessToken> {
     }
 
     private String encode(Map.Entry<String, String> entry) {
-        return encode(entry.getKey()) + "=" + encode(entry.getValue());
+        return "%s=%s".formatted(encode(entry.getKey()), encode(entry.getValue()));
     }
 
     private String encode(String s) {

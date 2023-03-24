@@ -1,6 +1,7 @@
-package com.github.yvasyliev.telegram;
+package com.github.yvasyliev.telegram.chain;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class RepeatGif extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramRepeaterBot telegramRepeaterBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         if (isGif(data)) {
             var gifUrl = data
                     .get("preview")
@@ -41,13 +42,13 @@ public class RepeatGif extends SubredditPostRepeaterChain {
             }
 
             try (var inputStream = new URL(gifUrl).openStream()) {
-                telegramRepeaterBot.sendGif(
+                telegramSenderBot.sendGif(
                         inputStream,
                         fileName,
                         data.get("title").textValue(),
                         hasSpoiler(data)
                 );
-                appData.setProperty("created", data.get("created").asText());
+                appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             } catch (IOException | TelegramApiException e) {
                 LOGGER.error(
                         "Failed to send gif. Created: {}, URL: {}",
@@ -57,7 +58,7 @@ public class RepeatGif extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramRepeaterBot);
+            super.repeatRedditPost(data, telegramSenderBot);
         }
     }
 
