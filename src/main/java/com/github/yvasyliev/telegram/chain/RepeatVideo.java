@@ -1,8 +1,9 @@
-package com.github.yvasyliev.telegram;
+package com.github.yvasyliev.telegram.chain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.exceptions.VideoUrlParseException;
 import com.github.yvasyliev.service.reddit.RedditVideoDownloader;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
-package com.github.yvasyliev.telegram;
+package com.github.yvasyliev.telegram.chain;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
