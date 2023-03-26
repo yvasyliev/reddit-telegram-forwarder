@@ -1,6 +1,6 @@
 package com.github.yvasyliev.appenders;
 
-import com.github.yvasyliev.config.AppConfig;
+import com.github.yvasyliev.config.TelegramLoggerBotConfig;
 import com.github.yvasyliev.telegram.TelegramLoggerBot;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
@@ -28,7 +28,7 @@ public class TelegramBotAppender extends AbstractAppender {
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
-        var applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        var applicationContext = new AnnotationConfigApplicationContext(TelegramLoggerBotConfig.class);
         this.telegramLoggerBot = applicationContext.getBean(TelegramLoggerBot.class);
     }
 

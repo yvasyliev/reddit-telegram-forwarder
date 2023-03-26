@@ -10,6 +10,10 @@ import com.github.yvasyliev.service.reddit.RedditVideoDownloader;
 import com.github.yvasyliev.service.reddit.api.GetRedditAccessToken;
 import com.github.yvasyliev.service.reddit.api.GetSubredditNew;
 import com.github.yvasyliev.service.reddit.api.Request;
+import com.github.yvasyliev.telegram.TelegramRepeaterBot;
+import com.github.yvasyliev.telegram.TelegramRepeaterBotImpl;
+import com.github.yvasyliev.telegram.TelegramSenderBot;
+import com.github.yvasyliev.telegram.TelegramSenderBotImpl;
 import com.github.yvasyliev.telegram.chain.NOPRepeaterChain;
 import com.github.yvasyliev.telegram.chain.RepeatGif;
 import com.github.yvasyliev.telegram.chain.RepeatMultiplePhotos;
@@ -18,12 +22,6 @@ import com.github.yvasyliev.telegram.chain.RepeatPhoto;
 import com.github.yvasyliev.telegram.chain.RepeatText;
 import com.github.yvasyliev.telegram.chain.RepeatVideo;
 import com.github.yvasyliev.telegram.chain.SubredditPostRepeaterChain;
-import com.github.yvasyliev.telegram.TelegramLoggerBot;
-import com.github.yvasyliev.telegram.TelegramLoggerBotImpl;
-import com.github.yvasyliev.telegram.TelegramRepeaterBot;
-import com.github.yvasyliev.telegram.TelegramRepeaterBotImpl;
-import com.github.yvasyliev.telegram.TelegramSenderBot;
-import com.github.yvasyliev.telegram.TelegramSenderBotImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -35,7 +33,7 @@ import java.net.http.HttpClient;
 import java.util.Properties;
 
 @Configuration
-public class AppConfig {
+public class AppConfig extends TelegramLoggerBotConfig {
     @Bean(initMethod = "load", destroyMethod = "store")
     public Properties appData() {
         return new AppData();
@@ -49,11 +47,6 @@ public class AppConfig {
     @Bean
     public TelegramSenderBot telegramSenderBot(@Value("${BOT_TOKEN}") String botToken) {
         return new TelegramSenderBotImpl(botToken);
-    }
-
-    @Bean
-    public TelegramLoggerBot telegramLoggerBot(@Value("${BOT_TOKEN}") String botToken) {
-        return new TelegramLoggerBotImpl(botToken);
     }
 
     @Bean
