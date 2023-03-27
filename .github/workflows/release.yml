@@ -85,4 +85,4 @@ jobs:
             ${{ env.JAR_PATH }} => ${{ secrets.REMOTE_DIR }}
           last_ssh: |
             cd ${{ secrets.REMOTE_DIR }}
-            echo "${{ secrets.RUN_CMD }}" | sed "s/{version}/${{ github.event.inputs.version }}/g" >> ${{ secrets.RUN_FILE }}
+            echo "cd ${{ secrets.REMOTE_DIR }}\n${{ secrets.RUN_CMD }}" | sed "s/{version}/${{ github.event.inputs.version }}/g" >> ${{ secrets.RUN_FILE }}
