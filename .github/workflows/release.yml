@@ -27,7 +27,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [ create-tag ]
+    needs: [ check_input ]
     steps:
       - name: Set JAR_NAME
         run: |
