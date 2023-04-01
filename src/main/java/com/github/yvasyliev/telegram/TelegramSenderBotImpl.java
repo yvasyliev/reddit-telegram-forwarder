@@ -1,6 +1,7 @@
 package com.github.yvasyliev.telegram;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 public class TelegramSenderBotImpl extends AbstractTelegramBot implements TelegramSenderBot {
@@ -90,12 +92,23 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
 
     @Override
     public void sendDocument(InputStream document, String filename, String text) throws TelegramApiException {
-        SendDocument sendDocument = SendDocument.builder()
+        var sendDocument = SendDocument.builder()
                 .chatId(channelId)
                 .document(new InputFile(document, filename))
                 .caption(text)
                 .build();
 
         execute(sendDocument);
+    }
+
+    @Override
+    public void sendPoll(String question, Collection<String> options) throws TelegramApiException {
+        var sendPoll = SendPoll.builder()
+                .chatId(channelId)
+                .question(question)
+                .options(options)
+                .build();
+
+        execute(sendPoll);
     }
 }

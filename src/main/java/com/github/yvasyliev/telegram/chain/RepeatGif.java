@@ -63,7 +63,8 @@ public class RepeatGif extends SubredditPostRepeaterChain {
     }
 
     private boolean isGif(JsonNode data) {
-        return data.get("url_overridden_by_dest").textValue().endsWith(".gif")
+        return data.has("url_overridden_by_dest")
+                && data.get("url_overridden_by_dest").textValue().endsWith(".gif")
                 && data.get("preview").get("images").get(0).get("variants").has("mp4");
     }
 }

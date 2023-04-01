@@ -44,7 +44,9 @@ public class TelegramBotAppender extends AbstractAppender {
         try {
             var stackTrace = getStackTrace(event.getThrown());
             if (stackTrace != null) {
-                formattedMessage = "%s\n%s".formatted(formattedMessage, stackTrace);
+                formattedMessage = """
+                        %s
+                        %s""".formatted(formattedMessage, stackTrace);
             }
 
             telegramLoggerBot.log(formattedMessage);

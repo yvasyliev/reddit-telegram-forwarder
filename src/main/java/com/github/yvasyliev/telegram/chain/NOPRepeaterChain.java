@@ -14,6 +14,12 @@ public class NOPRepeaterChain extends SubredditPostRepeaterChain {
     @Value("#{{'vimeo.com'}}")
     private Set<String> ignoredDomains;
 
+    @Value("""
+            Post was not repeated.
+            Created: {}
+            URL: {}""")
+    private String postNotHandledMessageTemplate;
+
     public NOPRepeaterChain() {
         super(null);
     }
@@ -22,9 +28,9 @@ public class NOPRepeaterChain extends SubredditPostRepeaterChain {
     public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         if (!ignoredDomains.contains(data.get("domain").textValue())) {
             LOGGER.error(
-                    "Post was not repeated. Created: {}, URL: {}",
+                    postNotHandledMessageTemplate,
                     data.get("created").intValue(),
-                    data.get("url_overridden_by_dest").textValue()
+                    data.get("url").textValue()
             );
         }
     }

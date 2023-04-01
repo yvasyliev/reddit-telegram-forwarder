@@ -65,22 +65,24 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
     }
 
     private String extractPhotoUrl(JsonNode data) {
-        var urlOverriddenByDest = data.get("url_overridden_by_dest").textValue();
+        if (data.has("url_overridden_by_dest")) {
+            var urlOverriddenByDest = data.get("url_overridden_by_dest").textValue();
 
-        if (urlOverriddenByDest.endsWith(".jpg1")) {
-            return urlOverriddenByDest.substring(0, urlOverriddenByDest.length() - 1);
-        }
+            if (urlOverriddenByDest.endsWith(".jpg1")) {
+                return urlOverriddenByDest.substring(0, urlOverriddenByDest.length() - 1);
+            }
 
-        if (photoExtensions.stream().anyMatch(urlOverriddenByDest::endsWith)) {
-            var photoUrl = data
-                    .get("preview")
-                    .get("images")
-                    .get(0)
-                    .get("source")
-                    .get("url")
-                    .textValue();
+            if (photoExtensions.stream().anyMatch(urlOverriddenByDest::endsWith)) {
+                var photoUrl = data
+                        .get("preview")
+                        .get("images")
+                        .get(0)
+                        .get("source")
+                        .get("url")
+                        .textValue();
 
-            return photoUrl.contains("auto=webp") ? urlOverriddenByDest : photoUrl;
+                return photoUrl.contains("auto=webp") ? urlOverriddenByDest : photoUrl;
+            }
         }
 
         return null;

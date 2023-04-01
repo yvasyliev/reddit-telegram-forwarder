@@ -19,6 +19,7 @@ import com.github.yvasyliev.telegram.chain.RepeatGif;
 import com.github.yvasyliev.telegram.chain.RepeatMultiplePhotos;
 import com.github.yvasyliev.telegram.chain.RepeatNestedPost;
 import com.github.yvasyliev.telegram.chain.RepeatPhoto;
+import com.github.yvasyliev.telegram.chain.RepeatPoll;
 import com.github.yvasyliev.telegram.chain.RepeatText;
 import com.github.yvasyliev.telegram.chain.RepeatVideo;
 import com.github.yvasyliev.telegram.chain.SubredditPostRepeaterChain;
@@ -117,7 +118,7 @@ public class AppConfig extends TelegramLoggerBotConfig {
 
     @Bean
     public SubredditPostRepeaterChain repeatVideo() {
-        return new RepeatVideo(nopRepeaterChain());
+        return new RepeatVideo(repeatPoll());
     }
 
     @Bean
@@ -128,5 +129,10 @@ public class AppConfig extends TelegramLoggerBotConfig {
     @Bean
     public SubredditPostRepeaterChain nopRepeaterChain() {
         return new NOPRepeaterChain();
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain repeatPoll() {
+        return new RepeatPoll(nopRepeaterChain());
     }
 }

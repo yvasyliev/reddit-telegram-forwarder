@@ -10,16 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
     private static final Logger LOGGER = LoggerFactory.getLogger(RepeatMultiplePhotos.class);
@@ -38,9 +33,9 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
     @Override
     public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
         if (data.has("gallery_data")) {
+            var hasSpoiler = hasSpoiler(data);
+            var photoUrlsPages = extractPhotoUrlsPages(data);
             try {
-                var hasSpoiler = hasSpoiler(data);
-                var photoUrlsPages = extractPhotoUrlsPages(data);
                 for (var i = 0; i < photoUrlsPages.size(); i++) {
                     var photoUrls = photoUrlsPages.get(i);
                     var text = buildText(data.get("title").textValue(), i + 1, photoUrlsPages.size());
@@ -91,10 +86,6 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
                 .filter(Optional::isPresent)
                 .map(optionalP -> optionalP.get().get("u").textValue())
                 .toList();
-    }
-
-    private Stream<JsonNode> stream(Iterator<JsonNode> elements) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(elements, Spliterator.ORDERED), false);
     }
 
     private String buildText(String originalText, int pageNumber, int totalPages) {
