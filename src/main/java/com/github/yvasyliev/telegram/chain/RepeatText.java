@@ -18,6 +18,9 @@ public class RepeatText extends SubredditPostRepeaterChain {
     @Value("#{{'youtube.com', 'youtu.be'}}")
     private Set<String> youtubeDomains;
 
+    @Value("#{{'.gifv'}}")
+    private Set<String> videoExtensions;
+
     @Autowired
     @Qualifier("appData")
     public Properties appData;
@@ -53,7 +56,16 @@ public class RepeatText extends SubredditPostRepeaterChain {
     }
 
     private boolean isTextPost(JsonNode data) {
-        return data.has("post_hint") && "link".equals(data.get("post_hint").textValue())
-                || data.has("domain") && youtubeDomains.contains(data.get("domain").textValue());
+        if (data.has("post_hint")) {
+            var postHint = data.get("post_hint").textValue();
+            if ("link".equals(postHint)) {
+                if (data.has("url_overridden_by_dest")) {
+                    var urlOverriddenByDest = data.get("url_overridden_by_dest").textValue();
+                    return videoExtensions.stream().noneMatch(urlOverriddenByDest::endsWith);
+                }
+                return true;
+            }
+        }
+        return data.has("domain") && youtubeDomains.contains(data.get("domain").textValue());
     }
 }
