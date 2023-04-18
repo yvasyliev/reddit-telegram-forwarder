@@ -34,7 +34,7 @@ Repeats Subreddit posts to Telegram.
    -DSUBREDDIT=${SUBREDDIT} \
    -jar reddit-telegram-repeater-${version}-jar-with-dependencies.jar
    ```
-    The application relies on environment variables to extract subreddit data and repeat it to Telegram:
+    * The application relies on environment variables to extract subreddit data and repeat it to Telegram:
 
       |        Variable         | Required | Default value | Description                                                         | Example                                          |
       |:-----------------------:|:--------:|:-------------:|:--------------------------------------------------------------------|:-------------------------------------------------|
