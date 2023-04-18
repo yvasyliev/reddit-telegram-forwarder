@@ -36,14 +36,15 @@ Repeats Subreddit posts to Telegram.
    ```
     * The application relies on environment variables to extract subreddit data and repeat it to Telegram:
 
-      |            Variable            | Required | Default value | Description                                                         | Example                                          |
-      |:------------------------------:|:--------:|:-------------:|:--------------------------------------------------------------------|:-------------------------------------------------|
-      |          `BOT_TOKEN`           |  `true`  |       -       | Telegram bot token                                                  | `4336854599:BBFqVLRq9ixVdxORFWQgaSywzCfRo5-tBus` |
-      |         `BOT_USERNAME`         |  `true`  |       -       | Telegram bot username                                               | `SubredditResenderBot`                           |
-      |          `CHANNEL_ID`          |  `true`  |       -       | Telegram channel ID. Subreddit posts will be sent here.             | `-1001572613876`                                 |
-      |         `DEVELOPER_ID`         |  `true`  |       -       | Telegram profile ID. Bot will error logs messages directly to user. | `280538130`                                      |
-      |       `REDDIT_CLIENT_ID`       |  `true`  |       -       | Reddit `client_id`                                                  | `pW134F0XNuueG4W78x9uGA`                         |
-      |    `DREDDIT_CLIENT_SECRET`     |  `true`  |       -       | Reddit client `secret`                                              | `fsdT6VkTgf1WMfSW6Pd5t4DRvfVueB`                 |
-      |       `DREDDIT_PASSWORD`       |  `true`  |       -       | Reddit profile password                                             | `ETD1fqx%cfk6odj#boj`                            |
-      |       `DREDDIT_USERNAME`       |  `true`  |       -       | Reddit profile username                                             | `RedditProfileUsername000`                       |
-      |          `SUBREDDIT`           |  `true`  |       -       | Subreddit name                                                      | `SubredditName`                                  |
+      |        Variable         | Required | Default value | Description                                                         | Example                                          |
+      |:-----------------------:|:--------:|:-------------:|:--------------------------------------------------------------------|:-------------------------------------------------|
+      |       `BOT_TOKEN`       |  `true`  |       -       | Telegram bot token                                                  | `4336854599:BBFqVLRq9ixVdxORFWQgaSywzCfRo5-tBus` |
+      |     `BOT_USERNAME`      |  `true`  |       -       | Telegram bot username                                               | `SubredditResenderBot`                           |
+      |      `CHANNEL_ID`       |  `true`  |       -       | Telegram channel ID. Subreddit posts will be sent here.             | `-1001572613876`                                 |
+      |     `DEVELOPER_ID`      |  `true`  |       -       | Telegram profile ID. Bot will error logs messages directly to user. | `280538130`                                      |
+      |   `REDDIT_CLIENT_ID`    |  `true`  |       -       | Reddit `client_id`                                                  | `pW134F0XNuueG4W78x9uGA`                         |
+      | `DREDDIT_CLIENT_SECRET` |  `true`  |       -       | Reddit client `secret`                                              | `fsdT6VkTgf1WMfSW6Pd5t4DRvfVueB`                 |
+      |   `DREDDIT_PASSWORD`    |  `true`  |       -       | Reddit profile password                                             | `ETD1fqx%cfk6odj#boj`                            |
+      |   `DREDDIT_USERNAME`    |  `true`  |       -       | Reddit profile username                                             | `RedditProfileUsername000`                       |
+      |       `SUBREDDIT`       |  `true`  |       -       | Subreddit name                                                      | `SubredditName`                                  |
+      |     `SKIP_AUTHORS`      | `false`  |       -       | Post authors to be ignored; comma-separated values                  | `user1,user2,user3`                              |
