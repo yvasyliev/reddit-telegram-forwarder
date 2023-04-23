@@ -16,7 +16,7 @@ Repeats Subreddit posts to Telegram.
     * Application type must be `script`.
 2. Build this project:
     ```shell
-    git clone https://github.com/yvasyliev/AnadeArmasFunclub.git
+    git clone https://github.com/yvasyliev/reddit-telegram-repeater.git
     mvn clean package
     cd target
     ```
