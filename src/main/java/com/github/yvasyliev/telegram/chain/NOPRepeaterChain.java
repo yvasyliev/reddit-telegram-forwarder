@@ -11,7 +11,7 @@ import java.util.Set;
 public class NOPRepeaterChain extends SubredditPostRepeaterChain {
     private static final Logger LOGGER = LoggerFactory.getLogger(NOPRepeaterChain.class);
 
-    @Value("#{{'vimeo.com'}}")
+    @Value("#{{'vimeo.com', 'gfycat.com'}}")
     private Set<String> ignoredDomains;
 
     @Value("""
