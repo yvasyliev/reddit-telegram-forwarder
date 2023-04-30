@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,6 +45,7 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
                         telegramSenderBot.sendPhoto(photoUrls.get(0), text, hasSpoiler);
                     } else {
                         telegramSenderBot.sendMultiplePhotos(photoUrls, text, hasSpoiler);
+                        sleep(5);
                     }
                 }
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
@@ -99,5 +101,13 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
         }
 
         return text;
+    }
+
+    private void sleep(long seconds) {
+        try {
+            TimeUnit.SECONDS.sleep(seconds);
+        } catch (InterruptedException e) {
+            LOGGER.error("Failed to sleep by {} seconds.", seconds, e);
+        }
     }
 }
