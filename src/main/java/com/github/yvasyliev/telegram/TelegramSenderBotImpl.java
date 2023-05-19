@@ -21,20 +21,23 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
     @Value("${CHANNEL_ID}")
     private String channelId;
 
+    @Value("${DEVELOPER_ID}")
+    private String developerId;
+
     public TelegramSenderBotImpl(String botToken) {
         super(botToken);
     }
 
     @Override
-    public void sendText(String text) throws TelegramApiException {
-        var sendMessage = new SendMessage(channelId, text);
+    public void sendText(String text, boolean needModerate) throws TelegramApiException {
+        var sendMessage = new SendMessage(needModerate ? developerId : channelId, text);
         execute(sendMessage);
     }
 
     @Override
-    public void sendPhoto(String photoUrl, String text, boolean hasSpoiler) throws TelegramApiException {
+    public void sendPhoto(String photoUrl, String text, boolean hasSpoiler, boolean needModerate) throws TelegramApiException {
         var sendPhoto = SendPhoto.builder()
-                .chatId(channelId)
+                .chatId(needModerate ? developerId : channelId)
                 .photo(new InputFile(photoUrl))
                 .caption(text)
                 .hasSpoiler(hasSpoiler)
@@ -44,7 +47,7 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
     }
 
     @Override
-    public void sendMultiplePhotos(List<String> photoUrls, String text, boolean hasSpoiler) throws TelegramApiException {
+    public void sendMultiplePhotos(List<String> photoUrls, String text, boolean hasSpoiler, boolean needModerate) throws TelegramApiException {
         var inputMediaPhotos = photoUrls
                 .stream()
                 .map(photoUrl -> (InputMedia) InputMediaPhoto
@@ -58,7 +61,7 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
         inputMediaPhotos.get(0).setCaption(text);
 
         var sendMediaGroup = SendMediaGroup.builder()
-                .chatId(channelId)
+                .chatId(needModerate ? developerId : channelId)
                 .medias(inputMediaPhotos)
                 .build();
 
@@ -66,9 +69,9 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
     }
 
     @Override
-    public void sendGif(InputStream gif, String filename, String text, boolean hasSpoiler) throws TelegramApiException {
+    public void sendGif(InputStream gif, String filename, String text, boolean hasSpoiler, boolean needModerate) throws TelegramApiException {
         var sendAnimation = SendAnimation.builder()
-                .chatId(channelId)
+                .chatId(needModerate ? developerId : channelId)
                 .animation(new InputFile(gif, filename))
                 .caption(text)
                 .hasSpoiler(hasSpoiler)
@@ -78,9 +81,9 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
     }
 
     @Override
-    public void sendVideo(InputStream video, String filename, String text, boolean hasSpoiler) throws TelegramApiException {
+    public void sendVideo(InputStream video, String filename, String text, boolean hasSpoiler, boolean needModerate) throws TelegramApiException {
         var sendVideo = SendVideo.builder()
-                .chatId(channelId)
+                .chatId(needModerate ? developerId : channelId)
                 .video(new InputFile(video, filename))
                 .caption(text)
                 .hasSpoiler(hasSpoiler)
@@ -91,9 +94,9 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
     }
 
     @Override
-    public void sendDocument(InputStream document, String filename, String text) throws TelegramApiException {
+    public void sendDocument(InputStream document, String filename, String text, boolean needModerate) throws TelegramApiException {
         var sendDocument = SendDocument.builder()
-                .chatId(channelId)
+                .chatId(needModerate ? developerId : channelId)
                 .document(new InputFile(document, filename))
                 .caption(text)
                 .build();
@@ -102,9 +105,9 @@ public class TelegramSenderBotImpl extends AbstractTelegramBot implements Telegr
     }
 
     @Override
-    public void sendPoll(String question, Collection<String> options) throws TelegramApiException {
+    public void sendPoll(String question, Collection<String> options, boolean needModerate) throws TelegramApiException {
         var sendPoll = SendPoll.builder()
-                .chatId(channelId)
+                .chatId(needModerate ? developerId : channelId)
                 .question(question)
                 .options(options)
                 .build();

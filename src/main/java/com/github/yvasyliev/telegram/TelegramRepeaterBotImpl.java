@@ -21,6 +21,6 @@ public class TelegramRepeaterBotImpl extends AbstractTelegramBot implements Tele
 
     @Override
     public void repeatSubredditPosts(List<JsonNode> dataStream) {
-        dataStream.forEach(data -> subredditPostRepeaterChain.repeatRedditPost(data, telegramSenderBot));
+        dataStream.forEach(data -> subredditPostRepeaterChain.repeatRedditPost(data, telegramSenderBot, false));
     }
 }

@@ -25,7 +25,7 @@ public class NOPRepeaterChain extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         if (!ignoredDomains.contains(data.get("domain").textValue())) {
             LOGGER.error(
                     postNotHandledMessageTemplate,

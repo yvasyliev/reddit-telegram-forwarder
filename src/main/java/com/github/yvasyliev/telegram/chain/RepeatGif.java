@@ -24,7 +24,7 @@ public class RepeatGif extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         if (isGif(data)) {
             var gifUrl = data
                     .get("preview")
@@ -46,7 +46,8 @@ public class RepeatGif extends SubredditPostRepeaterChain {
                         inputStream,
                         fileName,
                         data.get("title").textValue(),
-                        hasSpoiler(data)
+                        hasSpoiler(data),
+                        needModerate
                 );
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             } catch (IOException | TelegramApiException e) {
@@ -58,7 +59,7 @@ public class RepeatGif extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramSenderBot);
+            super.repeatRedditPost(data, telegramSenderBot, needModerate);
         }
     }
 

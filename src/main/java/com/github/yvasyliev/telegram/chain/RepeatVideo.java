@@ -29,7 +29,7 @@ public class RepeatVideo extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         try {
             var videoUrl = extractVideoUrl(data);
             if (videoUrl != null) {
@@ -39,12 +39,13 @@ public class RepeatVideo extends SubredditPostRepeaterChain {
                             inputStream,
                             filename,
                             data.get("title").textValue(),
-                            hasSpoiler(data)
+                            hasSpoiler(data),
+                            needModerate
                     );
                 }
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             } else {
-                super.repeatRedditPost(data, telegramSenderBot);
+                super.repeatRedditPost(data, telegramSenderBot, needModerate);
             }
         } catch (IOException | VideoUrlParseException | TelegramApiException e) {
             LOGGER.error(

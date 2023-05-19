@@ -32,7 +32,7 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         if (data.has("gallery_data")) {
             var hasSpoiler = hasSpoiler(data);
             var photoUrlsPages = extractPhotoUrlsPages(data);
@@ -42,9 +42,9 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
                     var text = buildText(data.get("title").textValue(), i + 1, photoUrlsPages.size());
 
                     if (photoUrls.size() == 1) {
-                        telegramSenderBot.sendPhoto(photoUrls.get(0), text, hasSpoiler);
+                        telegramSenderBot.sendPhoto(photoUrls.get(0), text, hasSpoiler, needModerate);
                     } else {
-                        telegramSenderBot.sendMultiplePhotos(photoUrls, text, hasSpoiler);
+                        telegramSenderBot.sendMultiplePhotos(photoUrls, text, hasSpoiler, needModerate);
                         sleep(5);
                     }
                 }
@@ -58,7 +58,7 @@ public class RepeatMultiplePhotos extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramSenderBot);
+            super.repeatRedditPost(data, telegramSenderBot, needModerate);
         }
     }
 

@@ -22,7 +22,7 @@ public class RepeatPoll extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         if (data.has("poll_data")) {
             var redditOptions = data.get("poll_data").get("options").elements();
             var options = stream(redditOptions)
@@ -30,7 +30,7 @@ public class RepeatPoll extends SubredditPostRepeaterChain {
                     .toList();
 
             try {
-                telegramSenderBot.sendPoll(data.get("title").textValue(), options);
+                telegramSenderBot.sendPoll(data.get("title").textValue(), options, needModerate);
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             } catch (TelegramApiException e) {
                 LOGGER.error(
@@ -41,7 +41,7 @@ public class RepeatPoll extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramSenderBot);
+            super.repeatRedditPost(data, telegramSenderBot, needModerate);
         }
     }
 }
