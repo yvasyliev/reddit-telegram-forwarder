@@ -22,11 +22,7 @@ public class FilterAuthorChain extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
-        if (restrictedAuthors.contains(data.get("author").textValue())) {
-            appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
-        } else {
-            super.repeatRedditPost(data, telegramSenderBot);
-        }
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
+        super.repeatRedditPost(data, telegramSenderBot, restrictedAuthors.contains(data.get("author").textValue()));
     }
 }

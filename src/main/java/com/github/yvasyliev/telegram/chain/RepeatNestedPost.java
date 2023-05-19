@@ -21,19 +21,20 @@ public class RepeatNestedPost extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         if (data.has("crosspost_parent_list")) {
             var created = appData.getProperty("PREVIOUS_REDDIT_POST_CREATED", "0");
             var subredditPostRepeaterChain = applicationContext.getBean("subredditPostRepeaterChain", SubredditPostRepeaterChain.class);
             subredditPostRepeaterChain.repeatRedditPost(
                     data.get("crosspost_parent_list").get(0),
-                    telegramSenderBot
+                    telegramSenderBot,
+                    needModerate
             );
             if (!created.equals(appData.getProperty("PREVIOUS_REDDIT_POST_CREATED"))) {
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
             }
         } else {
-            super.repeatRedditPost(data, telegramSenderBot);
+            super.repeatRedditPost(data, telegramSenderBot, needModerate);
         }
     }
 }

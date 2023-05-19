@@ -29,7 +29,7 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
     }
 
     @Override
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         var photoUrl = extractPhotoUrl(data);
         if (photoUrl != null) {
             var text = data.get("title").textValue();
@@ -37,7 +37,7 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
 
             try {
                 try {
-                    telegramSenderBot.sendPhoto(photoUrl, text, hasSpoiler);
+                    telegramSenderBot.sendPhoto(photoUrl, text, hasSpoiler, needModerate);
                 } catch (TelegramApiRequestException e) {
                     var apiResponse = e.getApiResponse();
 
@@ -47,7 +47,7 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
 
                     try (var inputStream = new URL(photoUrl).openStream()) {
                         var filename = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
-                        telegramSenderBot.sendDocument(inputStream, filename, text);
+                        telegramSenderBot.sendDocument(inputStream, filename, text, needModerate);
                     }
                 }
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
@@ -60,7 +60,7 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
                 );
             }
         } else {
-            super.repeatRedditPost(data, telegramSenderBot);
+            super.repeatRedditPost(data, telegramSenderBot, needModerate);
         }
     }
 

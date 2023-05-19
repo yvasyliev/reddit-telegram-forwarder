@@ -16,8 +16,8 @@ public abstract class SubredditPostRepeaterChain {
         this.nextChain = nextChain;
     }
 
-    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot) {
-        nextChain.repeatRedditPost(data, telegramSenderBot);
+    public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
+        nextChain.repeatRedditPost(data, telegramSenderBot, needModerate);
     }
 
     protected boolean hasSpoiler(JsonNode data) {
