@@ -16,6 +16,7 @@ import com.github.yvasyliev.telegram.TelegramSenderBot;
 import com.github.yvasyliev.telegram.TelegramSenderBotImpl;
 import com.github.yvasyliev.telegram.chain.FilterAuthorChain;
 import com.github.yvasyliev.telegram.chain.NOPRepeaterChain;
+import com.github.yvasyliev.telegram.chain.NsfwCheckChain;
 import com.github.yvasyliev.telegram.chain.RepeatGif;
 import com.github.yvasyliev.telegram.chain.RepeatMultiplePhotos;
 import com.github.yvasyliev.telegram.chain.RepeatNestedPost;
@@ -94,7 +95,7 @@ public class AppConfig extends TelegramLoggerBotConfig {
 
     @Bean
     public SubredditPostRepeaterChain repeatNestedPost() {
-        return new RepeatNestedPost(repeatText());
+        return new RepeatNestedPost(nsfwCheckChain());
     }
 
     @Bean
@@ -140,5 +141,10 @@ public class AppConfig extends TelegramLoggerBotConfig {
     @Bean(name = {"filterAuthorChain", "subredditPostRepeaterChain"})
     public SubredditPostRepeaterChain filterAuthorChain() {
         return new FilterAuthorChain(repeatNestedPost());
+    }
+
+    @Bean
+    public SubredditPostRepeaterChain nsfwCheckChain() {
+        return new NsfwCheckChain(repeatText());
     }
 }
