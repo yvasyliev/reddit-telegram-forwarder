@@ -41,13 +41,16 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
                 } catch (TelegramApiRequestException e) {
                     var apiResponse = e.getApiResponse();
 
-                    if (!apiResponse.contains("PHOTO_INVALID_DIMENSIONS") && !apiResponse.endsWith("too big for a photo")) {
-                        throw e;
-                    }
+                    switch (apiResponse) {
+                        case "Bad Request: wrong file identifier/HTTP URL specified":
+                            try (var inputStream = new URL(photoUrl).openStream()) {
+                                var filename = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
+                                telegramSenderBot.sendPhoto(inputStream, filename, text, hasSpoiler, needModerate);
+                            }
+                            break;
 
-                    try (var inputStream = new URL(photoUrl).openStream()) {
-                        var filename = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
-                        telegramSenderBot.sendDocument(inputStream, filename, text, needModerate);
+                        default:
+                            throw e;
                     }
                 }
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
