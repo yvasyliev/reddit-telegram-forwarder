@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
@@ -41,16 +42,25 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
                 } catch (TelegramApiRequestException e) {
                     var apiResponse = e.getApiResponse();
 
-                    switch (apiResponse) {
-                        case "Bad Request: wrong file identifier/HTTP URL specified":
-                            try (var inputStream = new URL(photoUrl).openStream()) {
-                                var filename = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
-                                telegramSenderBot.sendPhoto(inputStream, filename, text, hasSpoiler, needModerate);
-                            }
-                            break;
+                    if ("Bad Request: wrong file identifier/HTTP URL specified".equals(apiResponse)) {
+                        try {
+                            sendPhotoInputStream(
+                                    photoUrl,
+                                    (inputStream, filename) -> telegramSenderBot.sendPhoto(inputStream, filename, text, hasSpoiler, needModerate)
+                            );
+                            return;
+                        } catch (TelegramApiRequestException ex) {
+                            apiResponse = ex.getApiResponse();
+                        }
+                    }
 
-                        default:
-                            throw e;
+                    if ("Bad Request: PHOTO_INVALID_DIMENSIONS".equals(apiResponse)) {
+                        sendPhotoInputStream(
+                                photoUrl,
+                                (inputStream, filename) -> telegramSenderBot.sendDocument(inputStream, filename, text, needModerate)
+                        );
+                    } else {
+                        throw e;
                     }
                 }
                 appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
@@ -89,5 +99,17 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
         }
 
         return null;
+    }
+
+    private void sendPhotoInputStream(String photoUrl, SenderFunction senderFunction) throws IOException, TelegramApiException {
+        try (var inputStream = new URL(photoUrl).openStream()) {
+            var filename = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
+            senderFunction.send(inputStream, filename);
+        }
+    }
+
+    @FunctionalInterface
+    private interface SenderFunction {
+        void send(InputStream inputStream, String filename) throws TelegramApiException;
     }
 }
