@@ -29,6 +29,7 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
         super(nextChain);
     }
 
+    // TODO: 9/28/2023 refactor it.
     @Override
     public void repeatRedditPost(JsonNode data, TelegramSenderBot telegramSenderBot, boolean needModerate) {
         var photoUrl = extractPhotoUrl(data);
@@ -48,6 +49,7 @@ public class RepeatPhoto extends SubredditPostRepeaterChain {
                                     photoUrl,
                                     (inputStream, filename) -> telegramSenderBot.sendPhoto(inputStream, filename, text, hasSpoiler, needModerate)
                             );
+                            appData.setProperty("PREVIOUS_REDDIT_POST_CREATED", String.valueOf(data.get("created").intValue()));
                             return;
                         } catch (TelegramApiRequestException ex) {
                             apiResponse = ex.getApiResponse();
