@@ -1,7 +1,7 @@
 package com.github.yvasyliev.appenders;
 
-import com.github.yvasyliev.config.TelegramLoggerBotConfig;
-import com.github.yvasyliev.telegram.TelegramLoggerBot;
+import com.github.yvasyliev.bots.telegram.notifier.TelegramNotifier;
+import com.github.yvasyliev.config.TelegramNotifierConfig;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
@@ -24,12 +24,12 @@ import java.io.StringWriter;
 
 @Plugin(name = "TelegramBotAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TelegramBotAppender extends AbstractAppender {
-    private final TelegramLoggerBot telegramLoggerBot;
+    private final TelegramNotifier telegramNotifier;
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
-        var applicationContext = new AnnotationConfigApplicationContext(TelegramLoggerBotConfig.class);
-        this.telegramLoggerBot = applicationContext.getBean(TelegramLoggerBot.class);
+        var applicationContext = new AnnotationConfigApplicationContext(TelegramNotifierConfig.class);
+        this.telegramNotifier = applicationContext.getBean(TelegramNotifier.class);
     }
 
     @PluginFactory
@@ -41,21 +41,21 @@ public class TelegramBotAppender extends AbstractAppender {
     public void append(LogEvent event) {
         var formattedMessage = event.getMessage().getFormattedMessage();
 
-        try {
-            var stackTrace = getStackTrace(event.getThrown());
-            if (stackTrace != null) {
-                formattedMessage = """
-                        %s
-                        %s""".formatted(formattedMessage, stackTrace);
-            }
+        var stackTrace = getStackTrace(event.getThrown());
+        if (stackTrace != null) {
+            formattedMessage = """
+                    %s
+                    %s""".formatted(formattedMessage, stackTrace);
+        }
 
-            telegramLoggerBot.log(formattedMessage);
-        } catch (TelegramApiException | IOException e) {
-            throw new RuntimeException(e);
+        try {
+            telegramNotifier.notify(formattedMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
-    private String getStackTrace(Throwable throwable) throws IOException {
+    private String getStackTrace(Throwable throwable) {
         if (throwable == null) {
             return null;
         }
@@ -63,6 +63,8 @@ public class TelegramBotAppender extends AbstractAppender {
         try (var stringWriter = new StringWriter(); var printWriter = new PrintWriter(stringWriter)) {
             throwable.printStackTrace(printWriter);
             return stringWriter.toString();
+        } catch (IOException e) {
+            return "Failed to read stack trace: " + e;
         }
     }
 }
