@@ -1,3 +1,3 @@
-🗑️ Blocked authors:
+*🗑️ Blocked authors:*
 
 %s

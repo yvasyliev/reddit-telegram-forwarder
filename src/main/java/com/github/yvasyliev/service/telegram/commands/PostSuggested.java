@@ -2,7 +2,7 @@ package com.github.yvasyliev.service.telegram.commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.CallbackData;
-import com.github.yvasyliev.model.dto.PostApprovedData;
+import com.github.yvasyliev.model.dto.ExternalMessageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
@@ -34,7 +34,7 @@ public class PostSuggested extends Command {
 
         var approveButton = InlineKeyboardButton.builder()
                 .text("✅ Approve")
-                .callbackData(objectMapper.writeValueAsString(new PostApprovedData(
+                .callbackData(objectMapper.writeValueAsString(new ExternalMessageData(
                         "/approvepost",
                         sourceChatId,
                         sourceMessageId
@@ -46,12 +46,22 @@ public class PostSuggested extends Command {
                 .callbackData(objectMapper.writeValueAsString(new CallbackData("/rejectpost")))
                 .build();
 
+        var replyButton = InlineKeyboardButton.builder()
+                .text("🔙 Reply")
+                .callbackData(objectMapper.writeValueAsString(new ExternalMessageData(
+                        "/reply",
+                        sourceChatId,
+                        sourceMessageId
+                )))
+                .build();
+
         var sendMessage = SendMessage.builder()
                 .chatId(redTelBot.getAdminId())
                 .text("👆 Shall I publish the post above?")
                 .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(
                         approveButton,
-                        denyButton
+                        denyButton,
+                        replyButton
                 ))))
                 .build();
         redTelBot.execute(sendMessage);

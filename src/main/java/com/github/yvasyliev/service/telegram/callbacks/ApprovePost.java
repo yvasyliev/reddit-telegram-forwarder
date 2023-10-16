@@ -1,6 +1,6 @@
 package com.github.yvasyliev.service.telegram.callbacks;
 
-import com.github.yvasyliev.model.dto.PostApprovedData;
+import com.github.yvasyliev.model.dto.ExternalMessageData;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -19,11 +19,11 @@ public class ApprovePost extends Callback {
         var message = callbackQuery.getMessage();
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
-        var postApprovedData = objectMapper.readValue(callbackQuery.getData(), PostApprovedData.class);
+        var messageData = objectMapper.readValue(callbackQuery.getData(), ExternalMessageData.class);
         redTelBot.execute(new ForwardMessage(
                 redTelBot.getChannelId(),
-                postApprovedData.fromChatId(),
-                postApprovedData.messageId()
+                messageData.fromChatId(),
+                messageData.messageId()
         ));
         redTelBot.execute(new EditMessageReplyMarkup(
                 chatId.toString(),

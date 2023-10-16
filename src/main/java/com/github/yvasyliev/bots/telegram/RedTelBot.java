@@ -3,6 +3,7 @@ package com.github.yvasyliev.bots.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.CallbackData;
+import com.github.yvasyliev.model.dto.ExternalMessageData;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
@@ -34,6 +36,9 @@ public class RedTelBot extends TelegramPublisher {
 
     @Autowired
     private Map<Long, String> userCommands;
+
+    @Autowired
+    private Map<Long, ExternalMessageData> awaitingReplies;
 
     public RedTelBot(@Value("${BOT_TOKEN}") String botToken) {
         super(botToken);
@@ -99,7 +104,7 @@ public class RedTelBot extends TelegramPublisher {
 
     public void onCallbackQueryReceived(CallbackQuery callbackQuery) {
         var message = callbackQuery.getMessage();
-        if (message.isUserMessage() && getAdminId().equals(callbackQuery.getFrom().getId().toString())) {
+        if (message.isUserMessage() && isFromAdmin(callbackQuery)) {
             try {
                 var callbackData = objectMapper.readValue(callbackQuery.getData(), CallbackData.class);
                 context.getBean(callbackData.action(), Callback.class).acceptWithException(callbackQuery);
@@ -134,5 +139,21 @@ public class RedTelBot extends TelegramPublisher {
 
     public String removeUserCommand(long userId) {
         return userCommands.remove(userId);
+    }
+
+    public ExternalMessageData addAwaitingReply(Long userId, ExternalMessageData messageData) {
+        return awaitingReplies.put(userId, messageData);
+    }
+
+    public ExternalMessageData getAwaitingReply(Long userId) {
+        return awaitingReplies.remove(userId);
+    }
+
+    public boolean isFromAdmin(CallbackQuery callbackQuery) {
+        return isAdmin(callbackQuery.getFrom());
+    }
+
+    public boolean isAdmin(User user) {
+        return user.getId().toString().equals(getAdminId());
     }
 }
