@@ -1,6 +1,7 @@
 package com.github.yvasyliev.service.telegram.commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.yvasyliev.model.dto.CallbackData;
 import com.github.yvasyliev.model.dto.PostApprovedData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,8 +42,8 @@ public class PostSuggested extends Command {
                 .build();
 
         var denyButton = InlineKeyboardButton.builder()
-                .text("🚫 Deny")
-                .callbackData("{}")
+                .text("🚫 Reject")
+                .callbackData(objectMapper.writeValueAsString(new CallbackData("/rejectpost")))
                 .build();
 
         var sendMessage = SendMessage.builder()

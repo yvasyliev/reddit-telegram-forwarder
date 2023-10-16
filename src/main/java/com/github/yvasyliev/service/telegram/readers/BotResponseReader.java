@@ -14,8 +14,10 @@ public class BotResponseReader implements ThrowingFunction<String, String> {
     @Override
     public String applyWithException(String file) throws URISyntaxException, IOException {
         return String.join(
-                "\n",
-                Files.readAllLines(Paths.get(Objects.requireNonNull(BotResponseReader.class.getClassLoader().getResource(file)).toURI()))
-        ).replace(".", "\\.");
+                        "\n",
+                        Files.readAllLines(Paths.get(Objects.requireNonNull(BotResponseReader.class.getClassLoader().getResource(file)).toURI()))
+                )
+                .replace(".", "\\.")
+                .replace("!", "\\!");
     }
 }

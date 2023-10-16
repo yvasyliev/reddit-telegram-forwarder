@@ -53,7 +53,10 @@ public class RedTelBot extends TelegramPublisher {
                 .stream()
                 .filter(Update::hasMessage)
                 .map(Update::getMessage)
-                .filter(Message::getIsAutomaticForward)
+                .filter(message -> {
+                    var isAutomaticForward = message.getIsAutomaticForward();
+                    return isAutomaticForward != null && isAutomaticForward;
+                })
                 .toList();
         if (messages.size() == 10) {
             var message = messages.get(0);
