@@ -1,24 +1,15 @@
-package com.github.yvasyliev.model.entity;
-
-import com.github.yvasyliev.model.dto.PostType;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
+package com.github.yvasyliev.model.dto;
 
 import java.util.List;
 
-@Entity
 public class Post implements Comparable<Post> {
     private PostType type;
-    @Id
     private Integer created = 0;
     private String author;
     private String text;
     private Boolean hasSpoiler;
     private Boolean approved;
     private String mediaUrl;
-    @ElementCollection(fetch = FetchType.EAGER)
     private List<List<String>> photoUrlsPages;
     private List<String> options;
     private String postUrl;

@@ -3,8 +3,6 @@ package com.github.yvasyliev.bots.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.CallbackData;
-import com.github.yvasyliev.model.entity.UserCommand;
-import com.github.yvasyliev.service.dao.UserCommandService;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import org.slf4j.Logger;
@@ -19,7 +17,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RedTelBot extends TelegramPublisher {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedTelBot.class);
@@ -28,12 +28,11 @@ public class RedTelBot extends TelegramPublisher {
     private ApplicationContext context;
 
     @Autowired
-    private UserCommandService userCommandService;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     private BotSession botSession;
+
+    private final Map<Long, String> userCommands = new ConcurrentHashMap<>();
 
     public RedTelBot(@Value("${BOT_TOKEN}") String botToken) {
         super(botToken);
@@ -102,17 +101,23 @@ public class RedTelBot extends TelegramPublisher {
         if (message.hasText()) {
             var text = message.getText().trim();
             if (looksLikeCommand(text)) {
-                userCommandService.removeUserCommand(userId);
+                removeUserCommand(userId);
                 return Optional.of(text);
             }
         }
 
-        return userCommandService
-                .getUserCommand(userId)
-                .map(UserCommand::getCommand);
+        return Optional.ofNullable(userCommands.get(userId));
     }
 
     private boolean looksLikeCommand(String text) {
         return text.matches("/\\w+");
+    }
+
+    public String addUserCommand(long userId, String command) {
+        return userCommands.put(userId, command);
+    }
+
+    public String removeUserCommand(long userId) {
+        return userCommands.remove(userId);
     }
 }

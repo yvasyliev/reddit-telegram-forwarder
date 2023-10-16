@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.entity.Post;
-import com.github.yvasyliev.service.dao.BlockedAuthorService;
+import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.service.deserializers.mappers.PostMapper;
+import com.github.yvasyliev.service.json.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
     private List<PostMapper> postMappers;
 
     @Autowired
-    private BlockedAuthorService blockedAuthorService;
+    private ApplicationContext context;
 
     @Override
     public Post deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
@@ -32,6 +33,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
             var hasSpoiler = "nsfw".equals(jsonPost.get("thumbnail").textValue());
             var created = jsonPost.get("created").intValue();
             var postUrl = jsonPost.get("url_overridden_by_dest").textValue();
+            var state = context.getBean("state", State.class);
 
             jsonPost = extractRootPost(jsonPost);
             for (PostMapper postMapper : postMappers) {
@@ -40,7 +42,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
                     post.setAuthor(author);
                     post.setHasSpoiler(hasSpoiler);
                     post.setCreated(created);
-                    post.setApproved(blockedAuthorService.isBlocked(author));
+                    post.setApproved(state.getBlockedAuthors().contains(author));
                     post.setPostUrl(postUrl);
                     return post;
                 }

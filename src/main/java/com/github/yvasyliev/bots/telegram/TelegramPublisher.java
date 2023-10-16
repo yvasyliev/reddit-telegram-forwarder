@@ -3,9 +3,8 @@ package com.github.yvasyliev.bots.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.RedditPostApprovedData;
-import com.github.yvasyliev.model.entity.Post;
-import com.github.yvasyliev.service.dao.PostService;
-import com.github.yvasyliev.service.dao.StateService;
+import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.service.json.State;
 import com.github.yvasyliev.service.reddit.RedditPostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +47,10 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
     @Autowired
     private RedditPostService redditPostService;
 
-    @Autowired
-    private PostService postService;
-
     private final AtomicBoolean publishing = new AtomicBoolean(true);
 
     @Autowired
-    private StateService stateService;
+    private State state;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -113,12 +109,14 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
                 askApprove(chatId, post);
                 postCandidates.put(post.getCreated(), post);
             }
+            state.setLastCreated(post.getCreated());
         } catch (TelegramApiException e) {
             LOGGER.error("Failed to send post: {}", post, e);
         } catch (JsonProcessingException e) {
             LOGGER.error("Failed to serialize post: {}", post, e);
+        } catch (IOException e) {
+            LOGGER.error("Failed to save last_created: {}", post.getCreated(), e);
         }
-        stateService.setLastCreated(post.getCreated());
 //        try {
 //            TimeUnit.SECONDS.sleep(10);
 //        } catch (InterruptedException e) {

@@ -1,7 +1,7 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.entity.Post;
+import com.github.yvasyliev.model.dto.Post;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -3,8 +3,8 @@ package com.github.yvasyliev.service.reddit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.yvasyliev.model.entity.Post;
-import com.github.yvasyliev.service.dao.StateService;
+import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.service.json.State;
 import com.github.yvasyliev.service.reddit.api.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class RedditPostService {
     private int delayMinutes;
 
     @Autowired
-    private StateService stateService;
+    private State state;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -43,7 +43,7 @@ public class RedditPostService {
                 .get("data")
                 .get("children")
                 .elements();
-        var lastCreated = stateService.getLastCreated();
+        var lastCreated = state.getLastCreated();
         return StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(children, Spliterator.ORDERED), false)
                 .map(child -> child.get("data"))

@@ -2,7 +2,7 @@ package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.PostType;
-import com.github.yvasyliev.model.entity.Post;
+import com.github.yvasyliev.model.dto.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
