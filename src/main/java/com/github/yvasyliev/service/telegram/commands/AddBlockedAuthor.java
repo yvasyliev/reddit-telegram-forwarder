@@ -2,6 +2,7 @@ package com.github.yvasyliev.service.telegram.commands;
 
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.factory.UsernameParser;
+import com.github.yvasyliev.utils.MarkdownV2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -24,6 +25,7 @@ public class AddBlockedAuthor extends Command {
         if (optionalUsername.isPresent()) {
             var username = optionalUsername.get();
             stateManager.addBlockedAuthor(username);
+            username = MarkdownV2.escaped(username);
             reply(message, "responses/addblockedauthor.md", username, username);
         } else {
             reply(message, "responses/usernamenotrecognized.md");

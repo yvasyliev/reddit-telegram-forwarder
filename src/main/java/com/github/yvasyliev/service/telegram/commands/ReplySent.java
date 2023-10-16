@@ -1,5 +1,6 @@
 package com.github.yvasyliev.service.telegram.commands;
 
+import com.github.yvasyliev.utils.MarkdownV2;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,7 +21,7 @@ public class ReplySent extends Command {
             var replyMessage = SendMessage.builder()
                     .chatId(awaitingReply.fromChatId())
                     .replyToMessageId(awaitingReply.messageId())
-                    .text(responseReader.applyWithException("responses/replysent/reply_template.md").formatted(message.getText()))
+                    .text(responseReader.applyWithException("responses/replysent/reply_template.md").formatted(MarkdownV2.escaped(message.getText())))
                     .parseMode(ParseMode.MARKDOWNV2)
                     .build();
             redTelBot.execute(replyMessage);

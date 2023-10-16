@@ -18,6 +18,7 @@ public class BotResponseReader implements ThrowingFunction<String, String> {
                         Files.readAllLines(Paths.get(Objects.requireNonNull(BotResponseReader.class.getClassLoader().getResource(file)).toURI()))
                 )
                 .replace(".", "\\.")
-                .replace("!", "\\!");
+                .replace("!", "\\!")
+                .replace("-", "\\-");
     }
 }

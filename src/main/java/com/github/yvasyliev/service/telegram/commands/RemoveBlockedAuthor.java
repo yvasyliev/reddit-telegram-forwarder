@@ -2,6 +2,7 @@ package com.github.yvasyliev.service.telegram.commands;
 
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.factory.UsernameParser;
+import com.github.yvasyliev.utils.MarkdownV2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -21,7 +22,7 @@ public class RemoveBlockedAuthor extends Command {
         if (optionalUsername.isPresent()) {
             var username = optionalUsername.get();
             stateManager.removeBlockedAuthor(username);
-            reply(message, "responses/removeblockedauthor.md", username);
+            reply(message, "responses/removeblockedauthor.md", MarkdownV2.escaped(username));
         } else {
             reply(message, "responses/usernamenotrecognized.md");
         }

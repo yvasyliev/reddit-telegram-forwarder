@@ -18,20 +18,20 @@ public class UsernameParser implements Function<Message, Optional<String>> {
         var username = message.getText().trim();
 
         var matcher = Pattern
-                .compile("https://www\\.reddit\\.com/user/(\\w+)")
+                .compile("https://www\\.reddit\\.com/user/([\\w-]+)")
                 .matcher(username);
         if (matcher.find()) {
             username = matcher.group(1);
         }
 
         matcher = Pattern
-                .compile("u/(\\w+)")
+                .compile("u/([\\w-]+)")
                 .matcher(username);
         if (matcher.matches()) {
             username = matcher.group(1);
         }
 
-        return username.matches("\\w+")
+        return username.matches("[\\w-]+")
                 ? Optional.of(username)
                 : Optional.empty();
     }
