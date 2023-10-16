@@ -14,11 +14,12 @@ public class GetBlocked extends Command {
 
     @Override
     public void acceptWithException(Message message) throws Exception {
+        var blockedAuthorTemplate = responseReader.applyWithException("responses/getblocked/blocked_author.md");
         var blockedAuthors = stateManager
                 .getBlockedAuthors()
                 .stream()
-                .map(blockedAuthor -> "👤 " + blockedAuthor)
+                .map(blockedAuthorTemplate::formatted)
                 .collect(Collectors.joining("\n"));
-        reply(message, "responses/getblocked.md", blockedAuthors);
+        reply(message, "responses/getblocked/blocked_authors.md", blockedAuthors);
     }
 }

@@ -57,7 +57,7 @@ public class PostSuggested extends Command {
 
         var sendMessage = SendMessage.builder()
                 .chatId(redTelBot.getAdminId())
-                .text("👆 Shall I publish the post above?")
+                .text(responseReader.applyWithException("responses/postsuggested/suggest_post.md"))
                 .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(
                         approveButton,
                         denyButton,
@@ -66,6 +66,6 @@ public class PostSuggested extends Command {
                 .build();
         redTelBot.execute(sendMessage);
 
-        reply(message, "responses/postsuggested.md");
+        reply(message, "responses/postsuggested/post_suggested.md");
     }
 }
