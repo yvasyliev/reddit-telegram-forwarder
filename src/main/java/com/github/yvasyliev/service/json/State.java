@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 @Service
 @JsonIgnoreProperties(value = {"objectMapper", "stateSrc"}, ignoreUnknown = true)
@@ -20,12 +21,7 @@ public class State {
 
     private int lastCreated;
 
-    private SortedSet<String> blockedAuthors;
-
-    public State(int lastCreated, SortedSet<String> blockedAuthors) {
-        this.lastCreated = lastCreated;
-        this.blockedAuthors = blockedAuthors;
-    }
+    private SortedSet<String> blockedAuthors = new TreeSet<>();
 
     public int getLastCreated() {
         return lastCreated;
@@ -56,6 +52,8 @@ public class State {
     }
 
     private void save() throws IOException {
-        objectMapper.writeValue(stateSrc, this);
+        if (objectMapper != null) {
+            objectMapper.writeValue(stateSrc, this);
+        }
     }
 }

@@ -8,15 +8,20 @@ import com.github.yvasyliev.bots.telegram.RedTelBot;
 import com.github.yvasyliev.model.dto.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.File;
 import java.net.http.HttpClient;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -68,5 +73,28 @@ public class RedTelBotConfiguration extends TelegramNotifierConfig {
     @Bean
     public File stateSrc() {
         return new File("state.json");
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public <K, V> Map<K, V> synchronizedFixedSizeMap(@Value("16") int maxSize) {
+        return Collections.synchronizedMap(new LinkedHashMap<>(maxSize) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                return size() >= maxSize;
+            }
+        });
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public Map<Integer, Post> intPostMap(@Value("16") int maxSize) {
+        return synchronizedFixedSizeMap(maxSize);
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public Map<Long, String> longStringMap(@Value("16") int maxSize) {
+        return synchronizedFixedSizeMap(maxSize);
     }
 }

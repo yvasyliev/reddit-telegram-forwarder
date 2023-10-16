@@ -2,8 +2,8 @@ package com.github.yvasyliev.bots.telegram;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.yvasyliev.model.dto.RedditPostApprovedData;
 import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.RedditPostApprovedData;
 import com.github.yvasyliev.service.json.State;
 import com.github.yvasyliev.service.reddit.RedditPostService;
 import org.slf4j.Logger;
@@ -33,7 +33,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,9 +54,11 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final Map<Integer, Post> postCandidates = new ConcurrentHashMap<>();
+    @Autowired
+    private Map<Integer, Post> postCandidates;
 
-    private final Map<Integer, Post> extraPhotos = new ConcurrentHashMap<>();
+    @Autowired
+    private Map<Integer, Post> extraPhotos;
 
     public TelegramPublisher(String botToken) {
         super(botToken);

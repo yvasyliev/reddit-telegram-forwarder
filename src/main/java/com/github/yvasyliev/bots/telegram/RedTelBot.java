@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.generics.BotSession;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RedTelBot extends TelegramPublisher {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedTelBot.class);
@@ -33,7 +32,8 @@ public class RedTelBot extends TelegramPublisher {
 
     private BotSession botSession;
 
-    private final Map<Long, String> userCommands = new ConcurrentHashMap<>();
+    @Autowired
+    private Map<Long, String> userCommands;
 
     public RedTelBot(@Value("${BOT_TOKEN}") String botToken) {
         super(botToken);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.model.dto.PostType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.function.ThrowingFunction;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @Order(5)
 public class VideoPostMapper implements PostMapper {
     @Autowired
+    @Qualifier("redditVideoDownloader")
     private ThrowingFunction<String, String> redditVideoDownloadUrlProvider;
 
     @Override
