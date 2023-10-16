@@ -3,7 +3,7 @@ package com.github.yvasyliev.bots.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.model.dto.RedditPostApprovedData;
+import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.reddit.RedditPostService;
 import org.slf4j.Logger;
@@ -97,6 +97,7 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
 
     public void publishPost(Post post) {
         var chatId = getChatId(post.isApproved());
+        var created = post.getCreated();
         try {
             var sentMessage = switch (post.getType()) {
                 case TEXT -> execute(new SendMessage(chatId, post.getText()));
@@ -107,16 +108,16 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
                 case POLL -> sendPoll(chatId, post);
             };
             if (sentMessage != null && !post.isApproved()) {
-                askApprove(chatId, post);
-                postCandidates.put(post.getCreated(), post);
+                askApprove(chatId, created);
+                postCandidates.put(created, post);
             }
-            stateManager.setLastCreated(post.getCreated());
+            stateManager.setLastCreated(created);
         } catch (TelegramApiException e) {
             LOGGER.error("Failed to send post: {}", post, e);
         } catch (JsonProcessingException e) {
             LOGGER.error("Failed to serialize post: {}", post, e);
         } catch (IOException e) {
-            LOGGER.error("Failed to save last_created: {}", post.getCreated(), e);
+            LOGGER.error("Failed to save last_created: {}", created, e);
         }
 //        try {
 //            TimeUnit.SECONDS.sleep(10);
@@ -328,18 +329,21 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
         }, post);
     }
 
-    private Message askApprove(String chatId, Post post) throws TelegramApiException, JsonProcessingException {
+    private Message askApprove(String chatId, int created) throws TelegramApiException, JsonProcessingException {
         var approveButton = InlineKeyboardButton.builder()
                 .text("✅ Approve")
-                .callbackData(objectMapper.writeValueAsString(new RedditPostApprovedData(
+                .callbackData(objectMapper.writeValueAsString(new RedditPostDecisionData(
                         "/approveredditpost",
-                        post.getCreated()
+                        created
                 )))
                 .build();
 
         var denyButton = InlineKeyboardButton.builder()
-                .text("🚫 Deny")
-                .callbackData("{}")
+                .text("🚫 Reject")
+                .callbackData(objectMapper.writeValueAsString(new RedditPostDecisionData(
+                        "/rejectredditpost",
+                        created
+                )))
                 .build();
 
         var sendMessage = SendMessage.builder()
@@ -354,8 +358,12 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
     }
 
     public void publishPostCandidate(int created) {
-        var post = postCandidates.remove(created);
+        var post = rejectPostCandidate(created);
         post.setApproved(true);
         publishPost(post);
+    }
+
+    public Post rejectPostCandidate(int created) {
+        return postCandidates.remove(created);
     }
 }
