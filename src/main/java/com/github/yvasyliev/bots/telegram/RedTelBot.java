@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.CallbackData;
 import com.github.yvasyliev.model.dto.ExternalMessageData;
+import com.github.yvasyliev.service.telegram.PostManager;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import org.slf4j.Logger;
@@ -19,11 +20,10 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class RedTelBot extends TelegramPublisher {
+public class RedTelBot extends AbstractRedTelBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedTelBot.class);
 
     @Autowired
@@ -40,6 +40,9 @@ public class RedTelBot extends TelegramPublisher {
     @Autowired
     private Map<Long, ExternalMessageData> awaitingReplies;
 
+    @Autowired
+    private PostManager postManager;
+
     public RedTelBot(@Value("${BOT_TOKEN}") String botToken) {
         super(botToken);
     }
@@ -53,24 +56,6 @@ public class RedTelBot extends TelegramPublisher {
     }
 
     @Override
-    public void onUpdatesReceived(List<Update> updates) {
-        var messages = updates
-                .stream()
-                .filter(Update::hasMessage)
-                .map(Update::getMessage)
-                .filter(message -> {
-                    var isAutomaticForward = message.getIsAutomaticForward();
-                    return isAutomaticForward != null && isAutomaticForward;
-                })
-                .toList();
-        if (messages.size() == 10) {
-            var message = messages.get(0);
-            sendExtraPhotos(message.getMessageId(), message.getForwardFromMessageId());
-        }
-        super.onUpdatesReceived(updates);
-    }
-
-    @Override
     public void onUpdateReceived(Update update) {
         LOGGER.debug("Update received: {}", update);
         if (update.hasMessage()) {
@@ -81,7 +66,11 @@ public class RedTelBot extends TelegramPublisher {
     }
 
     public void onMessageReceived(Message message) {
-        if (message.isUserMessage()) {
+        var isAutomaticForward = message.getIsAutomaticForward();
+        var forwardFromMessageId = message.getForwardFromMessageId();
+        if (isAutomaticForward != null && isAutomaticForward && forwardFromMessageId != null) {
+            postManager.sendExtraPhotos(message.getMessageId(), forwardFromMessageId);
+        } else if (message.isUserMessage()) {
             onUserMessageReceived(message);
         }
     }
@@ -116,23 +105,6 @@ public class RedTelBot extends TelegramPublisher {
         }
     }
 
-    private Optional<String> getCommand(Message message) {
-        long userId = message.getFrom().getId();
-        if (message.hasText()) {
-            var text = message.getText().trim();
-            if (looksLikeCommand(text)) {
-                removeUserCommand(userId);
-                return Optional.of(text);
-            }
-        }
-
-        return Optional.ofNullable(userCommands.get(userId));
-    }
-
-    private boolean looksLikeCommand(String text) {
-        return text.matches("/\\w+");
-    }
-
     public String addUserCommand(long userId, String command) {
         return userCommands.put(userId, command);
     }
@@ -155,5 +127,22 @@ public class RedTelBot extends TelegramPublisher {
 
     public boolean isAdmin(User user) {
         return user.getId().toString().equals(getAdminId());
+    }
+
+    private Optional<String> getCommand(Message message) {
+        long userId = message.getFrom().getId();
+        if (message.hasText()) {
+            var text = message.getText().trim();
+            if (looksLikeCommand(text)) {
+                removeUserCommand(userId);
+                return Optional.of(text);
+            }
+        }
+
+        return Optional.ofNullable(userCommands.get(userId));
+    }
+
+    private boolean looksLikeCommand(String text) {
+        return text.matches("/\\w+");
     }
 }

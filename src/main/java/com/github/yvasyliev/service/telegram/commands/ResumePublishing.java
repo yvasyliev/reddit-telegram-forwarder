@@ -1,5 +1,7 @@
 package com.github.yvasyliev.service.telegram.commands;
 
+import com.github.yvasyliev.service.telegram.PostManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -10,9 +12,12 @@ import java.net.URISyntaxException;
 
 @Service("/resumepublishing")
 public class ResumePublishing extends Command {
+    @Autowired
+    private PostManager postManager;
+
     @Override
     public void acceptWithException(Message message) throws TelegramApiException, URISyntaxException, IOException {
-        redTelBot.resumePublishing();
+        postManager.resumePublishing();
         redTelBot.execute(new SendMessage(
                 message.getChatId().toString(),
                 responseReader.applyWithException("responses/resumepublishing.md")
