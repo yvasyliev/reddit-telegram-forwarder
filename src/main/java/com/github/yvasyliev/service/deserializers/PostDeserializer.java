@@ -3,12 +3,11 @@ package com.github.yvasyliev.service.deserializers;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.service.deserializers.mappers.PostMapper;
 import com.github.yvasyliev.service.json.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @Service
 public class PostDeserializer extends JsonDeserializer<Post> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostDeserializer.class);
     @Autowired
     private List<PostMapper> postMappers;
 
@@ -49,8 +47,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
             }
         }
 
-        LOGGER.error("Failed to parse post: {}", node);
-        return null;
+        throw new JsonMappingException(jsonParser, "Failed to parse post: " + node);
     }
 
     private JsonNode extractRootPost(JsonNode jsonPost) {
