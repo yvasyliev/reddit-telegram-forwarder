@@ -21,4 +21,9 @@ public class TelegramNotifierConfig {
     public Executor singleThreadExecutor() {
         return Executors.newSingleThreadExecutor();
     }
+
+    @Bean
+    public int charactersLimit() {
+        return 4096;
+    }
 }

@@ -25,11 +25,13 @@ import java.io.StringWriter;
 @Plugin(name = "TelegramBotAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TelegramBotAppender extends AbstractAppender {
     private final TelegramNotifier telegramNotifier;
+    private final int charactersLimit;
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
         var applicationContext = new AnnotationConfigApplicationContext(TelegramNotifierConfig.class);
         this.telegramNotifier = applicationContext.getBean(TelegramNotifier.class);
+        this.charactersLimit = applicationContext.getBean("charactersLimit", int.class);
     }
 
     @PluginFactory
@@ -48,10 +50,14 @@ public class TelegramBotAppender extends AbstractAppender {
                     %s""".formatted(formattedMessage, stackTrace);
         }
 
+        if (formattedMessage.length() > charactersLimit) {
+            formattedMessage = formattedMessage.substring(0, charactersLimit);
+        }
+
         try {
             telegramNotifier.notify(formattedMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
