@@ -86,7 +86,7 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
                     LOGGER.error("Failed to find new posts.", e);
                 }
             }
-        }, 0, 10, TimeUnit.MINUTES);
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
     public void publishPosts(List<Post> posts) {

@@ -14,8 +14,9 @@ public class ReplySent extends Command {
     @Override
     public void acceptWithException(Message message) throws URISyntaxException, IOException, TelegramApiException {
         if (message.hasText()) {
-            var chatId = message.getChatId();
-            var awaitingReply = redTelBot.getAwaitingReply(chatId);
+            var userId = message.getFrom().getId();
+            redTelBot.removeUserCommand(userId);
+            var awaitingReply = redTelBot.getAwaitingReply(userId);
             var replyMessage = SendMessage.builder()
                     .chatId(awaitingReply.fromChatId())
                     .replyToMessageId(awaitingReply.messageId())
