@@ -6,19 +6,21 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.service.deserializers.mappers.PostMapper;
 import com.github.yvasyliev.service.json.State;
+import org.hibernate.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.function.ThrowingFunction;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostDeserializer extends JsonDeserializer<Post> {
     @Autowired
-    private List<PostMapper> postMappers;
+    private List<ThrowingFunction<JsonNode, Optional<Post>>> postMappers;
 
     @Autowired
     private ApplicationContext context;
@@ -34,15 +36,21 @@ public class PostDeserializer extends JsonDeserializer<Post> {
             var state = context.getBean("state", State.class);
 
             jsonPost = extractRootPost(jsonPost);
-            for (PostMapper postMapper : postMappers) {
-                var post = postMapper.apply(jsonPost);
-                if (post != null) {
-                    post.setAuthor(author);
-                    post.setHasSpoiler(hasSpoiler);
-                    post.setCreated(created);
-                    post.setApproved(state.getBlockedAuthors().contains(author));
-                    post.setPostUrl(postUrl);
-                    return post;
+            for (var postMapper : postMappers) {
+                try {
+                    var optionalPost = postMapper.applyWithException(jsonPost).map(post -> {
+                        post.setAuthor(author);
+                        post.setHasSpoiler(hasSpoiler);
+                        post.setCreated(created);
+                        post.setApproved(state.getBlockedAuthors().contains(author));
+                        post.setPostUrl(postUrl);
+                        return post;
+                    });
+                    if (optionalPost.isPresent()) {
+                        return optionalPost.get();
+                    }
+                } catch (Exception e) {
+                    throw new MappingException(e);
                 }
             }
         }

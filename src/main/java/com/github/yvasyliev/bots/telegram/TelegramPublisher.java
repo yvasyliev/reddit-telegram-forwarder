@@ -81,7 +81,7 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
                 try {
                     var newPosts = redditPostService.findNewPosts();
                     publishPosts(newPosts);
-                } catch (IOException | InterruptedException e) {
+                } catch (Exception e) {
                     LOGGER.error("Failed to find new posts.", e);
                 }
             }

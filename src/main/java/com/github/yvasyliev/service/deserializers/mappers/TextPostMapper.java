@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -25,7 +26,7 @@ public class TextPostMapper implements PostMapper {
     private String postTextTemplate;
 
     @Override
-    public Post apply(JsonNode jsonPost) {
+    public Optional<Post> applyWithException(JsonNode jsonPost) {
         if (isTextPost(jsonPost)) {
             var text = postTextTemplate.formatted(
                     jsonPost.get("title").textValue(),
@@ -35,9 +36,9 @@ public class TextPostMapper implements PostMapper {
             var post = new Post();
             post.setType(PostType.TEXT);
             post.setText(text);
-            return post;
+            return Optional.of(post);
         }
-        return null;
+        return Optional.empty();
     }
 
     private boolean isTextPost(JsonNode post) {

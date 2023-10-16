@@ -3,36 +3,36 @@ package com.github.yvasyliev.service.deserializers.mappers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.model.dto.PostType;
-import com.github.yvasyliev.service.reddit.RedditVideoDownloader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.function.ThrowingFunction;
 
-import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @Order(5)
 public class VideoPostMapper implements PostMapper {
     @Autowired
-    private RedditVideoDownloader redditVideoDownloader;
+    private ThrowingFunction<String, String> redditVideoDownloadUrlProvider;
 
     @Override
-    public Post apply(JsonNode jsonPost) throws IOException {
+    public Optional<Post> applyWithException(JsonNode jsonPost) throws Exception {
         var videoUrl = extractVideoUrl(jsonPost);
         if (videoUrl != null) {
             var post = new Post();
             post.setType(PostType.VIDEO);
             post.setText(jsonPost.get("title").textValue());
             post.setMediaUrl(videoUrl);
-            return post;
+            return Optional.of(post);
         }
-        return null;
+        return Optional.empty();
     }
 
-    private String extractVideoUrl(JsonNode data) throws IOException {
+    private String extractVideoUrl(JsonNode data) throws Exception {
         if (data.get("is_video").booleanValue()) {
             var redditPostUrl = "https://www.reddit.com%s".formatted(data.get("permalink").textValue());
-            return redditVideoDownloader.getVideoDownloadUrl(redditPostUrl);
+            return redditVideoDownloadUrlProvider.applyWithException(redditPostUrl);
         }
 
         if (data.has("media")) {

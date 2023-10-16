@@ -6,11 +6,13 @@ import com.github.yvasyliev.model.dto.PostType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @Order(4)
 public class GifPostMapper implements PostMapper {
     @Override
-    public Post apply(JsonNode jsonPost) {
+    public Optional<Post> applyWithException(JsonNode jsonPost) {
         if (isGif(jsonPost)) {
             var gifUrl = jsonPost
                     .get("preview")
@@ -25,9 +27,9 @@ public class GifPostMapper implements PostMapper {
             post.setType(PostType.GIF);
             post.setText(jsonPost.get("title").textValue());
             post.setMediaUrl(gifUrl);
-            return post;
+            return Optional.of(post);
         }
-        return null;
+        return Optional.empty();
     }
 
     private boolean isGif(JsonNode data) {

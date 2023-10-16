@@ -20,7 +20,7 @@ public class PhotoGroupPostMapper implements PostMapper {
     private int pageSize;
 
     @Override
-    public Post apply(JsonNode jsonPost) {
+    public Optional<Post> applyWithException(JsonNode jsonPost) {
         if (jsonPost.has("gallery_data")) {
             var photoUrlsPages = extractPhotoUrlsPages(jsonPost);
             var title = jsonPost.get("title").textValue();
@@ -28,9 +28,9 @@ public class PhotoGroupPostMapper implements PostMapper {
             post.setType(PostType.PHOTO_GROUP);
             post.setText(title);
             post.setPhotoUrlsPages(photoUrlsPages);
-            return post;
+            return Optional.of(post);
         }
-        return null;
+        return Optional.empty();
     }
 
     private List<List<String>> extractPhotoUrlsPages(JsonNode post) {

@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.service.json.State;
-import com.github.yvasyliev.service.reddit.api.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.function.ThrowingSupplier;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -26,7 +25,7 @@ public class RedditPostService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedditPostService.class);
 
     @Autowired
-    private Request<JsonNode> getSubredditNew;
+    private ThrowingSupplier<JsonNode> subredditNewSupplier;
 
     @Value("30")
     private int delayMinutes;
@@ -37,8 +36,8 @@ public class RedditPostService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public List<Post> findNewPosts() throws IOException, InterruptedException {
-        var subredditPosts = getSubredditNew.execute();
+    public List<Post> findNewPosts() throws Exception {
+        var subredditPosts = subredditNewSupplier.getWithException();
         var children = subredditPosts
                 .get("data")
                 .get("children")

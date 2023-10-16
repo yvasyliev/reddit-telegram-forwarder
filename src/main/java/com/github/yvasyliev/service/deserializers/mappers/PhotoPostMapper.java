@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -16,7 +17,7 @@ public class PhotoPostMapper implements PostMapper {
     private Set<String> photoExtensions;
 
     @Override
-    public Post apply(JsonNode jsonPost) {
+    public Optional<Post> applyWithException(JsonNode jsonPost) {
         var photoUrl = extractPhotoUrl(jsonPost);
         if (photoUrl != null) {
             var text = jsonPost.get("title").textValue();
@@ -24,9 +25,9 @@ public class PhotoPostMapper implements PostMapper {
             post.setType(PostType.PHOTO);
             post.setText(text);
             post.setMediaUrl(photoUrl);
-            return post;
+            return Optional.of(post);
         }
-        return null;
+        return Optional.empty();
     }
 
     private String extractPhotoUrl(JsonNode post) {

@@ -6,11 +6,13 @@ import com.github.yvasyliev.model.dto.PostType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @Order(6)
 public class PollPostMapper implements PostMapper {
     @Override
-    public Post apply(JsonNode jsonPost) {
+    public Optional<Post> applyWithException(JsonNode jsonPost) {
         if (jsonPost.has("poll_data")) {
             var redditOptions = jsonPost.get("poll_data").get("options").elements();
             var options = stream(redditOptions)
@@ -20,8 +22,8 @@ public class PollPostMapper implements PostMapper {
             post.setType(PostType.POLL);
             post.setText(jsonPost.get("title").textValue());
             post.setOptions(options);
-            return post;
+            return Optional.of(post);
         }
-        return null;
+        return Optional.empty();
     }
 }
