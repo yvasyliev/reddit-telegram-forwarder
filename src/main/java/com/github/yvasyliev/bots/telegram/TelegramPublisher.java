@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.model.dto.RedditPostApprovedData;
-import com.github.yvasyliev.service.json.State;
+import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.reddit.RedditPostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
     private final AtomicBoolean publishing = new AtomicBoolean(true);
 
     @Autowired
-    private State state;
+    private StateManager stateManager;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -110,7 +110,7 @@ public abstract class TelegramPublisher extends AbstractRedTelBot {
                 askApprove(chatId, post);
                 postCandidates.put(post.getCreated(), post);
             }
-            state.setLastCreated(post.getCreated());
+            stateManager.setLastCreated(post.getCreated());
         } catch (TelegramApiException e) {
             LOGGER.error("Failed to send post: {}", post, e);
         } catch (JsonProcessingException e) {

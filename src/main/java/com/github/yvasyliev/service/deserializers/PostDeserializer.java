@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.service.json.State;
+import com.github.yvasyliev.service.state.StateManager;
 import org.hibernate.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +33,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
             var hasSpoiler = "nsfw".equals(jsonPost.get("thumbnail").textValue());
             var created = jsonPost.get("created").intValue();
             var postUrl = jsonPost.get("url_overridden_by_dest").textValue();
-            var state = context.getBean("state", State.class);
+            var blockedAuthors = context.getBean(StateManager.class).getBlockedAuthors();
 
             jsonPost = extractRootPost(jsonPost);
             for (var postMapper : postMappers) {
@@ -42,7 +42,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
                         post.setAuthor(author);
                         post.setHasSpoiler(hasSpoiler);
                         post.setCreated(created);
-                        post.setApproved(state.getBlockedAuthors().contains(author));
+                        post.setApproved(blockedAuthors.contains(author));
                         post.setPostUrl(postUrl);
                         return post;
                     });
