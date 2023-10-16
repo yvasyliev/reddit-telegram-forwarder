@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -65,33 +66,44 @@ public class RedTelBot extends TelegramPublisher {
     public void onUpdateReceived(Update update) {
         LOGGER.debug("Update received: {}", update);
         if (update.hasMessage()) {
-            var message = update.getMessage();
-            if (message.isUserMessage()) {
-                getCommand(message).ifPresent(command -> {
-                            if (context.containsBean(command)) {
-                                try {
-                                    context.getBean(command, Command.class).acceptWithException(message);
-                                } catch (Exception e) {
-                                    LOGGER.error("Failed to perform command {}", command, e);
-                                }
-                            } else {
-                                LOGGER.info("Unknown command: {}", command);
-                            }
-                        }
-                );
-            }
+            onMessageReceived(update.getMessage());
         } else if (update.hasCallbackQuery()) {
-            var callbackQuery = update.getCallbackQuery();
-            var message = callbackQuery.getMessage();
-            if (message.isUserMessage() && getAdminId().equals(callbackQuery.getFrom().getId().toString())) {
-                try {
-                    var callbackData = objectMapper.readValue(callbackQuery.getData(), CallbackData.class);
-                    context.getBean(callbackData.action(), Callback.class).acceptWithException(callbackQuery);
-                } catch (JsonProcessingException e) {
-                    LOGGER.error("Failed to parse callback data {}", callbackQuery.getData(), e);
-                } catch (Exception e) {
-                    LOGGER.error("Failed to handle callback", e);
-                }
+            onCallbackQueryReceived(update.getCallbackQuery());
+        }
+    }
+
+    public void onMessageReceived(Message message) {
+        if (message.isUserMessage()) {
+            onUserMessageReceived(message);
+        }
+    }
+
+    public void onUserMessageReceived(Message message) {
+        getCommand(message).ifPresent(command -> onCommandReceived(command, message));
+    }
+
+    public void onCommandReceived(String command, Message message) {
+        if (context.containsBean(command)) {
+            try {
+                context.getBean(command, Command.class).acceptWithException(message);
+            } catch (Exception e) {
+                LOGGER.error("Failed to perform command {}", command, e);
+            }
+        } else {
+            LOGGER.info("Unknown command: {}", command);
+        }
+    }
+
+    public void onCallbackQueryReceived(CallbackQuery callbackQuery) {
+        var message = callbackQuery.getMessage();
+        if (message.isUserMessage() && getAdminId().equals(callbackQuery.getFrom().getId().toString())) {
+            try {
+                var callbackData = objectMapper.readValue(callbackQuery.getData(), CallbackData.class);
+                context.getBean(callbackData.action(), Callback.class).acceptWithException(callbackQuery);
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Failed to parse callback data {}", callbackQuery.getData(), e);
+            } catch (Exception e) {
+                LOGGER.error("Failed to handle callback", e);
             }
         }
     }
