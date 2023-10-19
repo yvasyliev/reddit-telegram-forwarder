@@ -1,8 +1,8 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.model.dto.PostType;
+import com.github.yvasyliev.model.dto.post.PhotoPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -21,10 +21,10 @@ public class PhotoPostMapper implements PostMapper {
         var photoUrl = extractPhotoUrl(jsonPost);
         if (photoUrl != null) {
             var text = jsonPost.get("title").textValue();
-            var post = new Post();
-            post.setType(PostType.PHOTO);
+            var post = new PhotoPost();
             post.setText(text);
             post.setMediaUrl(photoUrl);
+            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
             return Optional.of(post);
         }
         return Optional.empty();

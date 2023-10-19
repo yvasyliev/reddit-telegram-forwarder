@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.state.StateManager;
 import org.hibernate.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,6 @@ public class PostDeserializer extends JsonDeserializer<Post> {
         var node = jsonParser.getCodec().readTree(jsonParser);
         if (node instanceof JsonNode jsonPost) {
             var author = jsonPost.get("author").textValue();
-            var hasSpoiler = "nsfw".equals(jsonPost.get("thumbnail").textValue());
             var created = jsonPost.get("created").intValue();
             var postUrl = jsonPost.get("url_overridden_by_dest").textValue();
             var blockedAuthors = context.getBean(StateManager.class).getBlockedAuthors();
@@ -40,7 +39,6 @@ public class PostDeserializer extends JsonDeserializer<Post> {
                 try {
                     var optionalPost = postMapper.applyWithException(jsonPost).map(post -> {
                         post.setAuthor(author);
-                        post.setHasSpoiler(hasSpoiler);
                         post.setCreated(created);
                         post.setApproved(blockedAuthors.contains(author));
                         post.setPostUrl(postUrl);

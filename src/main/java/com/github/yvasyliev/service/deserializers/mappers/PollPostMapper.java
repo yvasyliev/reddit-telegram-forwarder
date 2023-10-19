@@ -1,8 +1,8 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.model.dto.PostType;
+import com.github.yvasyliev.model.dto.post.PollPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +18,7 @@ public class PollPostMapper implements PostMapper {
             var options = stream(redditOptions)
                     .map(redditOption -> redditOption.get("text").textValue())
                     .toList();
-            var post = new Post();
-            post.setType(PostType.POLL);
+            var post = new PollPost();
             post.setText(jsonPost.get("title").textValue());
             post.setOptions(options);
             return Optional.of(post);

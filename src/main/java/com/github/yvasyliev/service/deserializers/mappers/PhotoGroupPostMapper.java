@@ -1,8 +1,8 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.PostType;
-import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -24,10 +24,10 @@ public class PhotoGroupPostMapper implements PostMapper {
         if (jsonPost.has("gallery_data")) {
             var photoUrlsPages = extractPhotoUrlsPages(jsonPost);
             var title = jsonPost.get("title").textValue();
-            var post = new Post();
-            post.setType(PostType.PHOTO_GROUP);
+            var post = new PhotoGroupPost();
             post.setText(title);
             post.setPhotoUrlsPages(photoUrlsPages);
+            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
             return Optional.of(post);
         }
         return Optional.empty();

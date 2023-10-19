@@ -1,6 +1,7 @@
 package com.github.yvasyliev.service.telegram.posts;
 
-import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.post.PhotoPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingBiFunction;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -14,10 +15,10 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-@Service("PHOTO")
-public class PhotoPostService extends PostService<Message> {
+@Service(Post.Type.PHOTO)
+public class PhotoPostService extends PostService<PhotoPost, Message> {
     @Override
-    public Optional<Message> applyWithException(String chatId, Post post) throws TelegramApiException {
+    public Optional<Message> applyWithException(String chatId, PhotoPost post) throws TelegramApiException {
         try {
             var sendPhoto = SendPhoto.builder()
                     .chatId(chatId)
@@ -31,7 +32,7 @@ public class PhotoPostService extends PostService<Message> {
         }
     }
 
-    private Message retrySendPhoto(String chatId, Post post, TelegramApiRequestException requestException) throws TelegramApiException {
+    private Message retrySendPhoto(String chatId, PhotoPost post, TelegramApiRequestException requestException) throws TelegramApiException {
         try {
             return onException(
                     requestException,
@@ -68,7 +69,7 @@ public class PhotoPostService extends PostService<Message> {
             TelegramApiRequestException e,
             Predicate<TelegramApiRequestException> exceptionPredicate,
             ThrowingBiFunction<InputStream, String, Message> telegramApiCall,
-            Post post
+            PhotoPost post
     ) throws TelegramApiException {
         if (exceptionPredicate.negate().test(e)) {
             throw e;

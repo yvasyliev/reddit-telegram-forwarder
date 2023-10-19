@@ -1,6 +1,7 @@
 package com.github.yvasyliev.service.telegram.posts;
 
-import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,8 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-@Service("PHOTO_GROUP")
-public class PhotoGroupPostService extends PostService<List<Message>> {
+@Service(Post.Type.PHOTO_GROUP)
+public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Message>> {
     @Autowired
     private BotResponseReader responseReader;
 
@@ -33,10 +34,10 @@ public class PhotoGroupPostService extends PostService<List<Message>> {
     private Executor delayedExecutor;
 
     @Autowired
-    private Map<Integer, Post> extraPhotos;
+    private Map<Integer, PhotoGroupPost> extraPhotos;
 
     @Override
-    public Optional<List<Message>> applyWithException(String chatId, Post post) throws TelegramApiException, URISyntaxException, IOException {
+    public Optional<List<Message>> applyWithException(String chatId, PhotoGroupPost post) throws TelegramApiException, URISyntaxException, IOException {
         var pages = post.getPhotoUrlsPages();
         var text = post.getText();
         var hasSpoiler = post.isHasSpoiler();
@@ -69,7 +70,7 @@ public class PhotoGroupPostService extends PostService<List<Message>> {
                 : List.of();
     }
 
-    private List<Message> sendDelayed(String chatId, int replyToMessageId, Post post) throws TelegramApiException {
+    private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws TelegramApiException {
         var pages = post.getPhotoUrlsPages();
         var hasSpoiler = post.isHasSpoiler();
         var messages = new ArrayList<Message>();

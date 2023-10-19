@@ -1,8 +1,8 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.model.dto.PostType;
+import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.model.dto.post.VideoPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
@@ -22,10 +22,10 @@ public class VideoPostMapper implements PostMapper {
     public Optional<Post> applyWithException(JsonNode jsonPost) throws Exception {
         var videoUrl = extractVideoUrl(jsonPost);
         if (videoUrl != null) {
-            var post = new Post();
-            post.setType(PostType.VIDEO);
+            var post = new VideoPost();
             post.setText(jsonPost.get("title").textValue());
             post.setMediaUrl(videoUrl);
+            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
             return Optional.of(post);
         }
         return Optional.empty();

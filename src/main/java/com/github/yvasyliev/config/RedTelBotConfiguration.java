@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.yvasyliev.bots.telegram.RedTelBot;
 import com.github.yvasyliev.model.dto.ExternalMessageData;
-import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -89,7 +90,13 @@ public class RedTelBotConfiguration extends TelegramNotifierConfig {
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public Map<Integer, Post> intPostMap(@Value("16") int maxSize) {
+    public Map<Integer, Post> integerPostMap(@Value("16") int maxSize) {
+        return synchronizedFixedSizeMap(maxSize);
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public Map<Integer, PhotoGroupPost> integerPhotoGroupPostMap(@Value("16") int maxSize) {
         return synchronizedFixedSizeMap(maxSize);
     }
 

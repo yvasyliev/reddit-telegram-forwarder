@@ -1,8 +1,8 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.model.dto.PostType;
+import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.model.dto.post.TextPost;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class TextPostMapper implements PostMapper {
 
     @Value("""
             %s
-            
+                        
             %s""")
     private String postTextTemplate;
 
@@ -33,8 +33,7 @@ public class TextPostMapper implements PostMapper {
                     jsonPost.get("url_overridden_by_dest").textValue()
             );
 
-            var post = new Post();
-            post.setType(PostType.TEXT);
+            var post = new TextPost();
             post.setText(text);
             return Optional.of(post);
         }

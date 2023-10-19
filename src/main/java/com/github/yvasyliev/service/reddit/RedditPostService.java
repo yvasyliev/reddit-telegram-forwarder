@@ -3,7 +3,7 @@ package com.github.yvasyliev.service.reddit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.yvasyliev.model.dto.Post;
+import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.state.StateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

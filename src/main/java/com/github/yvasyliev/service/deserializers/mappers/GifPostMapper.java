@@ -1,8 +1,8 @@
 package com.github.yvasyliev.service.deserializers.mappers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.yvasyliev.model.dto.Post;
-import com.github.yvasyliev.model.dto.PostType;
+import com.github.yvasyliev.model.dto.post.GifPost;
+import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +23,10 @@ public class GifPostMapper implements PostMapper {
                     .get("source")
                     .get("url")
                     .textValue();
-            var post = new Post();
-            post.setType(PostType.GIF);
+            var post = new GifPost();
             post.setText(jsonPost.get("title").textValue());
             post.setMediaUrl(gifUrl);
+            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
             return Optional.of(post);
         }
         return Optional.empty();

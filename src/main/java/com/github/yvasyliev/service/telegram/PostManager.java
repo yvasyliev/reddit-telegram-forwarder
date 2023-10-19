@@ -3,8 +3,8 @@ package com.github.yvasyliev.service.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.bots.telegram.RedTelBot;
-import com.github.yvasyliev.model.dto.Post;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
+import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.reddit.RedditPostService;
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.posts.PhotoGroupPostService;
@@ -74,13 +74,14 @@ public class PostManager {
         posts.forEach(this::publishPost);
     }
 
-    public void publishPost(Post post) {
+    @SuppressWarnings("unchecked")
+    public <T extends Post> void publishPost(T post) {
         var chatId = post.isApproved() ? redTelBot.getChannelId() : redTelBot.getAdminId();
         var created = post.getCreated();
-        var postServiceName = post.getType().name();
+        var postServiceName = post.getType();
 
         if (context.containsBean(postServiceName)) {
-            var postService = (PostService<?>) context.getBean(postServiceName);
+            var postService = (PostService<T, ?>) context.getBean(postServiceName);
             try {
                 var sentMessage = postService.applyWithException(chatId, post);
                 if (sentMessage.isPresent() && !post.isApproved()) {
