@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Service("/replysent")
-public class ReplySent extends Command {
+public class ReplySent extends AdminCommand {
     @Override
-    public void acceptWithException(Message message) throws URISyntaxException, IOException, TelegramApiException {
+    public void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
         if (message.hasText()) {
             var userId = message.getFrom().getId();
             redTelBot.removeUserCommand(userId);

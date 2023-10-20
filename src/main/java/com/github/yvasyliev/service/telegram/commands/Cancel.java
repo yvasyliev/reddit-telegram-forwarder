@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 @Service("/cancel")
 public class Cancel extends Command {
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         redTelBot.removeUserCommand(message.getFrom().getId());
         reply(message, "responses/cancel.md");
     }

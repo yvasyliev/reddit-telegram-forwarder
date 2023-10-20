@@ -22,7 +22,7 @@ public class PostSuggested extends Command {
     private ObjectMapper objectMapper;
 
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, IOException, URISyntaxException {
+    public void execute(Message message) throws TelegramApiException, IOException, URISyntaxException {
         var sourceChatId = message.getChatId().toString();
         var sourceMessageId = message.getMessageId();
 

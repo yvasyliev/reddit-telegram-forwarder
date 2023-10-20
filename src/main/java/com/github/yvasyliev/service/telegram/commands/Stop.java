@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Service("/stop")
-public class Stop extends Command {
+public class Stop extends AdminCommand {
     @Autowired
     private PostManager postManager;
 
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         postManager.stopPublishing();
         redTelBot.stopPolling();
         reply(message, "responses/stop.md");

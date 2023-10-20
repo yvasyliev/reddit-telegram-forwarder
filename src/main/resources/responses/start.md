@@ -1,5 +1,9 @@
-👋 Greetings!
+👋 Hello, I'm the manager bot of %s channel!
 
-🤓 I can duplicate Subreddit posts to Telegram channel.
+🤓 You can use me to suggest your posts or contact channel admin.
 
-Send /help to see available commands.
+Use these command to control me:
+
+/contactadmin - send message to admin
+/help - show available commands
+/suggestpost - suggest your post to channel

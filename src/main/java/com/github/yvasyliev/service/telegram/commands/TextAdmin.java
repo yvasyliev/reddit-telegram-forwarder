@@ -21,7 +21,7 @@ public class TextAdmin extends Command {
     private ObjectMapper objectMapper;
 
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, IOException, URISyntaxException {
+    public void execute(Message message) throws TelegramApiException, IOException, URISyntaxException {
         redTelBot.removeUserCommand(message.getFrom().getId());
         var sourceChatId = message.getChatId();
         var sourceMessageId = message.getMessageId();

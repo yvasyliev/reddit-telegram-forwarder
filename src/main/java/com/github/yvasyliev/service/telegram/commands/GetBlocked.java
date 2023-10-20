@@ -8,12 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.stream.Collectors;
 
 @Service("/getblocked")
-public class GetBlocked extends Command {
+public class GetBlocked extends AdminCommand {
     @Autowired
     private StateManager stateManager;
 
     @Override
-    public void acceptWithException(Message message) throws Exception {
+    public void execute(Message message) throws Exception {
         var blockedAuthorTemplate = responseReader.applyWithException("responses/getblocked/blocked_author.md");
         var blockedAuthors = stateManager
                 .getBlockedAuthors()

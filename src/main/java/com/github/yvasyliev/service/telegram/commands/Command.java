@@ -19,6 +19,19 @@ public abstract class Command implements ThrowingConsumer<Message> {
     @Autowired
     protected BotResponseReader responseReader;
 
+    @Override
+    public void acceptWithException(Message message) throws Exception {
+        if (hasPermission(message)) {
+            execute(message);
+        }
+    }
+
+    abstract void execute(Message message) throws Exception;
+
+    protected boolean hasPermission(Message message) {
+        return true;
+    }
+
     protected Message reply(Message to, String template, Object... args) throws URISyntaxException, IOException, TelegramApiException {
         var sendMessage = SendMessage.builder()
                 .chatId(to.getChatId())

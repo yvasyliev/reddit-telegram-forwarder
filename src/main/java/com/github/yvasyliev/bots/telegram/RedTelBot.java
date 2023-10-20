@@ -93,7 +93,7 @@ public class RedTelBot extends AbstractRedTelBot {
 
     public void onCallbackQueryReceived(CallbackQuery callbackQuery) {
         var message = callbackQuery.getMessage();
-        if (message.isUserMessage() && isFromAdmin(callbackQuery)) {
+        if (message.isUserMessage() && isAdmin(callbackQuery.getFrom())) {
             try {
                 var callbackData = objectMapper.readValue(callbackQuery.getData(), CallbackData.class);
                 context.getBean(callbackData.action(), Callback.class).acceptWithException(callbackQuery);
@@ -119,10 +119,6 @@ public class RedTelBot extends AbstractRedTelBot {
 
     public ExternalMessageData getAwaitingReply(Long userId) {
         return awaitingReplies.remove(userId);
-    }
-
-    public boolean isFromAdmin(CallbackQuery callbackQuery) {
-        return isAdmin(callbackQuery.getFrom());
     }
 
     public boolean isAdmin(User user) {

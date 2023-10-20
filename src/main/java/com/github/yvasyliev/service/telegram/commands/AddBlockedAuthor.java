@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Service("/addblockedauthor")
-public class AddBlockedAuthor extends Command {
+public class AddBlockedAuthor extends AdminCommand {
     @Autowired
     private UsernameParser usernameParser;
 
@@ -20,7 +20,7 @@ public class AddBlockedAuthor extends Command {
     private StateManager stateManager;
 
     @Override
-    public void acceptWithException(Message message) throws IOException, TelegramApiException, URISyntaxException {
+    public void execute(Message message) throws IOException, TelegramApiException, URISyntaxException {
         var optionalUsername = usernameParser.apply(message);
         if (optionalUsername.isPresent()) {
             var username = optionalUsername.get();

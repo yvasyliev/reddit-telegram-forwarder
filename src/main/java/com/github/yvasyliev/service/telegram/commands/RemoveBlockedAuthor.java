@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Service("/removeblockedauthor")
-public class RemoveBlockedAuthor extends Command {
+public class RemoveBlockedAuthor extends AdminCommand {
 
     @Autowired
     private UsernameParser usernameParser;
@@ -17,7 +17,7 @@ public class RemoveBlockedAuthor extends Command {
     private StateManager stateManager;
 
     @Override
-    public void acceptWithException(Message message) throws Exception {
+    public void execute(Message message) throws Exception {
         var optionalUsername = usernameParser.apply(message);
         if (optionalUsername.isPresent()) {
             var username = optionalUsername.get();

@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 @Service("/suggestpost")
 public class SuggestPost extends Command {
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         redTelBot.addUserCommand(message.getFrom().getId(), "/postsuggested");
         reply(message, "responses/suggestpost.md");
     }

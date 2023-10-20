@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Service("/resumepublishing")
-public class ResumePublishing extends Command {
+public class ResumePublishing extends AdminCommand {
     @Autowired
     private PostManager postManager;
 
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         postManager.resumePublishing();
         redTelBot.execute(new SendMessage(
                 message.getChatId().toString(),

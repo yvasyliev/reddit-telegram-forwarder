@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Service("/unblockauthor")
-public class UnblockAuthor extends Command {
+public class UnblockAuthor extends AdminCommand {
     @Override
-    public void acceptWithException(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         redTelBot.addUserCommand(message.getFrom().getId(), "/removeblockedauthor");
         reply(message, "responses/unblockauthor.md");
     }
