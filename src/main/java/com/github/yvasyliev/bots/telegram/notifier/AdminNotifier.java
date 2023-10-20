@@ -16,12 +16,18 @@ public class AdminNotifier extends AbstractRedTelBot implements TelegramNotifier
             ```""")
     private String messageTemplate;
 
+    @Value("4096")
+    private int charactersLimit;
+
     public AdminNotifier(@Value("${BOT_TOKEN}") String botToken) {
         super(botToken);
     }
 
     @Override
-    public Message notify(String text) throws TelegramApiException {
+    public Message applyWithException(String text) throws TelegramApiException {
+        if (text.length() > charactersLimit) {
+            text = text.substring(0, charactersLimit);
+        }
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(getAdminId())
                 .text(messageTemplate.formatted(text))

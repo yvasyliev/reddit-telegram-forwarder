@@ -24,12 +24,15 @@ import java.net.http.HttpClient;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ComponentScan("com.github.yvasyliev.service")
-public class RedTelBotConfiguration extends TelegramNotifierConfig {
+public class RedTelBotConfiguration {
     @Autowired
     private JsonDeserializer<Post> postJsonDeserializer;
 
@@ -110,5 +113,15 @@ public class RedTelBotConfiguration extends TelegramNotifierConfig {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public Map<Long, ExternalMessageData> longExternalMessageDataMap(@Value("16") int maxSize) {
         return synchronizedFixedSizeMap(maxSize);
+    }
+
+    @Bean
+    public Executor delayedExecutor() {
+        return CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, singleThreadExecutor());
+    }
+
+    @Bean
+    public Executor singleThreadExecutor() {
+        return Executors.newSingleThreadExecutor();
     }
 }
