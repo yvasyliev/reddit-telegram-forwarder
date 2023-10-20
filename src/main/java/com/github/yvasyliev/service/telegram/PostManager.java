@@ -74,14 +74,13 @@ public class PostManager {
         posts.forEach(this::publishPost);
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Post> void publishPost(T post) {
         var chatId = post.isApproved() ? redTelBot.getChannelId() : redTelBot.getAdminId();
         var created = post.getCreated();
         var postServiceName = post.getType();
 
         if (context.containsBean(postServiceName)) {
-            var postService = (PostService<T, ?>) context.getBean(postServiceName);
+            @SuppressWarnings("unchecked") var postService = (PostService<T, ?>) context.getBean(postServiceName);
             try {
                 var sentMessage = postService.applyWithException(chatId, post);
                 if (sentMessage.isPresent() && !post.isApproved()) {
