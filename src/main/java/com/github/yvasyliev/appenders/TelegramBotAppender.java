@@ -26,7 +26,7 @@ public class TelegramBotAppender extends AbstractAppender {
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
-        var applicationContext = new AnnotationConfigApplicationContext("com.github.yvasyliev.bots.telegram.notifier");
+        var applicationContext = new AnnotationConfigApplicationContext(TelegramNotifier.class.getPackageName());
         this.telegramNotifier = applicationContext.getBean(TelegramNotifier.class);
     }
 
