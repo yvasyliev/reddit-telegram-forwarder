@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.bots.telegram.RedTelBot;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
-import com.github.yvasyliev.service.reddit.RedditPostService;
+import com.github.yvasyliev.service.reddit.SubredditPostSupplier;
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.posts.PhotoGroupPostService;
 import com.github.yvasyliev.service.telegram.posts.PostService;
@@ -35,7 +35,7 @@ public class PostManager {
     private ScheduledExecutorService executorService;
 
     @Autowired
-    private RedditPostService redditPostService;
+    private SubredditPostSupplier subredditPostSupplier;
 
     @Autowired
     private RedTelBot redTelBot;
@@ -61,7 +61,7 @@ public class PostManager {
         executorService.scheduleWithFixedDelay(() -> {
             if (publishing.get()) {
                 try {
-                    var newPosts = redditPostService.findNewPosts();
+                    var newPosts = subredditPostSupplier.getWithException();
                     publishPosts(newPosts);
                 } catch (Exception e) {
                     LOGGER.error("Failed to find new posts.", e);

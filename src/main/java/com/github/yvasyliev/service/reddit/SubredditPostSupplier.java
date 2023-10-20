@@ -21,8 +21,8 @@ import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
 @Service
-public class RedditPostService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedditPostService.class);
+public class SubredditPostSupplier implements ThrowingSupplier<List<Post>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubredditPostSupplier.class);
 
     @Autowired
     private ThrowingSupplier<JsonNode> subredditNewSupplier;
@@ -36,7 +36,8 @@ public class RedditPostService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public List<Post> findNewPosts() throws Exception {
+    @Override
+    public List<Post> getWithException() throws Exception {
         var subredditPosts = subredditNewSupplier.getWithException();
         var children = subredditPosts
                 .get("data")
