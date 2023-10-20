@@ -1,7 +1,10 @@
-package com.github.yvasyliev.utils;
+package com.github.yvasyliev.service.telegram;
 
-public class MarkdownV2 {
-    public static String escaped(String text) {
+import java.util.function.Function;
+
+public class MarkdownV2Escaper implements Function<String, String> {
+    @Override
+    public String apply(String text) {
         return text
                 .replace("_", "\\_")
                 .replace("*", "\\*")

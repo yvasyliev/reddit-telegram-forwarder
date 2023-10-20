@@ -1,6 +1,7 @@
 package com.github.yvasyliev.service.telegram.commands;
 
-import com.github.yvasyliev.utils.MarkdownV2;
+import com.github.yvasyliev.service.telegram.MarkdownV2Escaper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,6 +13,9 @@ import java.net.URISyntaxException;
 
 @Service("/replysent")
 public class ReplySent extends AdminCommand {
+    @Autowired
+    private MarkdownV2Escaper markdownV2Escaper;
+
     @Override
     public void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
         if (message.hasText()) {
@@ -21,7 +25,7 @@ public class ReplySent extends AdminCommand {
             var replyMessage = SendMessage.builder()
                     .chatId(awaitingReply.fromChatId())
                     .replyToMessageId(awaitingReply.messageId())
-                    .text(responseReader.applyWithException("responses/replysent/reply_template.md").formatted(MarkdownV2.escaped(message.getText())))
+                    .text(responseReader.applyWithException("responses/replysent/reply_template.md").formatted(markdownV2Escaper.apply(message.getText())))
                     .parseMode(ParseMode.MARKDOWNV2)
                     .build();
             redTelBot.execute(replyMessage);
