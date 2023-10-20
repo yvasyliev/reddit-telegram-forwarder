@@ -49,6 +49,7 @@ public class RedTelBot extends AbstractRedTelBot {
 
     public void startPolling() throws TelegramApiException {
         botSession = context.getBean(TelegramBotsApi.class).registerBot(this);
+        LOGGER.info("Started polling.");
     }
 
     public void stopPolling() {

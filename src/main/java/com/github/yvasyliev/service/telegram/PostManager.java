@@ -68,6 +68,7 @@ public class PostManager {
                 }
             }
         }, 0, 1, TimeUnit.MINUTES);
+        LOGGER.info("Started posting.");
     }
 
     public void publishPosts(List<Post> posts) {
