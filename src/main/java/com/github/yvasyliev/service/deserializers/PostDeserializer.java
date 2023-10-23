@@ -1,5 +1,6 @@
 package com.github.yvasyliev.service.deserializers;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -7,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.state.StateManager;
-import org.hibernate.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
                         return optionalPost.get();
                     }
                 } catch (Exception e) {
-                    throw new MappingException(e);
+                    throw new JsonParseException(jsonParser, e.getMessage(), e);
                 }
             }
         }
