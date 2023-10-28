@@ -76,28 +76,29 @@ public class PostManager {
     }
 
     public <T extends Post> void publishPost(T post) {
-        var chatId = post.isApproved() ? redTelBot.getChannelId() : redTelBot.getAdminId();
-        var created = post.getCreated();
-        var postServiceName = post.getType();
-
-        if (context.containsBean(postServiceName)) {
-            @SuppressWarnings("unchecked") var postService = (PostService<T, ?>) context.getBean(postServiceName);
+        if (context.containsBean(post.getType())) {
             try {
-                var sentMessage = postService.applyWithException(chatId, post);
-                if (sentMessage.isPresent() && !post.isApproved()) {
-                    askApprove(chatId, created);
-                    postCandidates.put(created, post);
-                }
+                publishPost(post, post.getType());
             } catch (TelegramApiException | JsonProcessingException e) {
                 LOGGER.error("Failed to ask approve.", e);
             } catch (Exception e) {
                 LOGGER.error("Failed to send post: {}", post, e);
             }
             try {
-                stateManager.setLastCreated(created);
+                stateManager.setLastCreated(post.getCreated());
             } catch (IOException e) {
-                LOGGER.error("Failed to save last_created: {}", created, e);
+                LOGGER.error("Failed to save last_created: {}", post.getCreated(), e);
             }
+        }
+    }
+
+    public <T extends Post> void publishPost(T post, String postServiceName) throws Exception {
+        @SuppressWarnings("unchecked") var postService = (PostService<T, ?>) context.getBean(postServiceName);
+        var chatId = post.isApproved() ? redTelBot.getChannelId() : redTelBot.getAdminId();
+        var sentMessage = postService.applyWithException(chatId, post);
+        if (sentMessage.isPresent() && !post.isApproved()) {
+            askApprove(chatId, post.getCreated());
+            postCandidates.put(post.getCreated(), post);
         }
     }
 
