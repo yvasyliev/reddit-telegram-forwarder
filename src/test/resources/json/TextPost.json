@@ -1,0 +1,177 @@
+{
+  "kind": "Listing",
+  "data": {
+    "after": null,
+    "dist": 1,
+    "modhash": null,
+    "geo_filter": "",
+    "children": [
+      {
+        "kind": "t3",
+        "data": {
+          "approved_at_utc": null,
+          "subreddit": "movies",
+          "selftext": "",
+          "author_fullname": "t2_alrgvzbg",
+          "saved": false,
+          "mod_reason_title": null,
+          "gilded": 0,
+          "clicked": false,
+          "title": "Martin Scorsese Joins Letterboxd — and Has Curated a Massive List of Double-Feature Pairings with His Own Films",
+          "link_flair_richtext": [
+            {
+              "e": "text",
+              "t": "News"
+            }
+          ],
+          "subreddit_name_prefixed": "r/movies",
+          "hidden": false,
+          "pwls": 6,
+          "link_flair_css_class": "news",
+          "downs": 0,
+          "thumbnail_height": 93,
+          "top_awarded_type": null,
+          "hide_score": false,
+          "name": "t3_17hav59",
+          "quarantine": false,
+          "link_flair_text_color": "dark",
+          "upvote_ratio": 0.95,
+          "author_flair_background_color": null,
+          "ups": 3379,
+          "total_awards_received": 0,
+          "media_embed": {},
+          "thumbnail_width": 140,
+          "author_flair_template_id": null,
+          "is_original_content": false,
+          "user_reports": [],
+          "secure_media": null,
+          "is_reddit_media_domain": false,
+          "is_meta": false,
+          "category": null,
+          "secure_media_embed": {},
+          "link_flair_text": "News",
+          "can_mod_post": false,
+          "score": 3379,
+          "approved_by": null,
+          "is_created_from_ads_ui": false,
+          "author_premium": false,
+          "thumbnail": "https://b.thumbs.redditmedia.com/57kaqxw5hSF34UivdM69iwKxAE9DD1xD7X5jWrq2i3k.jpg",
+          "edited": false,
+          "author_flair_css_class": null,
+          "author_flair_richtext": [],
+          "gildings": {},
+          "post_hint": "link",
+          "content_categories": null,
+          "is_self": false,
+          "subreddit_type": "public",
+          "created": 1698365958.0,
+          "link_flair_type": "richtext",
+          "wls": 6,
+          "removed_by_category": null,
+          "banned_by": null,
+          "author_flair_type": "text",
+          "domain": "indiewire.com",
+          "allow_live_comments": false,
+          "selftext_html": null,
+          "likes": null,
+          "suggested_sort": null,
+          "banned_at_utc": null,
+          "url_overridden_by_dest": "https://www.indiewire.com/news/general-news/martin-scorsese-joins-letterboxd-lists-double-feature-choices-1234920446/",
+          "view_count": null,
+          "archived": false,
+          "no_follow": false,
+          "is_crosspostable": true,
+          "pinned": false,
+          "over_18": false,
+          "preview": {
+            "images": [
+              {
+                "source": {
+                  "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?auto=webp&s=a430b284e0883e8efa250334cde48c5ddbac7b34",
+                  "width": 6000,
+                  "height": 4000
+                },
+                "resolutions": [
+                  {
+                    "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?width=108&crop=smart&auto=webp&s=05ada6b79d58a71ba179f1e086001c29eccf644d",
+                    "width": 108,
+                    "height": 72
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?width=216&crop=smart&auto=webp&s=c01630c3a621074762ab961d5f9ceba4ef6ee1a8",
+                    "width": 216,
+                    "height": 144
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?width=320&crop=smart&auto=webp&s=3c18a6a9a2ace439965c48074c7ed32418c7b2ec",
+                    "width": 320,
+                    "height": 213
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?width=640&crop=smart&auto=webp&s=49680da24d95ca812798546bf318760f9cc3f89f",
+                    "width": 640,
+                    "height": 426
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?width=960&crop=smart&auto=webp&s=01ac362f55fe1187e97be21c224f8c15996654c2",
+                    "width": 960,
+                    "height": 640
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/B_sluN8KB15iwqPGzB_ZIhMy6Ra2spn7BFyaqJWSCOA.jpg?width=1080&crop=smart&auto=webp&s=374d35680c52ac5292cbcd4e83c01c0c779a1662",
+                    "width": 1080,
+                    "height": 720
+                  }
+                ],
+                "variants": {},
+                "id": "Q-Ya3oZ1tTSZajhOVqnYNuqElpF-hjuG_X7W6F5dcNE"
+              }
+            ],
+            "enabled": false
+          },
+          "all_awardings": [],
+          "awarders": [],
+          "media_only": false,
+          "link_flair_template_id": "2b89defa-381e-11e2-8c5e-12313d28169d",
+          "can_gild": false,
+          "spoiler": false,
+          "locked": false,
+          "author_flair_text": null,
+          "treatment_tags": [],
+          "visited": false,
+          "removed_by": null,
+          "mod_note": null,
+          "distinguished": null,
+          "subreddit_id": "t5_2qh3s",
+          "author_is_blocked": false,
+          "mod_reason_by": null,
+          "num_reports": null,
+          "removal_reason": null,
+          "link_flair_background_color": "#0aa18f",
+          "id": "17hav59",
+          "is_robot_indexable": true,
+          "report_reasons": null,
+          "author": "thr1ceuponatime",
+          "discussion_type": null,
+          "num_comments": 134,
+          "send_replies": false,
+          "whitelist_status": "all_ads",
+          "contest_mode": false,
+          "mod_reports": [],
+          "author_patreon_flair": false,
+          "author_flair_text_color": null,
+          "permalink": "/r/movies/comments/17hav59/martin_scorsese_joins_letterboxd_and_has_curated/",
+          "parent_whitelist_status": "all_ads",
+          "stickied": false,
+          "url": "https://www.indiewire.com/news/general-news/martin-scorsese-joins-letterboxd-lists-double-feature-choices-1234920446/",
+          "subreddit_subscribers": 31744356,
+          "created_utc": 1698365958.0,
+          "num_crossposts": 1,
+          "media": null,
+          "is_video": false
+        }
+      }
+    ],
+    "before": null
+  }
+}
