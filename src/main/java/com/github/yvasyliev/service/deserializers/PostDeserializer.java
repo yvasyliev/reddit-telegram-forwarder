@@ -30,7 +30,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
         var jsonPost = jsonParser.readValueAs(JsonNode.class);
         var author = jsonPost.get("author").textValue();
         var created = jsonPost.get("created").intValue();
-        var postUrl = jsonPost.get("url_overridden_by_dest").textValue();
+        var postUrl = jsonPost.has("url_overridden_by_dest") ? jsonPost.get("url_overridden_by_dest").textValue() : jsonPost.get("url").textValue();
         var blockedAuthors = context.getBean(StateManager.class).getBlockedAuthors();
 
         jsonPost = extractRootPost(jsonPost);
