@@ -27,38 +27,36 @@ public class PostDeserializer extends JsonDeserializer<Post> {
 
     @Override
     public Post deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        var node = jsonParser.getCodec().readTree(jsonParser);
-        if (node instanceof JsonNode jsonPost) {
-            var author = jsonPost.get("author").textValue();
-            var created = jsonPost.get("created").intValue();
-            var postUrl = jsonPost.get("url_overridden_by_dest").textValue();
-            var blockedAuthors = context.getBean(StateManager.class).getBlockedAuthors();
+        var jsonPost = jsonParser.readValueAs(JsonNode.class);
+        var author = jsonPost.get("author").textValue();
+        var created = jsonPost.get("created").intValue();
+        var postUrl = jsonPost.get("url_overridden_by_dest").textValue();
+        var blockedAuthors = context.getBean(StateManager.class).getBlockedAuthors();
 
-            jsonPost = extractRootPost(jsonPost);
-            for (var postMapper : postMappers) {
-                try {
-                    var optionalPost = postMapper.applyWithException(jsonPost).map(post -> {
-                        post.setAuthor(author);
-                        post.setCreated(created);
-                        post.setApproved(blockedAuthors.contains(author));
-                        post.setPostUrl(postUrl);
-                        return post;
-                    });
-                    if (optionalPost.isPresent()) {
-                        return optionalPost.get();
-                    }
-                } catch (Exception e) {
-                    throw new JsonParseException(jsonParser, e.getMessage(), e);
+        jsonPost = extractRootPost(jsonPost);
+        for (var postMapper : postMappers) {
+            try {
+                var optionalPost = postMapper.applyWithException(jsonPost).map(post -> {
+                    post.setAuthor(author);
+                    post.setCreated(created);
+                    post.setApproved(!blockedAuthors.contains(author));
+                    post.setPostUrl(postUrl);
+                    return post;
+                });
+                if (optionalPost.isPresent()) {
+                    return optionalPost.get();
                 }
+            } catch (Exception e) {
+                throw new JsonParseException(jsonParser, e.getMessage(), e);
             }
         }
 
-        throw new JsonMappingException(jsonParser, "Failed to parse post: " + node);
+        throw new JsonMappingException(jsonParser, "Failed to parse post: " + jsonPost);
     }
 
     private JsonNode extractRootPost(JsonNode jsonPost) {
         return jsonPost.has("crosspost_parent_list")
-                ? extractRootPost(jsonPost.get("crosspost_parent_list").get(0))
+                ? extractRootPost(jsonPost.at("/crosspost_parent_list/0"))
                 : jsonPost;
     }
 }
