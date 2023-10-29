@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <RollingFile name="roll-by-time-and-size"
+                     fileName="reddit-telegram-repeater.log"
+                     filePattern="reddit-telegram-repeater.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
+                     ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="" maxDepth="1000000">
+                    <IfFileName glob="reddit-telegram-repeater.*.log.gz"/>
+                    <IfLastModified age="30m"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <TelegramBotAppender name="telegramBotAppender"/>
+    </Appenders>
+    <Loggers>
+        <Root level="ALL">
+            <AppenderRef ref="stdout"/>
+<!--            <AppenderRef ref="roll-by-time-and-size"/>-->
+            <AppenderRef ref="telegramBotAppender" level="error"/>
+        </Root>
+        <Logger name="org.springframework" level="off"/>
+        <Logger name="org.apache.http" level="off"/>
+        <Logger name="com.github.yvasyliev" level="warn"/>
+<!--        <Logger name="org.hibernate" level="off"/>-->
+<!--        <Logger name="org.hibernate.SQL" level="debug"/>-->
+<!--        <Logger name="org.jboss.logging" level="off"/>-->
+        <!--        DEBUG org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator-->
+    </Loggers>
+</Configuration>
