@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,18 +36,16 @@ public class PhotoGroupPostMapper implements PostMapper {
         return Optional.empty();
     }
 
-    private List<List<String>> extractPhotoUrlsPages(JsonNode post) {
+    private LinkedList<Queue<String>> extractPhotoUrlsPages(JsonNode post) {
         var photoUrls = extractPhotoUrls(post);
-        return IntStream
+        return new LinkedList<>(IntStream
                 .range(0, photoUrls.size())
                 .boxed()
                 .collect(Collectors.groupingBy(
                         i -> i / pageSize,
-                        Collectors.mapping(photoUrls::get, Collectors.toList())
+                        Collectors.mapping(photoUrls::get, Collectors.toCollection(ArrayDeque::new))
                 ))
-                .values()
-                .stream()
-                .toList();
+                .values());
     }
 
     private List<String> extractPhotoUrls(JsonNode post) {

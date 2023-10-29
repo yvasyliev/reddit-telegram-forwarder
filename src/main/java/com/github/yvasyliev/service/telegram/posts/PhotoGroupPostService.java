@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -47,7 +48,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 ? responseReader.applyWithException("responses/photogroup.md").formatted(text)
                 : text;
 
-        var sendMediaGroup = sendMediaGroup(chatId, pages.get(0), hasSpoiler, null); // TODO: 10/16/2023 replace pages.get(0)
+        var sendMediaGroup = sendMediaGroup(chatId, pages.getFirst(), hasSpoiler, null);
         sendMediaGroup.getMedias().get(0).setCaption(caption);
 
         var publishedPost = redTelBot.execute(sendMediaGroup);
@@ -74,17 +75,16 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         var pages = post.getPhotoUrlsPages();
         var hasSpoiler = post.isHasSpoiler();
         var messages = new ArrayList<Message>();
-        for (var i = 1; i < pages.size(); i++) {
-            var page = pages.get(i);
+        for (var page : pages.subList(1, pages.size())) {
             messages.addAll(page.size() > 1
                     ? executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId))
-                    : List.of(executeDelayed(sendPhoto(chatId, page.get(0), hasSpoiler, replyToMessageId)))
+                    : List.of(executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)))
             );
         }
         return messages;
     }
 
-    private SendMediaGroup sendMediaGroup(String chatId, List<String> page, boolean hasSpoiler, Integer replyToMessageId) {
+    private SendMediaGroup sendMediaGroup(String chatId, Queue<String> page, boolean hasSpoiler, Integer replyToMessageId) {
         var inputMediaPhotos = page
                 .stream()
                 .map(photoUrl -> (InputMedia) InputMediaPhoto

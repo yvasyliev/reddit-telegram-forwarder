@@ -1,15 +1,16 @@
 package com.github.yvasyliev.model.dto.post;
 
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class PhotoGroupPost extends SpoilerablePost {
-    private List<List<String>> photoUrlsPages;
+    private LinkedList<Queue<String>> photoUrlsPages; // TODO: 10/29/2023 Migrate to JDK 21 and replace with List<List<String>>
 
-    public List<List<String>> getPhotoUrlsPages() {
+    public LinkedList<Queue<String>> getPhotoUrlsPages() {
         return photoUrlsPages;
     }
 
-    public void setPhotoUrlsPages(List<List<String>> photoUrlsPages) {
+    public void setPhotoUrlsPages(LinkedList<Queue<String>> photoUrlsPages) {
         this.photoUrlsPages = photoUrlsPages;
     }
 
