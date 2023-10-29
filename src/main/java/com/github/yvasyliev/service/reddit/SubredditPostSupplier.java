@@ -61,7 +61,7 @@ public class SubredditPostSupplier implements ThrowingSupplier<List<Post>> {
                         LOGGER.error(
                                 "Failed to deserialize post. Created: {}, URL: {}",
                                 data.get("created").intValue(),
-                                data.get("url_overridden_by_dest").textValue(),
+                                data.get("url").textValue(),
                                 e
                         );
                         return null;
