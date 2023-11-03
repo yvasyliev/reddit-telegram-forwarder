@@ -66,7 +66,7 @@ public class RedTelBotConfiguration {
     }
 
     @Bean
-    public RedTelBot redTelBot(@Value("${BOT_TOKEN}") String botToken) {
+    public RedTelBot redTelBot(@Value("${telegram.bot.token}") String botToken) {
         return new RedTelBot(botToken);
     }
 

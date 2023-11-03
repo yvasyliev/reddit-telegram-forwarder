@@ -18,6 +18,6 @@ public class Stop extends AdminCommand {
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         postManager.stopPublishing();
         redTelBot.stopPolling();
-        reply(message, "responses/stop.md");
+        reply(message, "responses/stop.md", redTelBot.getBotUsername());
     }
 }

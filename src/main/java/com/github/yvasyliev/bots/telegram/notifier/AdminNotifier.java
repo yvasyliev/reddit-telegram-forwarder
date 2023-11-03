@@ -19,7 +19,7 @@ public class AdminNotifier extends AbstractRedTelBot implements TelegramNotifier
     @Value("4096")
     private int charactersLimit;
 
-    public AdminNotifier(@Value("${BOT_TOKEN}") String botToken) {
+    public AdminNotifier(@Value("${telegram.bot.token}") String botToken) {
         super(botToken);
     }
 

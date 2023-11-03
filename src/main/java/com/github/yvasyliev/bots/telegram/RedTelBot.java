@@ -43,17 +43,18 @@ public class RedTelBot extends AbstractRedTelBot {
     @Autowired
     private PostManager postManager;
 
-    public RedTelBot(@Value("${BOT_TOKEN}") String botToken) {
+    public RedTelBot(@Value("${telegram.bot.token}") String botToken) {
         super(botToken);
     }
 
     public void startPolling() throws TelegramApiException {
         botSession = context.getBean(TelegramBotsApi.class).registerBot(this);
-        LOGGER.info("Started polling.");
+        LOGGER.info("{} started long polling.", getBotUsername());
     }
 
     public void stopPolling() {
         botSession.stop();
+        LOGGER.info("{} stopped long polling.", getBotUsername());
     }
 
     @Override
