@@ -1,20 +1,30 @@
 package com.github.yvasyliev;
 
-import com.github.yvasyliev.bots.telegram.RedTelBot;
-import com.github.yvasyliev.config.RedTelBotConfiguration;
-import com.github.yvasyliev.service.telegram.PostManager;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import com.github.yvasyliev.service.telegram.commands.Start;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.ApplicationPidFileWriter;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
 
-public class Application {
-    public static void main(String[] args) throws TelegramApiException {
-        var context = new AnnotationConfigApplicationContext(RedTelBotConfiguration.class);
-        context.registerShutdownHook();
+@SpringBootApplication
+public class Application extends TelegramBotStarterConfiguration {
+    private static ConfigurableApplicationContext context;
 
-        var redTelBot = context.getBean(RedTelBot.class);
-        redTelBot.startPolling();
+    public static void main(String[] args) {
+        context = new SpringApplicationBuilder(Application.class)
+                .listeners(new ApplicationPidFileWriter())
+                .build()
+                .run(args);
+    }
 
-        var postManager = context.getBean(PostManager.class);
-        postManager.schedulePosting();
+    public static ConfigurableApplicationContext getContext() {
+        return context;
+    }
+
+    @Bean("/help")
+    public Start help(Start start) {
+        return start;
     }
 }

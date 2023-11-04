@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.yvasyliev.bots.telegram.RedTelBot;
 import com.github.yvasyliev.model.dto.ExternalMessageData;
 import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
@@ -65,10 +64,10 @@ public class RedTelBotConfiguration {
         return "java:reddit-telegram-repeater:2.0.0  (by /u/%s)".formatted(redditUsername);
     }
 
-    @Bean
-    public RedTelBot redTelBot(@Value("${telegram.bot.token}") String botToken) {
-        return new RedTelBot(botToken);
-    }
+//    @Bean
+//    public RedTelBot redTelBot(@Value("${telegram.bot.token}") String botToken) {
+//        return new RedTelBot(botToken);
+//    }
 
     @Bean
     public HttpClient httpClient() {

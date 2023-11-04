@@ -3,8 +3,9 @@ package com.github.yvasyliev.bots.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.CallbackData;
+import com.github.yvasyliev.model.dto.ChannelPost;
 import com.github.yvasyliev.model.dto.ExternalMessageData;
-import com.github.yvasyliev.service.telegram.PostManager;
+import com.github.yvasyliev.model.events.NewChannelPost;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -19,10 +22,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
+import org.telegram.telegrambots.starter.AfterBotRegistration;
 
 import java.util.Map;
 import java.util.Optional;
 
+@Component
 public class RedTelBot extends AbstractRedTelBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedTelBot.class);
 
@@ -41,15 +46,20 @@ public class RedTelBot extends AbstractRedTelBot {
     private Map<Long, ExternalMessageData> awaitingReplies;
 
     @Autowired
-    private PostManager postManager;
+    private ApplicationEventPublisher eventPublisher;
 
     public RedTelBot(@Value("${telegram.bot.token}") String botToken) {
         super(botToken);
     }
 
+    @AfterBotRegistration
+    public void setBotSession(BotSession botSession) {
+        this.botSession = botSession;
+        LOGGER.info("{} started long polling.", getBotUsername());
+    }
+
     public void startPolling() throws TelegramApiException {
         botSession = context.getBean(TelegramBotsApi.class).registerBot(this);
-        LOGGER.info("{} started long polling.", getBotUsername());
     }
 
     public void stopPolling() {
@@ -71,7 +81,7 @@ public class RedTelBot extends AbstractRedTelBot {
         var isAutomaticForward = message.getIsAutomaticForward();
         var forwardFromMessageId = message.getForwardFromMessageId();
         if (isAutomaticForward != null && isAutomaticForward && forwardFromMessageId != null) {
-            postManager.sendExtraPhotos(message.getMessageId(), forwardFromMessageId);
+            eventPublisher.publishEvent(new NewChannelPost(new ChannelPost(message.getMessageId(), forwardFromMessageId)));
         } else if (message.isUserMessage()) {
             onUserMessageReceived(message);
         }

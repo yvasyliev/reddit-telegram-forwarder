@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Service("/start")
-@Qualifier("/help")
 public class Start extends Command {
     @Value("${telegram.channel.name}")
     private String telegramChannelName;

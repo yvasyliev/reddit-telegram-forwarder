@@ -3,6 +3,7 @@ package com.github.yvasyliev.service.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.bots.telegram.RedTelBot;
+import com.github.yvasyliev.model.dto.ChannelPost;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.reddit.SubredditPostSupplier;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -114,9 +116,10 @@ public class PostManager {
         executorService.shutdown();
     }
 
-    public void sendExtraPhotos(int replyToMessageId, int forwardMessageId) {
+    @EventListener
+    public void sendExtraPhotos(ChannelPost channelPost) {
         try {
-            photoGroupPostService.sendExtraPhotos(replyToMessageId, forwardMessageId);
+            photoGroupPostService.sendExtraPhotos(channelPost.messageId(), channelPost.forwardFromMessageId());
         } catch (TelegramApiException e) {
             LOGGER.error("Failed to send extra photos.", e);
         }
