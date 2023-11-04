@@ -8,6 +8,7 @@ import com.github.yvasyliev.model.dto.ExternalMessageData;
 import com.github.yvasyliev.model.events.NewChannelPost;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,10 @@ public class RedTelBot extends AbstractRedTelBot {
 
     public void startPolling() throws TelegramApiException {
         botSession = context.getBean(TelegramBotsApi.class).registerBot(this);
+        LOGGER.info("{} started long polling.", getBotUsername());
     }
 
+    @PreDestroy
     public void stopPolling() {
         botSession.stop();
         LOGGER.info("{} stopped long polling.", getBotUsername());
