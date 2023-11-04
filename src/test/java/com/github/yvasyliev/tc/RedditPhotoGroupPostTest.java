@@ -1,15 +1,9 @@
 package com.github.yvasyliev.tc;
 
-import com.github.yvasyliev.bots.telegram.RedTelBot;
 import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,24 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RedditPhotoGroupPostTest extends AbstractRedditPostTest {
-    @Autowired
-    RedTelBot redTelBot;
-
-    @BeforeAll
-    void startBot() throws TelegramApiException {
-        redTelBot.startPolling();
-    }
-
     @BeforeEach
     void waitABit() throws InterruptedException {
         TimeUnit.SECONDS.sleep(10);
-    }
-
-    @AfterAll
-    void stopBot() {
-        redTelBot.stopPolling();
     }
 
     @Test

@@ -8,10 +8,10 @@ public abstract class AbstractRedTelBot extends TelegramLongPollingBot {
     @Value("${BOT_USERNAME}")
     private String botUsername;
 
-    @Value("${ADMIN_ID}")
+    @Value("${telegram.admin.id}")
     private String adminId;
 
-    @Value("${CHANNEL_ID}")
+    @Value("${telegram.channel.id}")
     private String channelId;
 
     @Value("${GROUP_ID}")
