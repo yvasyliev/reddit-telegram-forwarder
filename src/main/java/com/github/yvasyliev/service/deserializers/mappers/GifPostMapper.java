@@ -15,19 +15,17 @@ public class GifPostMapper implements PostMapper {
     @Override
     @NonNull
     public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) {
-        if (isGif(jsonPost)) {
-            var gifUrl = jsonPost.requiredAt("/preview/images/0/variants/mp4/source/url").textValue();
-            var post = new GifPost();
-            post.setText(jsonPost.path("title").textValue());
-            post.setMediaUrl(gifUrl);
-            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
-            return Optional.of(post);
-        }
-        return Optional.empty();
-    }
+        var url = jsonPost.at("/preview/images/0/variants/mp4/source/url");
 
-    private boolean isGif(JsonNode jsonPost) {
-        return jsonPost.path("url_overridden_by_dest").textValue().endsWith(".gif")
-                && !jsonPost.at("/preview/images/0/variants/mp4").isMissingNode();
+        if (url.isMissingNode()) {
+            return Optional.empty();
+        }
+
+        var gifUrl = url.textValue();
+        var post = new GifPost();
+        post.setText(jsonPost.get("title").textValue());
+        post.setMediaUrl(gifUrl);
+        post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
+        return Optional.of(post);
     }
 }
