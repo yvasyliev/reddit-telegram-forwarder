@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.CallbackData;
 import com.github.yvasyliev.model.dto.ChannelPost;
 import com.github.yvasyliev.model.dto.ExternalMessageData;
-import com.github.yvasyliev.model.events.NewChannelPost;
+import com.github.yvasyliev.model.events.NewChannelPostEvent;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import jakarta.annotation.PreDestroy;
@@ -84,7 +84,7 @@ public class RedTelBot extends AbstractRedTelBot {
         var isAutomaticForward = message.getIsAutomaticForward();
         var forwardFromMessageId = message.getForwardFromMessageId();
         if (isAutomaticForward != null && isAutomaticForward && forwardFromMessageId != null) {
-            eventPublisher.publishEvent(new NewChannelPost(new ChannelPost(message.getMessageId(), forwardFromMessageId)));
+            eventPublisher.publishEvent(new NewChannelPostEvent(new ChannelPost(message.getMessageId(), forwardFromMessageId)));
         } else if (message.isUserMessage()) {
             onUserMessageReceived(message);
         }

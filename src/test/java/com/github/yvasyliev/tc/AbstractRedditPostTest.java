@@ -1,7 +1,6 @@
 package com.github.yvasyliev.tc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.yvasyliev.Application;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.PostManager;
@@ -11,7 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest
 abstract class AbstractRedditPostTest {
     @Autowired
     ObjectMapper objectMapper;

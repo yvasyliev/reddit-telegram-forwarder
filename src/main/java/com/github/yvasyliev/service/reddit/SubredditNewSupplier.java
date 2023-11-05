@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.RedditAccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingSupplier;
 
@@ -31,6 +32,7 @@ public class SubredditNewSupplier implements ThrowingSupplier<JsonNode> {
     private ThrowingSupplier<RedditAccessToken> redditAccessTokenSupplier;
 
     @Override
+    @NonNull
     public JsonNode getWithException() throws Exception {
         var redditAccessToken = redditAccessTokenSupplier.getWithException();
         var authorization = "Bearer %s".formatted(redditAccessToken.token());

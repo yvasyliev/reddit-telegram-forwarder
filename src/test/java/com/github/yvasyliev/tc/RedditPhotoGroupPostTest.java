@@ -2,7 +2,7 @@ package com.github.yvasyliev.tc;
 
 import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RedditPhotoGroupPostTest extends AbstractRedditPostTest {
-    @BeforeEach
+    @AfterEach
     void waitABit() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(20);
     }
 
     @Test

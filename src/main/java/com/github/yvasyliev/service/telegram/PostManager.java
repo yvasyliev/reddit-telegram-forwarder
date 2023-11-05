@@ -3,9 +3,9 @@ package com.github.yvasyliev.service.telegram;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.bots.telegram.RedTelBot;
-import com.github.yvasyliev.model.dto.ChannelPost;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.model.events.NewChannelPostEvent;
 import com.github.yvasyliev.service.reddit.SubredditPostSupplier;
 import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.posts.PhotoGroupPostService;
@@ -117,7 +117,8 @@ public class PostManager {
     }
 
     @EventListener
-    public void sendExtraPhotos(ChannelPost channelPost) {
+    public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
+        var channelPost = newChannelPostEvent.getChannelPost();
         try {
             photoGroupPostService.sendExtraPhotos(channelPost.messageId(), channelPost.forwardFromMessageId());
         } catch (TelegramApiException e) {

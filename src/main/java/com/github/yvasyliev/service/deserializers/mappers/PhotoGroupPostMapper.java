@@ -5,11 +5,11 @@ import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -23,6 +23,7 @@ public class PhotoGroupPostMapper implements PostMapper {
     private int pageSize;
 
     @Override
+    @NonNull
     public Optional<Post> applyWithException(JsonNode jsonPost) {
         if (jsonPost.has("gallery_data")) {
             var photoUrlsPages = extractPhotoUrlsPages(jsonPost);
@@ -36,9 +37,9 @@ public class PhotoGroupPostMapper implements PostMapper {
         return Optional.empty();
     }
 
-    private LinkedList<Queue<String>> extractPhotoUrlsPages(JsonNode post) {
+    private Queue<Queue<String>> extractPhotoUrlsPages(JsonNode post) {
         var photoUrls = extractPhotoUrls(post);
-        return new LinkedList<>(IntStream
+        return new ArrayDeque<>(IntStream
                 .range(0, photoUrls.size())
                 .boxed()
                 .collect(Collectors.groupingBy(
@@ -49,7 +50,7 @@ public class PhotoGroupPostMapper implements PostMapper {
     }
 
     private List<String> extractPhotoUrls(JsonNode post) {
-        var items = post.get("gallery_data").get("items").elements();
+        var items = post.requiredAt("/gallery_data/items").elements();
         return stream(items)
                 .map(item -> {
                     var mediaId = item.get("media_id").textValue();

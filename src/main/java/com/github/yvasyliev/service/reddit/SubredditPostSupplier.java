@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingSupplier;
 
@@ -37,6 +38,7 @@ public class SubredditPostSupplier implements ThrowingSupplier<List<Post>> {
     private ObjectMapper objectMapper;
 
     @Override
+    @NonNull
     public List<Post> getWithException() throws Exception {
         var subredditPosts = subredditNewSupplier.getWithException();
         var children = subredditPosts

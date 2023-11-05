@@ -4,6 +4,7 @@ import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,8 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     private Map<Integer, PhotoGroupPost> extraPhotos;
 
     @Override
-    public Optional<List<Message>> applyWithException(String chatId, PhotoGroupPost post) throws TelegramApiException, URISyntaxException, IOException {
+    @NonNull
+    public Optional<List<Message>> applyWithException(@NonNull String chatId, PhotoGroupPost post) throws TelegramApiException, URISyntaxException, IOException {
         var pages = post.getPhotoUrlsPages();
         var text = post.getText();
         var hasSpoiler = post.isHasSpoiler();
@@ -48,7 +51,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 ? responseReader.applyWithException("responses/photogroup.md").formatted(text)
                 : text;
 
-        var sendMediaGroup = sendMediaGroup(chatId, pages.getFirst(), hasSpoiler, null);
+        var sendMediaGroup = sendMediaGroup(chatId, pages.element(), hasSpoiler, null);
         sendMediaGroup.getMedias().get(0).setCaption(caption);
 
         var publishedPost = redTelBot.execute(sendMediaGroup);
@@ -72,10 +75,11 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     }
 
     private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws TelegramApiException {
-        var pages = post.getPhotoUrlsPages();
+        var pages = new ArrayDeque<>(post.getPhotoUrlsPages());
         var hasSpoiler = post.isHasSpoiler();
         var messages = new ArrayList<Message>();
-        for (var page : pages.subList(1, pages.size())) {
+        pages.removeFirst();
+        for (var page : pages) {
             messages.addAll(page.size() > 1
                     ? executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId))
                     : List.of(executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)))
