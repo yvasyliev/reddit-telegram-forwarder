@@ -13,16 +13,16 @@ import java.util.Optional;
 public class PollPostMapper implements PostMapper {
     @Override
     public Optional<Post> applyWithException(JsonNode jsonPost) {
-        if (jsonPost.has("poll_data")) {
-            var redditOptions = jsonPost.get("poll_data").get("options").elements();
-            var options = stream(redditOptions)
-                    .map(redditOption -> redditOption.get("text").textValue())
-                    .toList();
-            var post = new PollPost();
-            post.setText(jsonPost.get("title").textValue());
-            post.setOptions(options);
-            return Optional.of(post);
-        }
-        return Optional.empty();
+        return Optional
+                .ofNullable(jsonPost.path("poll_data").get("options"))
+                .map(redditOptions -> {
+                    var options = stream(redditOptions.elements())
+                            .map(redditOption -> redditOption.get("text").textValue())
+                            .toList();
+                    var post = new PollPost();
+                    post.setText(jsonPost.get("title").textValue());
+                    post.setOptions(options);
+                    return post;
+                });
     }
 }
