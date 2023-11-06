@@ -27,30 +27,31 @@ public class TextPostMapper implements PostMapper {
 
     @Override
     public Optional<Post> applyWithException(JsonNode jsonPost) {
-        if (isTextPost(jsonPost)) {
-            var text = postTextTemplate.formatted(
-                    jsonPost.get("title").textValue(),
-                    jsonPost.get("url_overridden_by_dest").textValue()
-            );
-
-            var post = new TextPost();
-            post.setText(text);
-            return Optional.of(post);
+        if (!isTextPost(jsonPost)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        var text = postTextTemplate.formatted(
+                jsonPost.get("title").textValue(),
+                jsonPost.get("url_overridden_by_dest").textValue()
+        );
+
+        var post = new TextPost();
+        post.setText(text);
+        return Optional.of(post);
     }
 
     private boolean isTextPost(JsonNode post) {
-        if (post.has("post_hint")) {
-            var postHint = post.get("post_hint").textValue();
-            if ("link".equals(postHint)) {
-                if (post.has("url_overridden_by_dest")) {
-                    var urlOverriddenByDest = post.get("url_overridden_by_dest").textValue();
-                    return videoExtensions.stream().noneMatch(urlOverriddenByDest::endsWith);
-                }
-                return true;
-            }
-        }
-        return post.has("domain") && youtubeDomains.contains(post.get("domain").textValue());
+        return "link".equals(post.path("post_hint").asText())
+                ? allowedVideoUrl(post)
+                : youtubeDomains.contains(post.path("domain").asText());
+
+    }
+
+    private boolean allowedVideoUrl(JsonNode post) {
+        return Optional
+                .ofNullable(post.path("url_overridden_by_dest").textValue())
+                .map(urlOverriddenByDest -> videoExtensions.stream().noneMatch(urlOverriddenByDest::endsWith))
+                .orElse(true);
     }
 }
