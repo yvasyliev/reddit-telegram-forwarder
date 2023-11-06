@@ -20,37 +20,23 @@ public class VideoPostMapper implements PostMapper {
 
     @Override
     public Optional<Post> applyWithException(JsonNode jsonPost) throws Exception {
-        var videoUrl = extractVideoUrl(jsonPost);
-        if (videoUrl != null) {
+        return extractVideoUrl(jsonPost).map(videoUrl -> {
             var post = new VideoPost();
             post.setText(jsonPost.get("title").textValue());
             post.setMediaUrl(videoUrl);
             post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
-            return Optional.of(post);
-        }
-        return Optional.empty();
+            return post;
+        });
     }
 
-    private String extractVideoUrl(JsonNode data) throws Exception {
-        if (data.get("is_video").booleanValue()) {
-            var redditPostUrl = "https://www.reddit.com%s".formatted(data.get("permalink").textValue());
-            return redditVideoDownloadUrlProvider.applyWithException(redditPostUrl);
+    private Optional<String> extractVideoUrl(JsonNode jsonPost) throws Exception {
+        if (jsonPost.get("is_video").booleanValue()) {
+            var redditPostUrl = "https://www.reddit.com%s".formatted(jsonPost.get("permalink").textValue());
+            return redditVideoDownloadUrlProvider.applyWithException(redditPostUrl).describeConstable();
         }
 
-        if (data.has("media")) {
-            var media = data.get("media");
-            if (media.has("reddit_video")) {
-                return media.get("reddit_video").get("fallback_url").textValue();
-            }
-        }
-
-        if (data.has("preview")) {
-            var preview = data.get("preview");
-            if (preview.has("reddit_video_preview")) {
-                return preview.get("reddit_video_preview").get("fallback_url").textValue();
-            }
-        }
-
-        return null;
+        return Optional
+                .ofNullable(jsonPost.at("/media/reddit_video/fallback_url").textValue())
+                .or(() -> Optional.ofNullable(jsonPost.at("/preview/reddit_video_preview/fallback_url").textValue()));
     }
 }
