@@ -18,39 +18,31 @@ public class PhotoPostMapper implements PostMapper {
 
     @Override
     public Optional<Post> applyWithException(JsonNode jsonPost) {
-        var photoUrl = extractPhotoUrl(jsonPost);
-        if (photoUrl != null) {
-            var text = jsonPost.get("title").textValue();
-            var post = new PhotoPost();
-            post.setText(text);
-            post.setMediaUrl(photoUrl);
-            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
-            return Optional.of(post);
-        }
-        return Optional.empty();
+        return extractPhotoUrl(jsonPost)
+                .map(photoUrl -> {
+                    var text = jsonPost.get("title").textValue();
+                    var post = new PhotoPost();
+                    post.setText(text);
+                    post.setMediaUrl(photoUrl);
+                    post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
+                    return post;
+                });
     }
 
-    private String extractPhotoUrl(JsonNode post) {
-        if (post.has("url_overridden_by_dest")) {
-            var urlOverriddenByDest = post.get("url_overridden_by_dest").textValue();
-
+    private Optional<String> extractPhotoUrl(JsonNode post) {
+        var urlOverriddenByDestNode = post.path("url_overridden_by_dest");
+        if (!urlOverriddenByDestNode.isMissingNode()) {
+            var urlOverriddenByDest = urlOverriddenByDestNode.textValue();
             if (urlOverriddenByDest.endsWith(".jpg1")) {
-                return urlOverriddenByDest.substring(0, urlOverriddenByDest.length() - 1);
+                return urlOverriddenByDest.substring(0, urlOverriddenByDest.length() - 1).describeConstable();
             }
 
             if (photoExtensions.stream().anyMatch(urlOverriddenByDest::endsWith)) {
-                var photoUrl = post
-                        .get("preview")
-                        .get("images")
-                        .get(0)
-                        .get("source")
-                        .get("url")
-                        .textValue();
-
-                return photoUrl.contains("auto=webp") ? urlOverriddenByDest : photoUrl;
+                var photoUrl = post.at("/preview/images/0/source/url").asText();
+                return (photoUrl.contains("auto=webp") ? urlOverriddenByDest : photoUrl).describeConstable();
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 }
