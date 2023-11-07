@@ -22,7 +22,7 @@ class RedditGifPostTest extends AbstractRedditPostTest {
 
     @Test
     void postApproved() {
-        assertDoesNotThrow(() -> stateManager.removeBlockedAuthor(gifPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.removeBlockedAuthor(gifPost().getAuthor()));
 
         var gifPost = gifPost();
         assertTrue(gifPost.isApproved());
@@ -31,7 +31,7 @@ class RedditGifPostTest extends AbstractRedditPostTest {
 
     @Test
     void postUnapproved() {
-        assertDoesNotThrow(() -> stateManager.addBlockedAuthor(gifPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.saveBlockedAuthor(gifPost().getAuthor()));
 
         var unapprovedGifPost = gifPost();
         assertFalse(unapprovedGifPost.isApproved());

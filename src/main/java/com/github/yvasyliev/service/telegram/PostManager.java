@@ -6,8 +6,8 @@ import com.github.yvasyliev.bots.telegram.RedTelBot;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.model.events.NewChannelPostEvent;
+import com.github.yvasyliev.service.data.RedditTelegramForwarderPropertyService;
 import com.github.yvasyliev.service.reddit.SubredditPostSupplier;
-import com.github.yvasyliev.service.state.StateManager;
 import com.github.yvasyliev.service.telegram.posts.PhotoGroupPostService;
 import com.github.yvasyliev.service.telegram.posts.PostService;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,7 +51,7 @@ public class PostManager {
     private Map<Integer, Post> postCandidates;
 
     @Autowired
-    private StateManager stateManager;
+    private RedditTelegramForwarderPropertyService propertyService;
 
     @Autowired
     private PhotoGroupPostService photoGroupPostService;
@@ -86,11 +85,7 @@ public class PostManager {
             } catch (Exception e) {
                 LOGGER.error("Failed to send post: {}", post, e);
             }
-            try {
-                stateManager.setLastCreated(post.getCreated());
-            } catch (IOException e) {
-                LOGGER.error("Failed to save last_created: {}", post.getCreated(), e);
-            }
+            propertyService.saveLastCreated(post.getCreated());
         }
     }
 

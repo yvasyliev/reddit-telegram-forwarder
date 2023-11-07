@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RedditTextPostTest extends AbstractRedditPostTest {
     @Test
     void postApproved() {
-        assertDoesNotThrow(() -> stateManager.removeBlockedAuthor(textPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.removeBlockedAuthor(textPost().getAuthor()));
         Post textPost = textPost();
         assertTrue(textPost.isApproved());
         assertDoesNotThrow(() -> postManager.publishPost(textPost, textPost.getType()));
@@ -22,7 +22,7 @@ class RedditTextPostTest extends AbstractRedditPostTest {
 
     @Test
     void postUnapproved() {
-        assertDoesNotThrow(() -> stateManager.addBlockedAuthor(textPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.saveBlockedAuthor(textPost().getAuthor()));
 
         Post unapprovedTextPost = textPost();
         assertFalse(unapprovedTextPost.isApproved());

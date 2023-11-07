@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.post.Post;
-import com.github.yvasyliev.service.state.StateManager;
+import com.github.yvasyliev.model.entities.BlockedAuthor;
+import com.github.yvasyliev.service.data.BlockedAuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingFunction;
 
@@ -23,7 +23,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
     private List<ThrowingFunction<JsonNode, Optional<Post>>> postMappers;
 
     @Autowired
-    private ApplicationContext context;
+    private BlockedAuthorService blockedAuthorService;
 
     @Override
     public Post deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
@@ -31,7 +31,11 @@ public class PostDeserializer extends JsonDeserializer<Post> {
         var author = jsonPost.get("author").textValue();
         var created = jsonPost.get("created").intValue();
         var postUrl = jsonPost.has("url_overridden_by_dest") ? jsonPost.get("url_overridden_by_dest").textValue() : jsonPost.get("url").textValue();
-        var blockedAuthors = context.getBean(StateManager.class).getBlockedAuthors();
+        var blockedAuthors = blockedAuthorService
+                .findAll()
+                .stream()
+                .map(BlockedAuthor::getUsername)
+                .toList();
 
         jsonPost = extractRootPost(jsonPost);
         for (var postMapper : postMappers) {

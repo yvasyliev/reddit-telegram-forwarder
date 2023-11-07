@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RedditPhotoGroupPostTest extends AbstractRedditPostTest {
     @AfterEach
     void waitABit() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(20);
+        TimeUnit.SECONDS.sleep(30);
     }
 
     @Test
     void postApproved() {
-        assertDoesNotThrow(() -> stateManager.removeBlockedAuthor(photoGroupPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.removeBlockedAuthor(photoGroupPost().getAuthor()));
         Post photoGroupPost = photoGroupPost();
         assertTrue(photoGroupPost.isApproved());
         assertDoesNotThrow(() -> postManager.publishPost(photoGroupPost, photoGroupPost.getType()));
@@ -30,7 +30,7 @@ class RedditPhotoGroupPostTest extends AbstractRedditPostTest {
 
     @Test
     void postUnapproved() {
-        assertDoesNotThrow(() -> stateManager.addBlockedAuthor(photoGroupPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.saveBlockedAuthor(photoGroupPost().getAuthor()));
 
         Post unapprovedPhotoGroupPost = photoGroupPost();
         assertFalse(unapprovedPhotoGroupPost.isApproved());

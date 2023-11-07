@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RedditVideoPostTest extends AbstractRedditPostTest {
     @Test
     void postApproved() {
-        assertDoesNotThrow(() -> stateManager.removeBlockedAuthor(videoPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.removeBlockedAuthor(videoPost().getAuthor()));
 
         var videoPost = videoPost();
         assertTrue(videoPost.isApproved());
@@ -23,7 +23,7 @@ class RedditVideoPostTest extends AbstractRedditPostTest {
 
     @Test
     void postUnapproved() {
-        assertDoesNotThrow(() -> stateManager.addBlockedAuthor(videoPost().getAuthor()));
+        assertDoesNotThrow(() -> blockedAuthorService.saveBlockedAuthor(videoPost().getAuthor()));
 
         var unapprovedVideoPost = videoPost();
         assertFalse(unapprovedVideoPost.isApproved());

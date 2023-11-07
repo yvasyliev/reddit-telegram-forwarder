@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.post.Post;
-import com.github.yvasyliev.service.state.StateManager;
+import com.github.yvasyliev.service.data.RedditTelegramForwarderPropertyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class SubredditPostSupplier implements ThrowingSupplier<List<Post>> {
     private int delayMinutes;
 
     @Autowired
-    private StateManager stateManager;
+    private RedditTelegramForwarderPropertyService propertyService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -45,7 +45,7 @@ public class SubredditPostSupplier implements ThrowingSupplier<List<Post>> {
                 .get("data")
                 .get("children")
                 .elements();
-        var lastCreated = stateManager.getLastCreated();
+        var lastCreated = propertyService.findLastCreated().orElse(0);
         return StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(children, Spliterator.ORDERED), false)
                 .map(child -> child.get("data"))

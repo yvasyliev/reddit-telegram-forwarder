@@ -2,7 +2,7 @@ package com.github.yvasyliev.tc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.post.Post;
-import com.github.yvasyliev.service.state.StateManager;
+import com.github.yvasyliev.service.data.BlockedAuthorService;
 import com.github.yvasyliev.service.telegram.PostManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ abstract class AbstractRedditPostTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    StateManager stateManager;
+    BlockedAuthorService blockedAuthorService;
 
     @Autowired
     PostManager postManager;
