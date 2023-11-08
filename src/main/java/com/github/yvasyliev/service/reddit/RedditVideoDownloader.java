@@ -7,6 +7,7 @@ import org.springframework.util.function.ThrowingFunction;
 
 import java.io.IOException;
 
+// TODO: 11/7/2023 remove Jsoup
 @Service
 public class RedditVideoDownloader implements ThrowingFunction<String, String> {
     @Override

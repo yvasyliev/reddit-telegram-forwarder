@@ -31,10 +31,13 @@ jobs:
       - name: Run test
         run: mvn test
         env:
+          spring.jpa.hibernate.ddl-auto: create-drop
           telegram.admin.id: ${{ secrets.telegram.admin.id }}
           telegram.bot.token: ${{ secrets.test.telegram.bot.token }}
           telegram.channel.id: ${{ secrets.test.telegram.channel.id }}
           telegram.chat.id: ${{ secrets.test.telegram.chat.id }}
+          telegram.schedule.posting.enabled: false
+
 
   release:
     runs-on: ubuntu-latest

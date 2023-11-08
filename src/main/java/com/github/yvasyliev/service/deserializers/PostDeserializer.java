@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.post.Post;
-import com.github.yvasyliev.model.entities.BlockedAuthor;
 import com.github.yvasyliev.service.data.BlockedAuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +29,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
         var jsonPost = jsonParser.readValueAs(JsonNode.class);
         var author = jsonPost.get("author").textValue();
         var created = jsonPost.get("created").intValue();
-        var postUrl = jsonPost.has("url_overridden_by_dest") ? jsonPost.get("url_overridden_by_dest").textValue() : jsonPost.get("url").textValue();
-        var blockedAuthors = blockedAuthorService
-                .findAll()
-                .stream()
-                .map(BlockedAuthor::getUsername)
-                .toList();
+        var postUrl = jsonPost.has("url_overridden_by_dest") ? jsonPost.get("url_overridden_by_dest").textValue() : jsonPost.get("url").textValue(); // TODO: 11/8/2023 simplify
 
         jsonPost = extractRootPost(jsonPost);
         for (var postMapper : postMappers) {
@@ -43,7 +37,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
                 var optionalPost = postMapper.applyWithException(jsonPost).map(post -> {
                     post.setAuthor(author);
                     post.setCreated(created);
-                    post.setApproved(!blockedAuthors.contains(author));
+                    post.setApproved(!blockedAuthorService.isBlocked(author));
                     post.setPostUrl(postUrl);
                     return post;
                 });

@@ -13,28 +13,25 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.io.File;
 import java.net.http.HttpClient;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @SpringBootApplication
+@EnableScheduling
 public class Application extends TelegramBotStarterConfiguration {
-    private static ConfigurableApplicationContext context;
+    private static ApplicationContext context;
 
     public static void main(String[] args) {
         context = new SpringApplicationBuilder(Application.class)
@@ -43,8 +40,10 @@ public class Application extends TelegramBotStarterConfiguration {
                 .run(args);
     }
 
-    public static ConfigurableApplicationContext getContext() {
-        return context;
+    public static void withContext(Consumer<ApplicationContext> contextConsumer) {
+        if (context != null) {
+            contextConsumer.accept(context);
+        }
     }
 
     @Bean("/help")
@@ -72,11 +71,6 @@ public class Application extends TelegramBotStarterConfiguration {
     }
 
     @Bean
-    public ScheduledExecutorService scheduledExecutorService() {
-        return Executors.newSingleThreadScheduledExecutor();
-    }
-
-    @Bean
     public String userAgent(@Value("${REDDIT_USERNAME}") String redditUsername) {
         return "java:reddit-telegram-repeater:2.0.0  (by /u/%s)".formatted(redditUsername);
     }
@@ -84,11 +78,6 @@ public class Application extends TelegramBotStarterConfiguration {
     @Bean
     public HttpClient httpClient() {
         return HttpClient.newHttpClient();
-    }
-
-    @Bean
-    public File stateSrc() {
-        return new File("state.json");
     }
 
     @Bean
@@ -126,13 +115,4 @@ public class Application extends TelegramBotStarterConfiguration {
         return synchronizedFixedSizeMap(maxSize);
     }
 
-    @Bean
-    public Executor delayedExecutor() {
-        return CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, singleThreadExecutor());
-    }
-
-    @Bean
-    public Executor singleThreadExecutor() {
-        return Executors.newSingleThreadExecutor();
-    }
 }

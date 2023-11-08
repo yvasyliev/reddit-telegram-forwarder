@@ -7,7 +7,6 @@ import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.model.events.NewChannelPostEvent;
 import com.github.yvasyliev.service.data.RedditTelegramForwarderPropertyService;
-import com.github.yvasyliev.service.reddit.SubredditPostSupplier;
 import com.github.yvasyliev.service.telegram.posts.PhotoGroupPostService;
 import com.github.yvasyliev.service.telegram.posts.PostService;
 import org.slf4j.Logger;
@@ -24,19 +23,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class PostManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostManager.class);
-
-    @Autowired
-    private ScheduledExecutorService executorService;
-
-    @Autowired
-    private SubredditPostSupplier subredditPostSupplier;
 
     @Autowired
     private RedTelBot redTelBot;
@@ -56,22 +47,6 @@ public class PostManager {
     @Autowired
     private PhotoGroupPostService photoGroupPostService;
 
-    private final AtomicBoolean publishing = new AtomicBoolean(true);
-
-    public void schedulePosting() {
-        executorService.scheduleWithFixedDelay(() -> {
-            if (publishing.get()) {
-                try {
-                    var newPosts = subredditPostSupplier.getWithException();
-                    publishPosts(newPosts);
-                } catch (Exception e) {
-                    LOGGER.error("Failed to find new posts.", e);
-                }
-            }
-        }, 0, 1, TimeUnit.MINUTES);
-        LOGGER.info("Started posting.");
-    }
-
     public void publishPosts(List<Post> posts) {
         posts.forEach(this::publishPost);
     }
@@ -80,8 +55,6 @@ public class PostManager {
         if (context.containsBean(post.getType())) {
             try {
                 publishPost(post, post.getType());
-            } catch (TelegramApiException | JsonProcessingException e) {
-                LOGGER.error("Failed to ask approve.", e);
             } catch (Exception e) {
                 LOGGER.error("Failed to send post: {}", post, e);
             }
@@ -94,29 +67,22 @@ public class PostManager {
         var chatId = post.isApproved() ? redTelBot.getChannelId() : redTelBot.getAdminId();
         var sentMessage = postService.applyWithException(chatId, post);
         if (sentMessage.isPresent() && !post.isApproved()) {
-            askApprove(chatId, post.getCreated());
-            postCandidates.put(post.getCreated(), post);
+            try {
+                askApprove(chatId, post.getCreated());
+                postCandidates.put(post.getCreated(), post);
+            } catch (TelegramApiException | JsonProcessingException e) {
+                LOGGER.error("Failed to ask approve.", e);
+            }
         }
     }
 
-    public void pausePublishing() {
-        publishing.set(false);
-    }
-
-    public void resumePublishing() {
-        publishing.set(true);
-    }
-
-    public void stopPublishing() {
-        executorService.shutdown();
-    }
-
+    // TODO: 11/8/2023 Move to PhotoGroupPostService
     @EventListener
     public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
         var channelPost = newChannelPostEvent.getChannelPost();
         try {
             photoGroupPostService.sendExtraPhotos(channelPost.messageId(), channelPost.forwardFromMessageId());
-        } catch (TelegramApiException e) {
+        } catch (ExecutionException | InterruptedException e) {
             LOGGER.error("Failed to send extra photos.", e);
         }
     }

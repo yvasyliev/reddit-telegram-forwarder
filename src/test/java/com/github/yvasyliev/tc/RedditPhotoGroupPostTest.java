@@ -2,10 +2,7 @@ package com.github.yvasyliev.tc;
 
 import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,11 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RedditPhotoGroupPostTest extends AbstractRedditPostTest {
-    @AfterEach
-    void waitABit() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(30);
-    }
-
     @Test
     void postApproved() {
         assertDoesNotThrow(() -> blockedAuthorService.removeBlockedAuthor(photoGroupPost().getAuthor()));

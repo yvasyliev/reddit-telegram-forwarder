@@ -19,9 +19,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.Optional;
 
 @Plugin(name = "TelegramBotAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TelegramBotAppender extends AbstractAppender {
+    private static final String MESSAGE_TEMPLATE = """
+            %s
+            %s""";
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
@@ -34,32 +38,33 @@ public class TelegramBotAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        var formattedMessage = event.getMessage().getFormattedMessage();
-
-        var stackTrace = getStackTrace(event.getThrown());
-        if (stackTrace != null) {
-            formattedMessage = """
-                    %s
-                    %s""".formatted(formattedMessage, stackTrace);
-        }
-
-        try {
-            Application.getContext().getBean(TelegramNotifier.class).applyWithException(formattedMessage);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
+        Application.withContext(applicationContext -> {
+            try {
+                applicationContext
+                        .getBean(TelegramNotifier.class)
+                        .applyWithException(buildMessage(event));
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        });
     }
 
-    private String getStackTrace(Throwable throwable) {
-        if (throwable == null) {
-            return null;
-        }
+    private String buildMessage(LogEvent event) {
+        var formattedMessage = event.getMessage().getFormattedMessage();
+        return getStackTrace(event.getThrown())
+                .map(stackTrace -> MESSAGE_TEMPLATE.formatted(formattedMessage, stackTrace))
+                .orElse(formattedMessage);
+    }
 
-        try (var stringWriter = new StringWriter(); var printWriter = new PrintWriter(stringWriter)) {
-            throwable.printStackTrace(printWriter);
-            return stringWriter.toString();
-        } catch (IOException e) {
-            return "Failed to read stack trace: " + e;
-        }
+    private Optional<String> getStackTrace(Throwable throwable) {
+        return Optional.ofNullable(throwable).map(t -> {
+            try (var stringWriter = new StringWriter(); var printWriter = new PrintWriter(stringWriter)) {
+                t.printStackTrace(printWriter);
+                return stringWriter.toString();
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
+                return null;
+            }
+        });
     }
 }

@@ -6,15 +6,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class BlockedAuthorService {
     @Autowired
     private BlockedAuthorRepository blockedAuthorRepository;
 
-    public List<BlockedAuthor> findAll() {
-        return blockedAuthorRepository.findAll();
+    public boolean isBlocked(String username) {
+        return blockedAuthorRepository.existsById(username);
     }
 
     @Transactional

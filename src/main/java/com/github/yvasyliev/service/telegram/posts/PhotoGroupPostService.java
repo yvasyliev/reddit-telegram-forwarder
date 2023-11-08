@@ -23,10 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.function.Function;
 
 @Service(Post.Type.PHOTO_GROUP)
 public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Message>> {
@@ -34,16 +32,16 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     private BotResponseReader responseReader;
 
     @Autowired
-    private Executor delayedExecutor;
+    private Map<Integer, PhotoGroupPost> extraPhotos;
 
     @Autowired
-    private Map<Integer, PhotoGroupPost> extraPhotos;
+    private Function<String, String> markdownV2Escaper;
 
     @Override
     @NonNull
-    public Optional<List<Message>> applyWithException(@NonNull String chatId, PhotoGroupPost post) throws TelegramApiException, URISyntaxException, IOException {
+    public Optional<List<Message>> applyWithException(@NonNull String chatId, PhotoGroupPost post) throws TelegramApiException, URISyntaxException, IOException, ExecutionException, InterruptedException {
         var pages = post.getPhotoUrlsPages();
-        var text = post.getText();
+        var text = markdownV2Escaper.apply(post.getText());
         var hasSpoiler = post.isHasSpoiler();
 
         var pagesAmount = pages.size();
@@ -54,7 +52,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         var sendMediaGroup = sendMediaGroup(chatId, pages.element(), hasSpoiler, null);
         sendMediaGroup.getMedias().get(0).setCaption(caption);
 
-        var publishedPost = redTelBot.execute(sendMediaGroup);
+        var publishedPost = redTelBot.executeDelayed(sendMediaGroup).get();
         var messages = new ArrayList<>(publishedPost);
         var messageId = publishedPost.get(0).getMessageId();
 
@@ -67,22 +65,22 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         return Optional.of(messages);
     }
 
-    public List<Message> sendExtraPhotos(int replyToMessageId, int forwardMessageId) throws TelegramApiException {
+    public List<Message> sendExtraPhotos(int replyToMessageId, int forwardMessageId) throws ExecutionException, InterruptedException {
         var post = extraPhotos.remove(forwardMessageId);
         return post != null
                 ? sendDelayed(redTelBot.getGroupId(), replyToMessageId, post)
                 : List.of();
     }
 
-    private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws TelegramApiException {
+    private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws ExecutionException, InterruptedException {
         var pages = new ArrayDeque<>(post.getPhotoUrlsPages());
         var hasSpoiler = post.isHasSpoiler();
         var messages = new ArrayList<Message>();
         pages.removeFirst();
         for (var page : pages) {
             messages.addAll(page.size() > 1
-                    ? executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId))
-                    : List.of(executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)))
+                    ? redTelBot.executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId)).get()
+                    : List.of(redTelBot.executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)).get())
             );
         }
         return messages;
@@ -114,41 +112,5 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 .hasSpoiler(hasSpoiler)
                 .replyToMessageId(replyToMessageId)
                 .build();
-    }
-
-    private List<Message> executeDelayed(SendMediaGroup sendMediaGroup) throws TelegramApiException {
-        try {
-            return CompletableFuture
-                    .supplyAsync(() -> {
-                                try {
-                                    return redTelBot.execute(sendMediaGroup);
-                                } catch (TelegramApiException e) {
-                                    throw new CompletionException(e);
-                                }
-                            },
-                            delayedExecutor
-                    )
-                    .get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new TelegramApiException(e);
-        }
-    }
-
-    public Message executeDelayed(SendPhoto sendPhoto) throws TelegramApiException {
-        try {
-            return CompletableFuture
-                    .supplyAsync(() -> {
-                                try {
-                                    return redTelBot.execute(sendPhoto);
-                                } catch (TelegramApiException e) {
-                                    throw new CompletionException(e);
-                                }
-                            },
-                            delayedExecutor
-                    )
-                    .get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new TelegramApiException(e);
-        }
     }
 }

@@ -6,6 +6,7 @@ import com.github.yvasyliev.model.dto.CallbackData;
 import com.github.yvasyliev.model.dto.ChannelPost;
 import com.github.yvasyliev.model.dto.ExternalMessageData;
 import com.github.yvasyliev.model.events.NewChannelPostEvent;
+import com.github.yvasyliev.service.async.DelayedBlockingExecutor;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import jakarta.annotation.PreDestroy;
@@ -17,6 +18,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -25,8 +28,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.starter.AfterBotRegistration;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class RedTelBot extends AbstractRedTelBot {
@@ -48,6 +53,9 @@ public class RedTelBot extends AbstractRedTelBot {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private DelayedBlockingExecutor delayedBlockingExecutor;
 
     public RedTelBot(@Value("${telegram.bot.token}") String botToken) {
         super(botToken);
@@ -138,6 +146,14 @@ public class RedTelBot extends AbstractRedTelBot {
 
     public boolean isAdmin(User user) {
         return user.getId().toString().equals(getAdminId());
+    }
+
+    public CompletableFuture<List<Message>> executeDelayed(SendMediaGroup sendMediaGroup) {
+        return delayedBlockingExecutor.submit(() -> execute(sendMediaGroup));
+    }
+
+    public CompletableFuture<Message> executeDelayed(SendPhoto sendPhoto) {
+        return delayedBlockingExecutor.submit(() -> execute(sendPhoto));
     }
 
     private Optional<String> getCommand(Message message) {
