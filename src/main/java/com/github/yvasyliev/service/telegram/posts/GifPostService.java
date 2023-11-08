@@ -25,7 +25,7 @@ public class GifPostService extends PostService<GifPost, Message> {
                     .hasSpoiler(post.isHasSpoiler())
                     .build();
 
-            return redTelBot.execute(sendAnimation);
+            return redditTelegramForwarderBot.execute(sendAnimation);
         }, post));
     }
 

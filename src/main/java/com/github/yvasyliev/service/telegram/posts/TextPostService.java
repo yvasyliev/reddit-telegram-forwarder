@@ -14,6 +14,6 @@ import java.util.Optional;
 public class TextPostService extends PostService<TextPost, Message> {
     @Override
     public Optional<Message> applyWithException(String chatId, TextPost post) throws TelegramApiException {
-        return Optional.ofNullable(redTelBot.execute(new SendMessage(chatId, post.getText())));
+        return Optional.ofNullable(redditTelegramForwarderBot.execute(new SendMessage(chatId, post.getText())));
     }
 }

@@ -19,7 +19,7 @@ public class ResumePublishing extends AdminCommand {
     @Override
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         postManager.resumePosting();
-        redTelBot.execute(new SendMessage(
+        redditTelegramForwarderBot.execute(new SendMessage(
                 message.getChatId().toString(),
                 responseReader.applyWithException("responses/resumepublishing.md")
         ));

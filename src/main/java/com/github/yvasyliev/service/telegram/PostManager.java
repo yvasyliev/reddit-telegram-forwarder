@@ -2,7 +2,7 @@ package com.github.yvasyliev.service.telegram;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.yvasyliev.bots.telegram.RedTelBot;
+import com.github.yvasyliev.bots.telegram.RedditTelegramForwarderBot;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.model.events.NewChannelPostEvent;
@@ -30,7 +30,7 @@ public class PostManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostManager.class);
 
     @Autowired
-    private RedTelBot redTelBot;
+    private RedditTelegramForwarderBot redditTelegramForwarderBot;
 
     @Autowired
     private ApplicationContext context;
@@ -64,7 +64,7 @@ public class PostManager {
 
     public <T extends Post> void publishPost(T post, String postServiceName) throws Exception {
         @SuppressWarnings("unchecked") var postService = (PostService<T, ?>) context.getBean(postServiceName);
-        var chatId = post.isApproved() ? redTelBot.getChannelId() : redTelBot.getAdminId();
+        var chatId = post.isApproved() ? redditTelegramForwarderBot.getChannelId() : redditTelegramForwarderBot.getAdminId();
         var sentMessage = postService.applyWithException(chatId, post);
         if (sentMessage.isPresent() && !post.isApproved()) {
             try {
@@ -122,6 +122,6 @@ public class PostManager {
                         denyButton
                 ))))
                 .build();
-        return redTelBot.execute(sendMessage);
+        return redditTelegramForwarderBot.execute(sendMessage);
     }
 }

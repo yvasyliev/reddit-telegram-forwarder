@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class ContactAdmin extends Command {
     @Override
     public void execute(Message message) throws Exception {
-        redTelBot.addUserCommand(message.getFrom().getId(), "/textadmin");
+        redditTelegramForwarderBot.addUserCommand(message.getFrom().getId(), "/textadmin");
         reply(message, "responses/contactadmin.md");
     }
 }

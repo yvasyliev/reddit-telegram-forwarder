@@ -26,7 +26,7 @@ public class PhotoPostService extends PostService<PhotoPost, Message> {
                     .caption(post.getText())
                     .hasSpoiler(post.isHasSpoiler())
                     .build();
-            return Optional.ofNullable(redTelBot.execute(sendPhoto));
+            return Optional.ofNullable(redditTelegramForwarderBot.execute(sendPhoto));
         } catch (TelegramApiRequestException e) {
             return Optional.ofNullable(retrySendPhoto(chatId, post, e));
         }
@@ -44,7 +44,7 @@ public class PhotoPostService extends PostService<PhotoPost, Message> {
                                 .caption(post.getText())
                                 .hasSpoiler(post.isHasSpoiler())
                                 .build();
-                        return redTelBot.execute(sendPhoto);
+                        return redditTelegramForwarderBot.execute(sendPhoto);
                     },
                     post
             );
@@ -58,7 +58,7 @@ public class PhotoPostService extends PostService<PhotoPost, Message> {
                                 .document(new InputFile(inputStream, filename))
                                 .caption(post.getText())
                                 .build();
-                        return redTelBot.execute(sendPhoto);
+                        return redditTelegramForwarderBot.execute(sendPhoto);
                     },
                     post
             );

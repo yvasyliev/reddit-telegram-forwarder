@@ -23,7 +23,7 @@ public class VideoPostService extends PostService<VideoPost, Message> {
                     .supportsStreaming(true)
                     .build();
 
-            return redTelBot.execute(sendVideo);
+            return redditTelegramForwarderBot.execute(sendVideo);
         }, post));
     }
 }

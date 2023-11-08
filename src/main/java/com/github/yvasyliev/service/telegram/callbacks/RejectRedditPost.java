@@ -21,7 +21,7 @@ public class RejectRedditPost extends Callback {
         var messageId = message.getMessageId();
         var data = objectMapper.readValue(callbackQuery.getData(), RedditPostDecisionData.class);
         postManager.rejectPostCandidate(data.created());
-        redTelBot.execute(new EditMessageReplyMarkup(
+        redditTelegramForwarderBot.execute(new EditMessageReplyMarkup(
                 chatId.toString(),
                 messageId,
                 callbackQuery.getInlineMessageId(),
@@ -33,6 +33,6 @@ public class RejectRedditPost extends Callback {
                 .text(format("responses/rejectpost.md", message.getText()))
                 .parseMode(ParseMode.MARKDOWNV2)
                 .build();
-        redTelBot.execute(editMessageText);
+        redditTelegramForwarderBot.execute(editMessageText);
     }
 }

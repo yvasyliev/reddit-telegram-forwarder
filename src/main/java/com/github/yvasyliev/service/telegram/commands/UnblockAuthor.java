@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 public class UnblockAuthor extends AdminCommand {
     @Override
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
-        redTelBot.addUserCommand(message.getFrom().getId(), "/removeblockedauthor");
+        redditTelegramForwarderBot.addUserCommand(message.getFrom().getId(), "/removeblockedauthor");
         reply(message, "responses/unblockauthor.md");
     }
 }

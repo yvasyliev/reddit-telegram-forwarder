@@ -17,6 +17,6 @@ public class Stop extends AdminCommand {
     @Override
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         context.close();
-        reply(message, "responses/stop.md", redTelBot.getBotUsername());
+        reply(message, "responses/stop.md", redditTelegramForwarderBot.getBotUsername());
     }
 }

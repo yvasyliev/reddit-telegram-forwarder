@@ -19,6 +19,6 @@ public class PollPostService extends PostService<PollPost, Message> {
                 .options(post.getOptions())
                 .build();
 
-        return Optional.ofNullable(redTelBot.execute(sendPoll));
+        return Optional.ofNullable(redditTelegramForwarderBot.execute(sendPoll));
     }
 }

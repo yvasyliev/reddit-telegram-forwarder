@@ -1,7 +1,7 @@
 package com.github.yvasyliev.service.telegram.callbacks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.yvasyliev.bots.telegram.RedTelBot;
+import com.github.yvasyliev.bots.telegram.RedditTelegramForwarderBot;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.function.ThrowingConsumer;
@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 
 public abstract class Callback implements ThrowingConsumer<CallbackQuery> {
     @Autowired
-    protected RedTelBot redTelBot;
+    protected RedditTelegramForwarderBot redditTelegramForwarderBot;
 
     @Autowired
     protected BotResponseReader responseReader;

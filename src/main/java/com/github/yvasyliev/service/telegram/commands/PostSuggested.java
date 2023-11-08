@@ -26,8 +26,8 @@ public class PostSuggested extends Command {
         var sourceChatId = message.getChatId().toString();
         var sourceMessageId = message.getMessageId();
 
-        redTelBot.execute(new ForwardMessage(
-                redTelBot.getAdminId(),
+        redditTelegramForwarderBot.execute(new ForwardMessage(
+                redditTelegramForwarderBot.getAdminId(),
                 sourceChatId,
                 sourceMessageId
         ));
@@ -56,7 +56,7 @@ public class PostSuggested extends Command {
                 .build();
 
         var sendMessage = SendMessage.builder()
-                .chatId(redTelBot.getAdminId())
+                .chatId(redditTelegramForwarderBot.getAdminId())
                 .text(responseReader.applyWithException("responses/postsuggested/suggest_post.md"))
                 .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(
                         approveButton,
@@ -64,7 +64,7 @@ public class PostSuggested extends Command {
                         replyButton
                 ))))
                 .build();
-        redTelBot.execute(sendMessage);
+        redditTelegramForwarderBot.execute(sendMessage);
 
         reply(message, "responses/postsuggested/post_suggested.md");
     }

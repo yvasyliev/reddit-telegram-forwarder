@@ -25,7 +25,7 @@ public class ApproveRedditPost extends Callback {
         var messageId = message.getMessageId();
         var data = objectMapper.readValue(callbackQuery.getData(), RedditPostDecisionData.class);
         postManager.publishPostCandidate(data.created());
-        redTelBot.execute(new EditMessageReplyMarkup(
+        redditTelegramForwarderBot.execute(new EditMessageReplyMarkup(
                 chatId.toString(),
                 messageId,
                 callbackQuery.getInlineMessageId(),
@@ -37,6 +37,6 @@ public class ApproveRedditPost extends Callback {
                 .text(format("responses/approvepost.md", message.getText()))
                 .parseMode(ParseMode.MARKDOWNV2)
                 .build();
-        redTelBot.execute(editMessageText);
+        redditTelegramForwarderBot.execute(editMessageText);
     }
 }

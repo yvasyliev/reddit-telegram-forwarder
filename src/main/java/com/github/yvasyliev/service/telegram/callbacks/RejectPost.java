@@ -13,7 +13,7 @@ public class RejectPost extends Callback {
         var message = callbackQuery.getMessage();
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
-        redTelBot.execute(new EditMessageReplyMarkup(
+        redditTelegramForwarderBot.execute(new EditMessageReplyMarkup(
                 chatId.toString(),
                 messageId,
                 callbackQuery.getInlineMessageId(),
@@ -25,6 +25,6 @@ public class RejectPost extends Callback {
                 .text(format("responses/rejectpost.md", message.getText()))
                 .parseMode(ParseMode.MARKDOWNV2)
                 .build();
-        redTelBot.execute(editMessageText);
+        redditTelegramForwarderBot.execute(editMessageText);
     }
 }

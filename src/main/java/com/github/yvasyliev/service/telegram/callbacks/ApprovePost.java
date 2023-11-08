@@ -20,12 +20,12 @@ public class ApprovePost extends Callback {
         var chatId = message.getChatId();
         var messageId = message.getMessageId();
         var messageData = objectMapper.readValue(callbackQuery.getData(), ExternalMessageData.class);
-        redTelBot.execute(new ForwardMessage(
-                redTelBot.getChannelId(),
+        redditTelegramForwarderBot.execute(new ForwardMessage(
+                redditTelegramForwarderBot.getChannelId(),
                 messageData.fromChatId(),
                 messageData.messageId()
         ));
-        redTelBot.execute(new EditMessageReplyMarkup(
+        redditTelegramForwarderBot.execute(new EditMessageReplyMarkup(
                 chatId.toString(),
                 messageId,
                 callbackQuery.getInlineMessageId(),
@@ -37,6 +37,6 @@ public class ApprovePost extends Callback {
                 .text(format("responses/approvepost.md", message.getText()))
                 .parseMode(ParseMode.MARKDOWNV2)
                 .build();
-        redTelBot.execute(editMessageText);
+        redditTelegramForwarderBot.execute(editMessageText);
     }
 }

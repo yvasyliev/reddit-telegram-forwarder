@@ -1,6 +1,6 @@
 package com.github.yvasyliev.service.telegram.commands;
 
-import com.github.yvasyliev.bots.telegram.RedTelBot;
+import com.github.yvasyliev.bots.telegram.RedditTelegramForwarderBot;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.function.ThrowingConsumer;
@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 
 public abstract class Command implements ThrowingConsumer<Message> {
     @Autowired
-    protected RedTelBot redTelBot;
+    protected RedditTelegramForwarderBot redditTelegramForwarderBot;
 
     @Autowired
     protected BotResponseReader responseReader;
@@ -39,6 +39,6 @@ public abstract class Command implements ThrowingConsumer<Message> {
                 .disableWebPagePreview(true)
                 .parseMode(ParseMode.MARKDOWNV2)
                 .build();
-        return redTelBot.execute(sendMessage);
+        return redditTelegramForwarderBot.execute(sendMessage);
     }
 }

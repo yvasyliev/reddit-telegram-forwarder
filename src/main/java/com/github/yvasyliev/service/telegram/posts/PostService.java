@@ -1,6 +1,6 @@
 package com.github.yvasyliev.service.telegram.posts;
 
-import com.github.yvasyliev.bots.telegram.RedTelBot;
+import com.github.yvasyliev.bots.telegram.RedditTelegramForwarderBot;
 import com.github.yvasyliev.model.dto.post.MediaPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import org.apache.http.client.utils.URIBuilder;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public abstract class PostService<U extends Post, R> implements ThrowingBiFunction<String, U, Optional<R>> {
     @Autowired
-    protected RedTelBot redTelBot;
+    protected RedditTelegramForwarderBot redditTelegramForwarderBot;
 
     protected Message sendWithInputStream(ThrowingBiFunction<InputStream, String, Message> telegramApiCall, MediaPost post) throws TelegramApiException {
         var mediaUrl = post.getMediaUrl();

@@ -19,7 +19,7 @@ public class PausePublishing extends AdminCommand {
     @Override
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         postManager.pausePosting();
-        redTelBot.execute(new SendMessage(
+        redditTelegramForwarderBot.execute(new SendMessage(
                 message.getChatId().toString(),
                 responseReader.applyWithException("responses/pausepublishing.md")
         ));

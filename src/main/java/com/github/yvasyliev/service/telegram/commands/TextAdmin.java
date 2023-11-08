@@ -22,15 +22,15 @@ public class TextAdmin extends Command {
 
     @Override
     public void execute(Message message) throws TelegramApiException, IOException, URISyntaxException {
-        redTelBot.removeUserCommand(message.getFrom().getId());
+        redditTelegramForwarderBot.removeUserCommand(message.getFrom().getId());
         var sourceChatId = message.getChatId();
         var sourceMessageId = message.getMessageId();
         var forwardMessage = ForwardMessage.builder()
-                .chatId(redTelBot.getAdminId())
+                .chatId(redditTelegramForwarderBot.getAdminId())
                 .fromChatId(sourceChatId)
                 .messageId(sourceMessageId)
                 .build();
-        redTelBot.execute(forwardMessage);
+        redditTelegramForwarderBot.execute(forwardMessage);
         var replyButton = InlineKeyboardButton.builder()
                 .text("🔙 Reply")
                 .callbackData(objectMapper.writeValueAsString(new ExternalMessageData(
@@ -40,11 +40,11 @@ public class TextAdmin extends Command {
                 )))
                 .build();
         var sendMessage = SendMessage.builder()
-                .chatId(redTelBot.getAdminId())
+                .chatId(redditTelegramForwarderBot.getAdminId())
                 .text(responseReader.applyWithException("responses/textadmin/message_to_admin.md"))
                 .replyMarkup(new InlineKeyboardMarkup(List.of(List.of(replyButton))))
                 .build();
-        redTelBot.execute(sendMessage);
+        redditTelegramForwarderBot.execute(sendMessage);
         reply(message, "responses/textadmin/message_sent.md");
     }
 }

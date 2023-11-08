@@ -20,15 +20,15 @@ public class ReplySent extends AdminCommand {
     public void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
         if (message.hasText()) {
             var userId = message.getFrom().getId();
-            redTelBot.removeUserCommand(userId);
-            var awaitingReply = redTelBot.getAwaitingReply(userId);
+            redditTelegramForwarderBot.removeUserCommand(userId);
+            var awaitingReply = redditTelegramForwarderBot.getAwaitingReply(userId);
             var replyMessage = SendMessage.builder()
                     .chatId(awaitingReply.fromChatId())
                     .replyToMessageId(awaitingReply.messageId())
                     .text(responseReader.applyWithException("responses/replysent/reply_template.md").formatted(markdownV2Escaper.apply(message.getText())))
                     .parseMode(ParseMode.MARKDOWNV2)
                     .build();
-            redTelBot.execute(replyMessage);
+            redditTelegramForwarderBot.execute(replyMessage);
             reply(message, "responses/replysent/reply_sent.md");
         } else {
             reply(message, "responses/replysent/empty_reply.md");

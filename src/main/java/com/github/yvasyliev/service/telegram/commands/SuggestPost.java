@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 public class SuggestPost extends Command {
     @Override
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
-        redTelBot.addUserCommand(message.getFrom().getId(), "/postsuggested");
+        redditTelegramForwarderBot.addUserCommand(message.getFrom().getId(), "/postsuggested");
         reply(message, "responses/suggestpost.md");
     }
 }

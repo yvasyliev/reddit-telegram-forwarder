@@ -1,6 +1,5 @@
 package com.github.yvasyliev.service.telegram.commands;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,12 +15,12 @@ public class Start extends Command {
 
     @Override
     public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
-        if (redTelBot.isAdmin(message.getFrom())) {
+        if (redditTelegramForwarderBot.isAdmin(message.getFrom())) {
             reply(
                     message,
                     "responses/admin/start.md",
                     telegramChannelName,
-                    redTelBot.getMe().getFirstName()
+                    redditTelegramForwarderBot.getMe().getFirstName()
             );
         } else {
             reply(message, "responses/start.md", telegramChannelName);

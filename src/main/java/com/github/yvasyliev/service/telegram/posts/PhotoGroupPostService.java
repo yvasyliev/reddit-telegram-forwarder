@@ -52,7 +52,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         var sendMediaGroup = sendMediaGroup(chatId, pages.element(), hasSpoiler, null);
         sendMediaGroup.getMedias().get(0).setCaption(caption);
 
-        var publishedPost = redTelBot.executeDelayed(sendMediaGroup).get();
+        var publishedPost = redditTelegramForwarderBot.executeDelayed(sendMediaGroup).get();
         var messages = new ArrayList<>(publishedPost);
         var messageId = publishedPost.get(0).getMessageId();
 
@@ -68,7 +68,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     public List<Message> sendExtraPhotos(int replyToMessageId, int forwardMessageId) throws ExecutionException, InterruptedException {
         var post = extraPhotos.remove(forwardMessageId);
         return post != null
-                ? sendDelayed(redTelBot.getChatId(), replyToMessageId, post)
+                ? sendDelayed(redditTelegramForwarderBot.getChatId(), replyToMessageId, post)
                 : List.of();
     }
 
@@ -79,8 +79,8 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         pages.removeFirst();
         for (var page : pages) {
             messages.addAll(page.size() > 1
-                    ? redTelBot.executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId)).get()
-                    : List.of(redTelBot.executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)).get())
+                    ? redditTelegramForwarderBot.executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId)).get()
+                    : List.of(redditTelegramForwarderBot.executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)).get())
             );
         }
         return messages;

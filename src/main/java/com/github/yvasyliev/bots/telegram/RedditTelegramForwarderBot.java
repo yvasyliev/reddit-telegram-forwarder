@@ -33,8 +33,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-public class RedTelBot extends TelegramLongPollingBot {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedTelBot.class);
+public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedditTelegramForwarderBot.class);
 
     @Autowired
     private ApplicationContext context;
@@ -68,7 +68,7 @@ public class RedTelBot extends TelegramLongPollingBot {
     @Value("${telegram.bot.username}")
     private String botUsername;
 
-    public RedTelBot(@Value("${telegram.bot.token}") String botToken) {
+    public RedditTelegramForwarderBot(@Value("${telegram.bot.token}") String botToken) {
         super(botToken);
     }
 
