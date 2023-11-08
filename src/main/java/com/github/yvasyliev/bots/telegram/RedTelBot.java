@@ -162,22 +162,13 @@ public class RedTelBot extends TelegramLongPollingBot {
         return delayedBlockingExecutor.submit(() -> execute(sendPhoto));
     }
 
-    // TODO: 11/8/2023 message.isCommand 
     private Optional<String> getCommand(Message message) {
-        long userId = message.getFrom().getId();
-        if (message.hasText()) {
-            var text = message.getText().trim();
-            if (looksLikeCommand(text)) {
-                removeUserCommand(userId);
-                return Optional.of(text);
-            }
+        var userId = message.getFrom().getId();
+        if (message.isCommand()) {
+            return Optional.ofNullable(removeUserCommand(userId))
+                    .or(() -> Optional.of(message.getText().trim()));
         }
-
         return Optional.ofNullable(userCommands.get(userId));
-    }
-
-    private boolean looksLikeCommand(String text) {
-        return text.matches("/\\w+");
     }
 
     public String getChatId() {
