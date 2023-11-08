@@ -1,7 +1,6 @@
 package com.github.yvasyliev.service.factories;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,19 +14,19 @@ import java.util.stream.Collectors;
 
 @Component
 public class RedditAccessTokenRequestFactoryBean implements FactoryBean<HttpRequest> {
-    @Value("${REDDIT_CLIENT_ID}")
+    @Value("${reddit.client.id}")
     private String redditClientId;
 
-    @Value("${REDDIT_CLIENT_SECRET}")
+    @Value("${reddit.client.secret}")
     private String redditClientSecret;
 
-    @Value("${REDDIT_USERNAME}")
+    @Value("${reddit.username}")
     private String redditUsername;
 
-    @Value("${REDDIT_PASSWORD}")
+    @Value("${reddit.password}")
     private String redditPassword;
 
-    @Autowired
+    @Value("java:${project.artifactId}:${project.version} (by /u/${reddit.username})")
     private String userAgent;
 
     @Override
