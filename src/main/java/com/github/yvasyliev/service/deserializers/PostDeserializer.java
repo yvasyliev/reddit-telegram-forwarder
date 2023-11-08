@@ -29,7 +29,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
         var jsonPost = jsonParser.readValueAs(JsonNode.class);
         var author = jsonPost.get("author").textValue();
         var created = jsonPost.get("created").intValue();
-        var postUrl = jsonPost.has("url_overridden_by_dest") ? jsonPost.get("url_overridden_by_dest").textValue() : jsonPost.get("url").textValue(); // TODO: 11/8/2023 simplify
+        var postUrl = jsonPost.path("url_overridden_by_dest").asText(jsonPost.get("url").textValue());
 
         jsonPost = extractRootPost(jsonPost);
         for (var postMapper : postMappers) {
