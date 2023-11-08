@@ -17,4 +17,11 @@ public class PhotoGroupPost extends SpoilerablePost {
     public String getType() {
         return Type.PHOTO_GROUP;
     }
+
+    @Override
+    public String toString() {
+        return "PhotoGroupPost{" +
+                "photoUrlsPages=" + photoUrlsPages +
+                "} " + super.toString();
+    }
 }

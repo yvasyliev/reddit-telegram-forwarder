@@ -10,4 +10,11 @@ public abstract class MediaPost extends SpoilerablePost {
     public void setMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
     }
+
+    @Override
+    public String toString() {
+        return "MediaPost{" +
+                "mediaUrl='" + mediaUrl + '\'' +
+                "} " + super.toString();
+    }
 }

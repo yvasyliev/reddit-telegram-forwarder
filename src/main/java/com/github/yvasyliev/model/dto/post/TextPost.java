@@ -5,4 +5,9 @@ public class TextPost extends Post {
     public String getType() {
         return Type.TEXT;
     }
+
+    @Override
+    public String toString() {
+        return "TextPost{} " + super.toString();
+    }
 }

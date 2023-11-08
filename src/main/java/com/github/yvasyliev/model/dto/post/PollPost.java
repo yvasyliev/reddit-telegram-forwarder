@@ -17,4 +17,11 @@ public class PollPost extends Post {
     public String getType() {
         return Type.POLL;
     }
+
+    @Override
+    public String toString() {
+        return "PollPost{" +
+                "options=" + options +
+                "} " + super.toString();
+    }
 }

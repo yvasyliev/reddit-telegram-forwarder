@@ -5,4 +5,9 @@ public class VideoPost extends MediaPost {
     public String getType() {
         return Type.VIDEO;
     }
+
+    @Override
+    public String toString() {
+        return "VideoPost{} " + super.toString();
+    }
 }

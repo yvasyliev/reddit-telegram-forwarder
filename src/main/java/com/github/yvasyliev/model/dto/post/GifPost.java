@@ -5,4 +5,9 @@ public class GifPost extends MediaPost {
     public String getType() {
         return Type.GIF;
     }
+
+    @Override
+    public String toString() {
+        return "GifPost{} " + super.toString();
+    }
 }

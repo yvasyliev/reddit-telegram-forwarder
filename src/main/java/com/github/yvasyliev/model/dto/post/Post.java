@@ -54,6 +54,17 @@ public abstract class Post implements Comparable<Post> {
         return Integer.compare(created, post.created);
     }
 
+    @Override
+    public String toString() {
+        return "Post{" +
+                "created=" + created +
+                ", author='" + author + '\'' +
+                ", approved=" + approved +
+                ", postUrl='" + postUrl + '\'' +
+                ", text='" + text + '\'' +
+                '}';
+    }
+
     public interface Type {
         String GIF = "GIF";
         String PHOTO_GROUP = "PHOTO_GROUP";

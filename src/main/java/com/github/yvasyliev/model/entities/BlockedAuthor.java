@@ -22,4 +22,11 @@ public class BlockedAuthor {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    @Override
+    public String toString() {
+        return "BlockedAuthor{" +
+                "username='" + username + '\'' +
+                '}';
+    }
 }

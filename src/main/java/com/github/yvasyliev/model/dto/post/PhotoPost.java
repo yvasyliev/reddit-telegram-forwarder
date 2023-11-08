@@ -5,4 +5,9 @@ public class PhotoPost extends MediaPost {
     public String getType() {
         return Type.PHOTO;
     }
+
+    @Override
+    public String toString() {
+        return "PhotoPost{} " + super.toString();
+    }
 }

@@ -38,4 +38,12 @@ public class RedditTelegramForwarderProperty {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "RedditTelegramForwarderProperty{" +
+                "name=" + name +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

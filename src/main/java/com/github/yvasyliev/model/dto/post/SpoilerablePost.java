@@ -11,4 +11,11 @@ public abstract class SpoilerablePost extends Post {
     public void setHasSpoiler(boolean hasSpoiler) {
         this.hasSpoiler = hasSpoiler;
     }
+
+    @Override
+    public String toString() {
+        return "SpoilerablePost{" +
+                "hasSpoiler=" + hasSpoiler +
+                "} " + super.toString();
+    }
 }
