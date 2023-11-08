@@ -68,7 +68,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     public List<Message> sendExtraPhotos(int replyToMessageId, int forwardMessageId) throws ExecutionException, InterruptedException {
         var post = extraPhotos.remove(forwardMessageId);
         return post != null
-                ? sendDelayed(redTelBot.getGroupId(), replyToMessageId, post)
+                ? sendDelayed(redTelBot.getChatId(), replyToMessageId, post)
                 : List.of();
     }
 

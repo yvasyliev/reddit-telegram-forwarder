@@ -17,14 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.starter.AfterBotRegistration;
 
@@ -34,7 +33,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-public class RedTelBot extends AbstractRedTelBot {
+public class RedTelBot extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedTelBot.class);
 
     @Autowired
@@ -57,6 +56,18 @@ public class RedTelBot extends AbstractRedTelBot {
     @Autowired
     private DelayedBlockingExecutor delayedBlockingExecutor;
 
+    @Value("${telegram.chat.id}")
+    private String chatId;
+
+    @Value("${telegram.channel.id}")
+    private String channelId;
+
+    @Value("${telegram.admin.id}")
+    private String adminId;
+
+    @Value("${telegram.bot.username}")
+    private String botUsername;
+
     public RedTelBot(@Value("${telegram.bot.token}") String botToken) {
         super(botToken);
     }
@@ -64,11 +75,6 @@ public class RedTelBot extends AbstractRedTelBot {
     @AfterBotRegistration
     public void setBotSession(BotSession botSession) {
         this.botSession = botSession;
-        LOGGER.info("{} started long polling.", getBotUsername());
-    }
-
-    public void startPolling() throws TelegramApiException {
-        botSession = context.getBean(TelegramBotsApi.class).registerBot(this);
         LOGGER.info("{} started long polling.", getBotUsername());
     }
 
@@ -156,6 +162,7 @@ public class RedTelBot extends AbstractRedTelBot {
         return delayedBlockingExecutor.submit(() -> execute(sendPhoto));
     }
 
+    // TODO: 11/8/2023 message.isCommand 
     private Optional<String> getCommand(Message message) {
         long userId = message.getFrom().getId();
         if (message.hasText()) {
@@ -171,5 +178,22 @@ public class RedTelBot extends AbstractRedTelBot {
 
     private boolean looksLikeCommand(String text) {
         return text.matches("/\\w+");
+    }
+
+    public String getChatId() {
+        return chatId;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public String getAdminId() {
+        return adminId;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botUsername;
     }
 }
