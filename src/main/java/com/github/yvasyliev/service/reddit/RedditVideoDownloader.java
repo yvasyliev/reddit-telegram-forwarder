@@ -6,20 +6,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingFunction;
 
 import java.io.IOException;
+import java.util.Optional;
 
-// TODO: 11/7/2023 remove Jsoup
 @Service
 public class RedditVideoDownloader implements ThrowingFunction<String, String> {
     @Override
     public String applyWithException(String redditPostUrl) throws IOException {
         var url = "https://rapidsave.com/info?url=%s".formatted(redditPostUrl);
-        var element = Jsoup.connect(url)
-                .get()
-                .select("div.download-info a")
-                .first();
-        if (element == null) {
-            throw new VideoUrlParseException("Failed to parse video URL: %s".formatted(url));
-        }
-        return element.attr("href");
+        return Optional.ofNullable(Jsoup
+                        .connect(url)
+                        .get()
+                        .select("div.download-info a")
+                        .first()
+                )
+                .map(element -> element.attr("href"))
+                .orElseThrow(() -> new VideoUrlParseException("Failed to parse video URL: %s".formatted(url)));
     }
 }
