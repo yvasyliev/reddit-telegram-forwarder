@@ -16,10 +16,10 @@ import java.net.http.HttpResponse;
 
 @Service
 public class SubredditNewSupplier implements ThrowingSupplier<JsonNode> {
-    @Value("${SUBREDDIT}")
+    @Value("${reddit.subreddit}")
     private String subreddit;
 
-    @Autowired
+    @Value("java:${project.artifactId}:${project.version} (by /u/${reddit.username})")
     private String userAgent;
 
     @Autowired

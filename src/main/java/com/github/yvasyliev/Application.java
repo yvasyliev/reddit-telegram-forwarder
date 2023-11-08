@@ -71,11 +71,6 @@ public class Application extends TelegramBotStarterConfiguration {
     }
 
     @Bean
-    public String userAgent(@Value("${REDDIT_USERNAME}") String redditUsername) {
-        return "java:reddit-telegram-repeater:2.0.0  (by /u/%s)".formatted(redditUsername);
-    }
-
-    @Bean
     public HttpClient httpClient() {
         return HttpClient.newHttpClient();
     }
