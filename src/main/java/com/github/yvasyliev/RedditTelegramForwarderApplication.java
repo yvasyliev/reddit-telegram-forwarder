@@ -24,11 +24,11 @@ import java.util.function.Consumer;
 
 @SpringBootApplication
 @EnableScheduling
-public class Application extends TelegramBotStarterConfiguration {
+public class RedditTelegramForwarderApplication extends TelegramBotStarterConfiguration {
     private static ApplicationContext context;
 
     public static void main(String[] args) {
-        context = new SpringApplicationBuilder(Application.class)
+        context = new SpringApplicationBuilder(RedditTelegramForwarderApplication.class)
                 .listeners(new ApplicationPidFileWriter())
                 .build()
                 .run(args);

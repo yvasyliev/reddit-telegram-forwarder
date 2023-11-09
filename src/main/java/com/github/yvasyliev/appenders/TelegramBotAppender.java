@@ -1,6 +1,6 @@
 package com.github.yvasyliev.appenders;
 
-import com.github.yvasyliev.Application;
+import com.github.yvasyliev.RedditTelegramForwarderApplication;
 import com.github.yvasyliev.bots.telegram.notifier.TelegramNotifier;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
@@ -38,7 +38,7 @@ public class TelegramBotAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        Application.withContext(applicationContext -> {
+        RedditTelegramForwarderApplication.withContext(applicationContext -> {
             try {
                 applicationContext
                         .getBean(TelegramNotifier.class)
