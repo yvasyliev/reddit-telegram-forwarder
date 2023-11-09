@@ -2,8 +2,12 @@ package com.github.yvasyliev.service.telegram.posts;
 
 import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.model.events.NewChannelPostEvent;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -28,6 +32,8 @@ import java.util.function.Function;
 
 @Service(Post.Type.PHOTO_GROUP)
 public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Message>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PhotoGroupPostService.class);
+
     @Autowired
     private BotResponseReader responseReader;
 
@@ -65,11 +71,22 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         return Optional.of(messages);
     }
 
-    public List<Message> sendExtraPhotos(int replyToMessageId, int forwardMessageId) throws ExecutionException, InterruptedException {
-        var post = extraPhotos.remove(forwardMessageId);
-        return post != null
-                ? sendDelayed(redditTelegramForwarderBot.getChatId(), replyToMessageId, post)
-                : List.of();
+    @EventListener
+    public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
+        var channelPost = newChannelPostEvent.getChannelPost();
+        Optional
+                .ofNullable(extraPhotos.remove(channelPost.forwardFromMessageId()))
+                .ifPresent(post -> {
+                    try {
+                        sendDelayed(
+                                redditTelegramForwarderBot.getChatId(),
+                                channelPost.messageId(),
+                                post
+                        );
+                    } catch (ExecutionException | InterruptedException e) {
+                        LOGGER.error("Failed to send extra photos.", e);
+                    }
+                });
     }
 
     private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws ExecutionException, InterruptedException {

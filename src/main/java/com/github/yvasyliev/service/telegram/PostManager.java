@@ -5,15 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.bots.telegram.RedditTelegramForwarderBot;
 import com.github.yvasyliev.model.dto.RedditPostDecisionData;
 import com.github.yvasyliev.model.dto.post.Post;
-import com.github.yvasyliev.model.events.NewChannelPostEvent;
 import com.github.yvasyliev.service.data.RedditTelegramForwarderPropertyService;
-import com.github.yvasyliev.service.telegram.posts.PhotoGroupPostService;
 import com.github.yvasyliev.service.telegram.posts.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -23,7 +20,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class PostManager {
@@ -43,9 +39,6 @@ public class PostManager {
 
     @Autowired
     private RedditTelegramForwarderPropertyService propertyService;
-
-    @Autowired
-    private PhotoGroupPostService photoGroupPostService;
 
     public void publishPosts(List<Post> posts) {
         posts.forEach(this::publishPost);
@@ -73,17 +66,6 @@ public class PostManager {
             } catch (TelegramApiException | JsonProcessingException e) {
                 LOGGER.error("Failed to ask approve.", e);
             }
-        }
-    }
-
-    // TODO: 11/8/2023 Move to PhotoGroupPostService
-    @EventListener
-    public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
-        var channelPost = newChannelPostEvent.getChannelPost();
-        try {
-            photoGroupPostService.sendExtraPhotos(channelPost.messageId(), channelPost.forwardFromMessageId());
-        } catch (ExecutionException | InterruptedException e) {
-            LOGGER.error("Failed to send extra photos.", e);
         }
     }
 
