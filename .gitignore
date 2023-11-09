@@ -3,3 +3,6 @@
 .idea
 app_data.properties
 *.log
+*.db
+*.gz
+*.pid
