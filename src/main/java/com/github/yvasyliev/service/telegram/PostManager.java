@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -21,8 +20,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-@Service
 public class PostManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostManager.class);
 
@@ -72,9 +71,12 @@ public class PostManager {
     }
 
     public void publishPostCandidate(int created) {
-        var post = rejectPostCandidate(created);
-        post.setApproved(true);
-        publishPost(post);
+        Optional
+                .ofNullable(rejectPostCandidate(created))
+                .ifPresent(post -> {
+                    post.setApproved(true);
+                    publishPost(post);
+                });
     }
 
     public Post rejectPostCandidate(int created) {

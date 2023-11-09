@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.data.BlockedAuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingFunction;
 
@@ -24,6 +25,9 @@ public class PostDeserializer extends JsonDeserializer<Post> {
     @Autowired
     private BlockedAuthorService blockedAuthorService;
 
+    @Value("${reddit.authors.blocked.by.default:false}")
+    private boolean authorsBlockedByDefault;
+
     @Override
     public Post deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         var jsonPost = jsonParser.readValueAs(JsonNode.class);
@@ -37,7 +41,7 @@ public class PostDeserializer extends JsonDeserializer<Post> {
                 var optionalPost = postMapper.applyWithException(jsonPost).map(post -> {
                     post.setAuthor(author);
                     post.setCreated(created);
-                    post.setApproved(!blockedAuthorService.isBlocked(author));
+                    post.setApproved(!authorsBlockedByDefault && !blockedAuthorService.isBlocked(author));
                     post.setPostUrl(postUrl);
                     return post;
                 });
