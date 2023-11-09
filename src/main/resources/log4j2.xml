@@ -5,18 +5,18 @@
             <PatternLayout disableAnsi="false" pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level} %style{%logger{36}}{magenta} - %msg%n"/>
         </Console>
         <RollingFile name="roll-by-time-and-size"
-                     fileName="reddit-telegram-repeater.log"
-                     filePattern="reddit-telegram-repeater.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
+                     fileName="reddit-telegram-forwarder.log"
+                     filePattern="reddit-telegram-forwarder.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
                      ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
             </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="1 MB"/>
+                <SizeBasedTriggeringPolicy size="128 KB"/>
             </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="" maxDepth="1000000">
-                    <IfFileName glob="reddit-telegram-repeater.*.log.gz"/>
+                    <IfFileName glob="reddit-telegram-forwarder.*.log.gz"/>
                     <IfLastModified age="30m"/>
                 </Delete>
             </DefaultRolloverStrategy>
@@ -30,12 +30,11 @@
             <AppenderRef ref="telegramBotAppender" level="error"/>
         </Root>
         <Logger name="org.springframework" level="warn"/>
-        <Logger name="org.apache.http" level="off"/>
-        <Logger name="org.hibernate" level="off"/>
+        <Logger name="org.apache.http" level="warn"/>
+        <Logger name="org.hibernate" level="warn"/>
         <Logger name="org.hibernate.SQL" level="debug"/>
-        <Logger name="org.jboss.logging" level="off"/>
+        <Logger name="org.jboss.logging" level="warn"/>
         <Logger name="org.sqlite.core" level="warn"/>
         <Logger name="com.zaxxer.hikari" level="warn"/>
-        <!--        DEBUG org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator-->
     </Loggers>
 </Configuration>
