@@ -19,6 +19,10 @@ import java.util.function.Predicate;
 public class PhotoPostService extends PostService<PhotoPost, Message> {
     @Override
     public Optional<Message> applyWithException(String chatId, PhotoPost post) throws TelegramApiException {
+        return Optional.ofNullable(sendPhoto(chatId, post));
+    }
+
+    public Message sendPhoto(String chatId, PhotoPost post) throws TelegramApiException {
         try {
             var sendPhoto = SendPhoto.builder()
                     .chatId(chatId)
@@ -26,9 +30,9 @@ public class PhotoPostService extends PostService<PhotoPost, Message> {
                     .caption(post.getText())
                     .hasSpoiler(post.isHasSpoiler())
                     .build();
-            return Optional.ofNullable(redditTelegramForwarderBot.execute(sendPhoto));
+            return redditTelegramForwarderBot.execute(sendPhoto);
         } catch (TelegramApiRequestException e) {
-            return Optional.ofNullable(retrySendPhoto(chatId, post, e));
+            return retrySendPhoto(chatId, post, e);
         }
     }
 
