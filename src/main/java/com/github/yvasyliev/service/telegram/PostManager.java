@@ -10,6 +10,7 @@ import com.github.yvasyliev.service.telegram.posts.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -35,6 +36,7 @@ public class PostManager {
     private ObjectMapper objectMapper;
 
     @Autowired
+    @Qualifier("synchronizedFixedSizeMap")
     private Map<Integer, Post> postCandidates;
 
     @Autowired

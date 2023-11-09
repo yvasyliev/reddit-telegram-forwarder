@@ -1,11 +1,8 @@
 package com.github.yvasyliev;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.yvasyliev.model.dto.ExternalMessageData;
-import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.service.telegram.commands.Start;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.net.http.HttpClient;
 import java.util.Collections;
@@ -52,22 +46,13 @@ public class Application extends TelegramBotStarterConfiguration {
     }
 
     @Bean
-    public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
-        return new TelegramBotsApi(DefaultBotSession.class);
-    }
-
-    @Bean
     public ObjectMapper objectMapper(JsonDeserializer<Post> postJsonDeserializer) {
-        var mapper = new ObjectMapper();
-        mapper.registerModule(module(postJsonDeserializer));
-        return mapper;
-    }
-
-    @Bean
-    public Module module(JsonDeserializer<Post> postJsonDeserializer) {
         var module = new SimpleModule();
         module.addDeserializer(Post.class, postJsonDeserializer);
-        return module;
+
+        var mapper = new ObjectMapper();
+        mapper.registerModule(module);
+        return mapper;
     }
 
     @Bean
@@ -85,29 +70,4 @@ public class Application extends TelegramBotStarterConfiguration {
             }
         });
     }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public Map<Integer, Post> integerPostMap(@Value("16") int maxSize) {
-        return synchronizedFixedSizeMap(maxSize);
-    }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public Map<Integer, PhotoGroupPost> integerPhotoGroupPostMap(@Value("16") int maxSize) {
-        return synchronizedFixedSizeMap(maxSize);
-    }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public Map<Long, String> longStringMap(@Value("16") int maxSize) {
-        return synchronizedFixedSizeMap(maxSize);
-    }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public Map<Long, ExternalMessageData> longExternalMessageDataMap(@Value("16") int maxSize) {
-        return synchronizedFixedSizeMap(maxSize);
-    }
-
 }

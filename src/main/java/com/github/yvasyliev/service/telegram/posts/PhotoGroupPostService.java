@@ -7,6 +7,7 @@ import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     private BotResponseReader responseReader;
 
     @Autowired
+    @Qualifier("synchronizedFixedSizeMap")
     private Map<Integer, PhotoGroupPost> extraPhotos;
 
     @Autowired
