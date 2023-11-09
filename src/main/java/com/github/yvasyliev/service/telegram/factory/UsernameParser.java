@@ -11,28 +11,27 @@ import java.util.regex.Pattern;
 public class UsernameParser implements Function<Message, Optional<String>> {
     @Override
     public Optional<String> apply(Message message) {
-        if (!message.hasText()) {
-            return Optional.empty();
-        }
+        return Optional
+                .ofNullable(message.getText())
+                .map(String::trim)
+                .map(username -> {
+                    var matcher = Pattern
+                            .compile("https://www\\.reddit\\.com/user/([\\w-]+)")
+                            .matcher(username);
+                    if (matcher.find()) {
+                        return matcher.group(1);
+                    }
 
-        var username = message.getText().trim();
+                    matcher = Pattern
+                            .compile("u/([\\w-]+)")
+                            .matcher(username);
+                    if (matcher.matches()) {
+                        return matcher.group(1);
+                    }
 
-        var matcher = Pattern
-                .compile("https://www\\.reddit\\.com/user/([\\w-]+)")
-                .matcher(username);
-        if (matcher.find()) {
-            username = matcher.group(1);
-        }
-
-        matcher = Pattern
-                .compile("u/([\\w-]+)")
-                .matcher(username);
-        if (matcher.matches()) {
-            username = matcher.group(1);
-        }
-
-        return username.matches("[\\w-]+")
-                ? Optional.of(username)
-                : Optional.empty();
+                    return username.matches("[\\w-]+")
+                            ? username
+                            : null;
+                });
     }
 }
