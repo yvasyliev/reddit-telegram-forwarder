@@ -1,6 +1,6 @@
 package com.github.yvasyliev.service.telegram;
 
-import com.github.yvasyliev.service.reddit.SubredditPostSupplier;
+import com.github.yvasyliev.service.reddit.SubredditNewSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ public class ScheduledPostManager extends PostManager {
     private AtomicBoolean isPosting;
 
     @Autowired
-    private SubredditPostSupplier subredditPostSupplier;
+    private SubredditNewSupplier subredditNewSupplier;
 
 
     @Scheduled(fixedDelayString = "${telegram.schedule.posting.delay.in.minutes:1}", timeUnit = TimeUnit.MINUTES)
     public void shareNewPosts() {
         if (isPosting.get()) {
             try {
-                var newPosts = subredditPostSupplier.getWithException();
+                var newPosts = subredditNewSupplier.getWithException();
                 publishPosts(newPosts);
             } catch (Exception e) {
                 LOGGER.error("Failed to find new posts.", e);
