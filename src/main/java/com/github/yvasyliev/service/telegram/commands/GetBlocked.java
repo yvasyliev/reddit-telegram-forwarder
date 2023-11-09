@@ -13,7 +13,7 @@ public class GetBlocked extends AdminCommand {
     private BlockedAuthorRepository blockedAuthorRepository;
 
     @Override
-    public void execute(Message message) throws Exception {
+    protected void execute(Message message) throws Exception {
         var blockedAuthorTemplate = responseReader.applyWithException("responses/getblocked/blocked_author.md");
         var blockedAuthors = blockedAuthorRepository
                 .findAll()

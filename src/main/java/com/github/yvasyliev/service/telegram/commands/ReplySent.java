@@ -17,7 +17,7 @@ public class ReplySent extends AdminCommand {
     private MarkdownV2Escaper markdownV2Escaper;
 
     @Override
-    public void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
+    protected void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
         if (message.hasText()) {
             var userId = message.getFrom().getId();
             redditTelegramForwarderBot.removeUserCommand(userId);

@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 @Service("/blockauthor")
 public class BlockAuthor extends AdminCommand {
     @Override
-    public void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
+    protected void execute(Message message) throws URISyntaxException, IOException, TelegramApiException {
         redditTelegramForwarderBot.addUserCommand(message.getFrom().getId(), "/addblockedauthor");
         reply(message, "responses/blockauthor.md");
     }

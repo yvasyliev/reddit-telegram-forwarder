@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 @Service("/cancel")
 public class Cancel extends Command {
     @Override
-    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    protected void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         redditTelegramForwarderBot.removeUserCommand(message.getFrom().getId());
         reply(message, "responses/cancel.md");
     }

@@ -26,7 +26,7 @@ public abstract class Command implements ThrowingConsumer<Message> {
         }
     }
 
-    abstract void execute(Message message) throws Exception;
+    protected abstract void execute(Message message) throws Exception;
 
     protected boolean hasPermission(Message message) {
         return true;

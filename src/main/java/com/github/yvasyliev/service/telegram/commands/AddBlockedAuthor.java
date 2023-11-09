@@ -23,7 +23,7 @@ public class AddBlockedAuthor extends AdminCommand {
     private MarkdownV2Escaper markdownV2Escaper;
 
     @Override
-    public void execute(Message message) throws IOException, TelegramApiException, URISyntaxException {
+    protected void execute(Message message) throws IOException, TelegramApiException, URISyntaxException {
         var optionalUsername = usernameParser.apply(message);
         if (optionalUsername.isPresent()) {
             var username = optionalUsername.get();

@@ -20,7 +20,7 @@ public class RemoveBlockedAuthor extends AdminCommand {
     private BlockedAuthorService blockedAuthorService;
 
     @Override
-    public void execute(Message message) throws Exception {
+    protected void execute(Message message) throws Exception {
         var optionalUsername = usernameParser.apply(message);
         if (optionalUsername.isPresent()) {
             var username = optionalUsername.get();

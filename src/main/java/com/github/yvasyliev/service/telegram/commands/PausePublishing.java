@@ -17,7 +17,7 @@ public class PausePublishing extends AdminCommand {
     private ScheduledPostManager postManager;
 
     @Override
-    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    protected void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         postManager.pausePosting();
         redditTelegramForwarderBot.execute(new SendMessage(
                 message.getChatId().toString(),

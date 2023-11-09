@@ -14,7 +14,7 @@ public class Start extends Command {
     private String telegramChannelName;
 
     @Override
-    public void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
+    protected void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
         if (redditTelegramForwarderBot.isAdmin(message.getFrom())) {
             reply(
                     message,

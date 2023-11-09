@@ -21,7 +21,7 @@ public class TextAdmin extends Command {
     private ObjectMapper objectMapper;
 
     @Override
-    public void execute(Message message) throws TelegramApiException, IOException, URISyntaxException {
+    protected void execute(Message message) throws TelegramApiException, IOException, URISyntaxException {
         redditTelegramForwarderBot.removeUserCommand(message.getFrom().getId());
         var sourceChatId = message.getChatId();
         var sourceMessageId = message.getMessageId();
