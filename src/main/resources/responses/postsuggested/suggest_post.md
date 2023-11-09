@@ -1,1 +1,1 @@
-👆 Shall I publish the post above?
+👆 Shall I approve the post above?

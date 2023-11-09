@@ -10,18 +10,17 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-// TODO: 11/8/2023 rename to pauseposting
-@Service("/pausepublishing")
-public class PausePublishing extends AdminCommand {
+@Service("/resumeposting")
+public class ResumePosting extends AdminCommand {
     @Autowired
     private ScheduledPostManager postManager;
 
     @Override
     protected void execute(Message message) throws TelegramApiException, URISyntaxException, IOException {
-        postManager.pausePosting();
+        postManager.resumePosting();
         redditTelegramForwarderBot.execute(new SendMessage(
                 message.getChatId().toString(),
-                responseReader.applyWithException("responses/pausepublishing.md")
+                responseReader.applyWithException("responses/resumeposting.md")
         ));
     }
 }

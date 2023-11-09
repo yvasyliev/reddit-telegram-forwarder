@@ -11,7 +11,7 @@ Use these command to control me:
 *Admin commands*
 /blockauthor - block Reddit author
 /getblocked - show blocked Reddit authors
-/pausepublishing - pause fetching posts from subreddit
-/resumepublishing - resume fetching posts from subreddit
+/pauseposting - pause fetching posts from subreddit
+/resumeposting - resume fetching posts from subreddit
 /stop - stop %s
 /unblockauthor - unblock Reddit author
