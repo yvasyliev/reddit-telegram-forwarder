@@ -4,6 +4,7 @@ import com.github.yvasyliev.model.dto.ExternalMessageData;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -23,6 +24,10 @@ public class Reply extends Callback {
         var userId = callbackQuery.getFrom().getId();
         redditTelegramForwarderBot.addUserCommand(userId, "/replysent");
         redditTelegramForwarderBot.addAwaitingReply(userId, messageData);
+        var answerCallbackQuery = AnswerCallbackQuery.builder()
+                .callbackQueryId(callbackQuery.getId())
+                .build();
+        redditTelegramForwarderBot.execute(answerCallbackQuery);
         var sendMessage = SendMessage.builder()
                 .chatId(userId)
                 .text(responseReader.applyWithException("responses/reply.md"))
