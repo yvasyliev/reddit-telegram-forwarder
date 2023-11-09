@@ -81,6 +81,11 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
         LOGGER.info("{} started long polling.", getBotUsername());
     }
 
+    @Override
+    public String getBotUsername() {
+        return botUsername;
+    }
+
     @PreDestroy
     public void stopPolling() {
         botSession.stop();
@@ -107,22 +112,6 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
         }
     }
 
-    public void onUserMessageReceived(Message message) {
-        getCommand(message).ifPresent(command -> onCommandReceived(command, message));
-    }
-
-    public void onCommandReceived(String command, Message message) {
-        if (context.containsBean(command)) {
-            try {
-                context.getBean(command, Command.class).acceptWithException(message);
-            } catch (Exception e) {
-                LOGGER.error("Failed to perform command {}", command, e);
-            }
-        } else {
-            LOGGER.info("Unknown command: {}", command);
-        }
-    }
-
     public void onCallbackQueryReceived(CallbackQuery callbackQuery) {
         var message = callbackQuery.getMessage();
         if (message.isUserMessage() && isAdmin(callbackQuery.getFrom())) {
@@ -137,32 +126,12 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
         }
     }
 
-    public String addUserCommand(long userId, String command) {
-        return userCommands.put(userId, command);
-    }
-
-    public String removeUserCommand(long userId) {
-        return userCommands.remove(userId);
-    }
-
-    public ExternalMessageData addAwaitingReply(Long userId, ExternalMessageData messageData) {
-        return awaitingReplies.put(userId, messageData);
-    }
-
-    public ExternalMessageData getAwaitingReply(Long userId) {
-        return awaitingReplies.remove(userId);
+    public void onUserMessageReceived(Message message) {
+        getCommand(message).ifPresent(command -> onCommandReceived(command, message));
     }
 
     public boolean isAdmin(User user) {
         return user.getId().toString().equals(getAdminId());
-    }
-
-    public CompletableFuture<List<Message>> executeDelayed(SendMediaGroup sendMediaGroup) {
-        return delayedBlockingExecutor.submit(() -> execute(sendMediaGroup));
-    }
-
-    public CompletableFuture<Message> executeDelayed(SendPhoto sendPhoto) {
-        return delayedBlockingExecutor.submit(() -> execute(sendPhoto));
     }
 
     private Optional<String> getCommand(Message message) {
@@ -174,20 +143,51 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
         return Optional.ofNullable(userCommands.get(userId));
     }
 
-    public String getChatId() {
-        return chatId;
-    }
-
-    public String getChannelId() {
-        return channelId;
+    public void onCommandReceived(String command, Message message) {
+        if (context.containsBean(command)) {
+            try {
+                context.getBean(command, Command.class).acceptWithException(message);
+            } catch (Exception e) {
+                LOGGER.error("Failed to perform command {}", command, e);
+            }
+        } else {
+            LOGGER.info("Unknown command: {}", command);
+        }
     }
 
     public String getAdminId() {
         return adminId;
     }
 
-    @Override
-    public String getBotUsername() {
-        return botUsername;
+    public String removeUserCommand(long userId) {
+        return userCommands.remove(userId);
+    }
+
+    public String addUserCommand(long userId, String command) {
+        return userCommands.put(userId, command);
+    }
+
+    public ExternalMessageData addAwaitingReply(Long userId, ExternalMessageData messageData) {
+        return awaitingReplies.put(userId, messageData);
+    }
+
+    public ExternalMessageData getAwaitingReply(Long userId) {
+        return awaitingReplies.remove(userId);
+    }
+
+    public CompletableFuture<List<Message>> executeDelayed(SendMediaGroup sendMediaGroup) {
+        return delayedBlockingExecutor.submit(() -> execute(sendMediaGroup));
+    }
+
+    public CompletableFuture<Message> executeDelayed(SendPhoto sendPhoto) {
+        return delayedBlockingExecutor.submit(() -> execute(sendPhoto));
+    }
+
+    public String getChatId() {
+        return chatId;
+    }
+
+    public String getChannelId() {
+        return channelId;
     }
 }

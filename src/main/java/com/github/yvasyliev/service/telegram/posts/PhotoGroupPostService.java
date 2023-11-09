@@ -73,38 +73,6 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         return Optional.of(messages);
     }
 
-    @EventListener
-    public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
-        var channelPost = newChannelPostEvent.getChannelPost();
-        Optional
-                .ofNullable(extraPhotos.remove(channelPost.forwardFromMessageId()))
-                .ifPresent(post -> {
-                    try {
-                        sendDelayed(
-                                redditTelegramForwarderBot.getChatId(),
-                                channelPost.messageId(),
-                                post
-                        );
-                    } catch (ExecutionException | InterruptedException e) {
-                        LOGGER.error("Failed to send extra photos.", e);
-                    }
-                });
-    }
-
-    private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws ExecutionException, InterruptedException {
-        var pages = new ArrayDeque<>(post.getPhotoUrlsPages());
-        var hasSpoiler = post.isHasSpoiler();
-        var messages = new ArrayList<Message>();
-        pages.removeFirst();
-        for (var page : pages) {
-            messages.addAll(page.size() > 1
-                    ? redditTelegramForwarderBot.executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId)).get()
-                    : List.of(redditTelegramForwarderBot.executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)).get())
-            );
-        }
-        return messages;
-    }
-
     private SendMediaGroup sendMediaGroup(String chatId, Queue<String> page, boolean hasSpoiler, Integer replyToMessageId) {
         var inputMediaPhotos = page
                 .stream()
@@ -124,6 +92,20 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 .build();
     }
 
+    private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws ExecutionException, InterruptedException {
+        var pages = new ArrayDeque<>(post.getPhotoUrlsPages());
+        var hasSpoiler = post.isHasSpoiler();
+        var messages = new ArrayList<Message>();
+        pages.removeFirst();
+        for (var page : pages) {
+            messages.addAll(page.size() > 1
+                    ? redditTelegramForwarderBot.executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId)).get()
+                    : List.of(redditTelegramForwarderBot.executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)).get())
+            );
+        }
+        return messages;
+    }
+
     private SendPhoto sendPhoto(String chatId, String photo, boolean hasSpoiler, Integer replyToMessageId) {
         return SendPhoto.builder()
                 .chatId(chatId)
@@ -131,5 +113,23 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 .hasSpoiler(hasSpoiler)
                 .replyToMessageId(replyToMessageId)
                 .build();
+    }
+
+    @EventListener
+    public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
+        var channelPost = newChannelPostEvent.getChannelPost();
+        Optional
+                .ofNullable(extraPhotos.remove(channelPost.forwardFromMessageId()))
+                .ifPresent(post -> {
+                    try {
+                        sendDelayed(
+                                redditTelegramForwarderBot.getChatId(),
+                                channelPost.messageId(),
+                                post
+                        );
+                    } catch (ExecutionException | InterruptedException e) {
+                        LOGGER.error("Failed to send extra photos.", e);
+                    }
+                });
     }
 }

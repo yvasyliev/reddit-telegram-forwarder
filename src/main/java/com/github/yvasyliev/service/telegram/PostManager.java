@@ -70,19 +70,6 @@ public class PostManager {
         }
     }
 
-    public void publishPostCandidate(int created) {
-        Optional
-                .ofNullable(rejectPostCandidate(created))
-                .ifPresent(post -> {
-                    post.setApproved(true);
-                    publishPost(post);
-                });
-    }
-
-    public Post rejectPostCandidate(int created) {
-        return postCandidates.remove(created);
-    }
-
     private Message askApprove(String chatId, int created) throws TelegramApiException, JsonProcessingException {
         var approveButton = InlineKeyboardButton.builder()
                 .text("✅ Approve")
@@ -109,5 +96,18 @@ public class PostManager {
                 ))))
                 .build();
         return redditTelegramForwarderBot.execute(sendMessage);
+    }
+
+    public void publishPostCandidate(int created) {
+        Optional
+                .ofNullable(rejectPostCandidate(created))
+                .ifPresent(post -> {
+                    post.setApproved(true);
+                    publishPost(post);
+                });
+    }
+
+    public Post rejectPostCandidate(int created) {
+        return postCandidates.remove(created);
     }
 }
