@@ -1,13 +1,13 @@
 package com.github.yvasyliev.service.telegram.factory;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-@Service
+@Component
 public class UsernameParser implements Function<Message, Optional<String>> {
     @Override
     public Optional<String> apply(Message message) {
