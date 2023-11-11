@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface RedditTelegramForwarderPropertyRepository extends JpaRepository<RedditTelegramForwarderProperty, String> {
     @Query("""
             select
-                cast(r.value as integer)
+                r.value
             from
                 RedditTelegramForwarderProperty r
             where
