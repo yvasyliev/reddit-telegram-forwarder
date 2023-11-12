@@ -78,7 +78,11 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
     @AfterBotRegistration
     public void setBotSession(BotSession botSession) {
         this.botSession = botSession;
-        LOGGER.info("{} started long polling.", getBotUsername());
+        LOGGER
+                .atInfo()
+                .setMessage("{} started long polling.")
+                .addArgument(this::getBotUsername)
+                .log();
     }
 
     @Override
@@ -89,12 +93,26 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
     @PreDestroy
     public void stopPolling() {
         botSession.stop();
-        LOGGER.info("{} stopped long polling.", getBotUsername());
+        LOGGER
+                .atInfo()
+                .setMessage("{} stopped long polling.")
+                .addArgument(this::getBotUsername)
+                .log();
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        LOGGER.debug("Update received: {}", update);
+        LOGGER
+                .atDebug()
+                .setMessage("update={}")
+                .addArgument(() -> {
+                    try {
+                        return objectMapper.writeValueAsString(update);
+                    } catch (JsonProcessingException e) {
+                        return update;
+                    }
+                })
+                .log();
         if (update.hasMessage()) {
             onMessageReceived(update.getMessage());
         } else if (update.hasCallbackQuery()) {
@@ -119,7 +137,12 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
                 var callbackData = objectMapper.readValue(callbackQuery.getData(), CallbackData.class);
                 context.getBean(callbackData.action(), Callback.class).acceptWithException(callbackQuery);
             } catch (JsonProcessingException e) {
-                LOGGER.error("Failed to parse callback data {}", callbackQuery.getData(), e);
+                LOGGER
+                        .atError()
+                        .setMessage("Failed to parse callback data {}")
+                        .addArgument(callbackQuery::getData)
+                        .setCause(e)
+                        .log();
             } catch (Exception e) {
                 LOGGER.error("Failed to handle callback", e);
             }

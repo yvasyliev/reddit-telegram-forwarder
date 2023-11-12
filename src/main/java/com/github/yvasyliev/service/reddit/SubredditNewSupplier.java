@@ -60,12 +60,13 @@ public class SubredditNewSupplier implements ThrowingSupplier<List<Post>> {
                     try {
                         return objectMapper.treeToValue(data, Post.class);
                     } catch (JsonProcessingException e) {
-                        LOGGER.error(
-                                "Failed to deserialize post. Created: {}, URL: {}",
-                                data.get("created").intValue(),
-                                data.get("url").textValue(),
-                                e
-                        );
+                        LOGGER
+                                .atError()
+                                .setMessage("Failed to deserialize post. Created: {}, URL: {}")
+                                .addArgument(() -> data.get("created"))
+                                .addArgument(() -> data.get("url"))
+                                .setCause(e)
+                                .log();
                         return null;
                     }
                 })
