@@ -16,5 +16,7 @@ jobs:
     needs: set-env
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo ${{ needs.set-env.outputs.foo }}
+      - env:
+          FOO: ${{ needs.set-env.outputs.foo }}
+        run: |
+          echo $FOO
