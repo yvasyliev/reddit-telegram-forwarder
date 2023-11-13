@@ -12,6 +12,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
@@ -24,7 +25,8 @@ import java.util.function.Consumer;
 
 @SpringBootApplication
 @EnableScheduling
-public class RedditTelegramForwarderApplication extends TelegramBotStarterConfiguration {
+@Import(TelegramBotStarterConfiguration.class)
+public class RedditTelegramForwarderApplication {
     private static ApplicationContext context;
 
     public static void main(String[] args) {
