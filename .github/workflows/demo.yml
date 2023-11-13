@@ -10,6 +10,7 @@ jobs:
       - run: |
           echo "foo=bar" >> $GITHUB_ENV
   print-env:
+    needs: set-env
     runs-on: ubuntu-latest
     steps:
       - run: |
