@@ -6,12 +6,15 @@ on:
 jobs:
   set-env:
     runs-on: ubuntu-latest
+    outputs:
+      foo: ${{ steps.set.outputs.foo }}
     steps:
-      - run: |
+      - id: set
+        run: |
           echo "foo=bar" >> $GITHUB_ENV
   print-env:
     needs: set-env
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo ${{ env.foo }}
+          echo ${{ needs.set-env.outputs.foo }}
