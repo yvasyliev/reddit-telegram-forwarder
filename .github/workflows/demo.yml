@@ -1,0 +1,16 @@
+name: Demo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  set-env:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        echo "foo=bar" >> $GITHUB_ENV
+  print-env:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        echo ${{ env.foo }}
