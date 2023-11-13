@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        echo "foo=bar" >> $GITHUB_ENV
+        echo foo=bar >> $GITHUB_ENV
   print-env:
     runs-on: ubuntu-latest
     steps:
