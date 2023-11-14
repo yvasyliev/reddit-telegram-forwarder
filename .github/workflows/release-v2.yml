@@ -68,3 +68,14 @@ jobs:
         run: |
           echo "current-version=$CURRENT_VERSION"
           echo "Current version is \`$CURRENT_VERSION\`" >> $GITHUB_STEP_SUMMARY
+      - name: Validate current version
+        if: github.event.inputs.release_type != 'provided'
+        env:
+#          CURRENT_VERSION: ${{ steps.get-current-version.outputs.current-version }}
+          CURRENT_VERSION: 1.2.3a
+        run: |
+          if [[ ! $CURRENT_VERSION =~ ^([[:digit:]]+\.){2}[[:digit:]]+([\.-].+)?$ ]]
+          then
+            echo "::error::Unexpected artifact version found in pom.xml: $CURRENT_VERSION. Expected format: x.y.z*"
+            exit 1
+          fi
