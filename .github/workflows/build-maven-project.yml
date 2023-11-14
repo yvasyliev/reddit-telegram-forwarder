@@ -5,6 +5,7 @@ on: [ push, pull_request ]
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: Test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -15,4 +16,18 @@ jobs:
           distribution: 'corretto'
           cache: maven
       - name: Build with Maven
+        env:
+          reddit.subreddit: ${{ secrets.REDDIT_SUBREDDIT }}
+          reddit.client.id: ${{ secrets.REDDIT_CLIENT_ID }}
+          reddit.client.secret: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          reddit.password: ${{ secrets.REDDIT_PASSWORD }}
+          reddit.username: ${{ secrets.REDDIT_USERNAME }}
+          spring.jpa.hibernate.ddl-auto: ${{ vars.SPRING_JPA_HIBERNATE_DDL_AUTO }}
+          telegram.admin.id: ${{ secrets.TELEGRAM_ADMIN_ID }}
+          telegram.bot.token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          telegram.bot.username: ${{ secrets.TELEGRAM_BOT_USERNAME }}
+          telegram.channel.id: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          telegram.channel.name: ${{ secrets.TELEGRAM_CHANNEL_NAME }}
+          telegram.chat.id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          telegram.schedule.posting.enabled: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
         run: mvn package
