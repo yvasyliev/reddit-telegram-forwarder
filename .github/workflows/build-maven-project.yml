@@ -17,17 +17,17 @@ jobs:
           cache: maven
       - name: Build with Maven
         env:
-          reddit.subreddit: ${{ secrets.REDDIT_SUBREDDIT }}
-          reddit.client.id: ${{ secrets.REDDIT_CLIENT_ID }}
-          reddit.client.secret: ${{ secrets.REDDIT_CLIENT_SECRET }}
-          reddit.password: ${{ secrets.REDDIT_PASSWORD }}
-          reddit.username: ${{ secrets.REDDIT_USERNAME }}
-          spring.jpa.hibernate.ddl-auto: ${{ vars.SPRING_JPA_HIBERNATE_DDL_AUTO }}
-          telegram.admin.id: ${{ secrets.TELEGRAM_ADMIN_ID }}
-          telegram.bot.token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          telegram.bot.username: ${{ secrets.TELEGRAM_BOT_USERNAME }}
-          telegram.channel.id: ${{ secrets.TELEGRAM_CHANNEL_ID }}
-          telegram.channel.name: ${{ secrets.TELEGRAM_CHANNEL_NAME }}
-          telegram.chat.id: ${{ secrets.TELEGRAM_CHAT_ID }}
-          telegram.schedule.posting.enabled: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
+          REDDIT_SUBREDDIT: ${{ secrets.REDDIT_SUBREDDIT }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          SPRING_JPA_HIBERNATE_DDL_AUTO: ${{ vars.SPRING_JPA_HIBERNATE_DDL_AUTO }}
+          TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TELEGRAM_CHANNEL_NAME: ${{ secrets.TELEGRAM_CHANNEL_NAME }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
         run: mvn package
