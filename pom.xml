@@ -26,6 +26,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <additionalProperties>
+                        <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+                    </additionalProperties>
+                </configuration>
             </plugin>
         </plugins>
     </build>
