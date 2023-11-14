@@ -67,5 +67,4 @@ jobs:
           CURRENT_VERSION: ${{ steps.get-current-version.outputs.current-version }}
         run: |
           echo "current-version=$CURRENT_VERSION"
-          echo "Current version is `$CURRENT_VERSION`" >> $GITHUB_STEP_SUMMARY
-          echo "Current version is $CURRENT_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo 'Current version is `$CURRENT_VERSION`' >> $GITHUB_STEP_SUMMARY
