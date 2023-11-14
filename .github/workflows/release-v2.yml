@@ -60,4 +60,7 @@ jobs:
         id: get-current-version
         run: |
           sudo apt-get install xmlstarlet
-          echo "current-version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)" >> "$GITHUB_OUTPUT"
+          current_version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
+          echo "current-version=current_version" >> "$GITHUB_OUTPUT"
+      - name: Print current version
+        run: echo "current-version=${{ steps.get-current-version.outputs.current-version }}"
