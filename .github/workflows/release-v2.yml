@@ -64,3 +64,6 @@ jobs:
           echo "current-version=$current_version" >> "$GITHUB_OUTPUT"
       - name: Print current version
         run: echo "current-version=${{ steps.get-current-version.outputs.current-version }}"
+        run: |
+          echo "current-version=${{ steps.get-current-version.outputs.current-version }}"
+          echo "Current version is `${{ steps.get-current-version.outputs.current-version }}`" >> $GITHUB_STEP_SUMMARY
