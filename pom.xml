@@ -28,6 +28,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <systemPropertyVariables>
+                        <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+                        <surefire.timeout>60</surefire.timeout>
+                    </systemPropertyVariables>
                     <additionalProperties>
                         <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
                         <surefire.timeout>60</surefire.timeout>
