@@ -1,7 +1,4 @@
 ![reddit-telegram-forwarder-logo](assests/reddit-telegram-forwarder-logo.png)
-
-<p style="text-align: center">Console Java application to forward Reddit posts to Telegram channel.</p>
-
 # Reddit-Telegram Forwarder
 
 Spring Boot-based Java application to forward Reddit posts to Telegram channel.
