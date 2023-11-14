@@ -30,6 +30,11 @@
                     <additionalProperties>
                         <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
                     </additionalProperties>
+                    <arguments>
+                        <argument>
+                            --forkedProcessTimeoutInSeconds=60
+                        </argument>
+                    </arguments>
                 </configuration>
             </plugin>
         </plugins>
