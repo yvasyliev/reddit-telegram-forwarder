@@ -63,6 +63,10 @@ jobs:
           current_version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
           echo "current-version=$current_version" >> "$GITHUB_OUTPUT"
       - name: Print current version
+        env:
+          CURRENT_VERSION: ${{ steps.get-current-version.outputs.current-version }}
         run: |
           echo "current-version=${{ steps.get-current-version.outputs.current-version }}"
           echo "Current version is `${{ steps.get-current-version.outputs.current-version }}`" >> $GITHUB_STEP_SUMMARY
+          echo "current-version=$CURRENT_VERSION"
+          echo "Current version is `$CURRENT_VERSION`" >> $GITHUB_STEP_SUMMARY
