@@ -30,4 +30,4 @@ jobs:
           TELEGRAM_CHANNEL_NAME: ${{ secrets.TELEGRAM_CHANNEL_NAME }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
-        run: mvn package -DforkedProcessTimeoutInSeconds=60
+        run: mvn package -DforkedProcessTimeoutInSeconds=60 -Dsurefire.timeout=60
