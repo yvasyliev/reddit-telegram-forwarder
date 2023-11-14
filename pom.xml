@@ -18,8 +18,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
-        <surefire.timeout>60</surefire.timeout>
     </properties>
 
     <build>
@@ -27,20 +25,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
-                        <surefire.timeout>60</surefire.timeout>
-                    </systemPropertyVariables>
-                    <additionalProperties>
-                        <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
-                        <surefire.timeout>60</surefire.timeout>
-                    </additionalProperties>
-                    <arguments>
-                        <argument>--forkedProcessTimeoutInSeconds=60</argument>
-                        <argument>--surefire.timeout=60</argument>
-                    </arguments>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
