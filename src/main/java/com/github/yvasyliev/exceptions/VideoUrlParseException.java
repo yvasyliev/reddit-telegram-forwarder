@@ -1,6 +1,8 @@
 package com.github.yvasyliev.exceptions;
 
-public class VideoUrlParseException extends Exception {
+import java.io.IOException;
+
+public class VideoUrlParseException extends IOException {
     public VideoUrlParseException(String message) {
         super(message);
     }

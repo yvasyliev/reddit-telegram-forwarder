@@ -1,7 +1,7 @@
 package com.github.yvasyliev.appenders;
 
-import com.github.yvasyliev.config.TelegramLoggerBotConfig;
-import com.github.yvasyliev.telegram.TelegramLoggerBot;
+import com.github.yvasyliev.RedditTelegramForwarderApplication;
+import com.github.yvasyliev.bots.telegram.notifier.TelegramNotifier;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
@@ -14,22 +14,21 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.Optional;
 
 @Plugin(name = "TelegramBotAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TelegramBotAppender extends AbstractAppender {
-    private final TelegramLoggerBot telegramLoggerBot;
+    private static final String MESSAGE_TEMPLATE = """
+            %s
+            %s""";
 
     protected TelegramBotAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
-        var applicationContext = new AnnotationConfigApplicationContext(TelegramLoggerBotConfig.class);
-        this.telegramLoggerBot = applicationContext.getBean(TelegramLoggerBot.class);
     }
 
     @PluginFactory
@@ -39,30 +38,33 @@ public class TelegramBotAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        var formattedMessage = event.getMessage().getFormattedMessage();
-
-        try {
-            var stackTrace = getStackTrace(event.getThrown());
-            if (stackTrace != null) {
-                formattedMessage = """
-                        %s
-                        %s""".formatted(formattedMessage, stackTrace);
+        RedditTelegramForwarderApplication.withContext(applicationContext -> {
+            try {
+                applicationContext
+                        .getBean(TelegramNotifier.class)
+                        .applyWithException(buildMessage(event));
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
             }
-
-            telegramLoggerBot.log(formattedMessage);
-        } catch (TelegramApiException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
-    private String getStackTrace(Throwable throwable) throws IOException {
-        if (throwable == null) {
-            return null;
-        }
+    private String buildMessage(LogEvent event) {
+        var formattedMessage = event.getMessage().getFormattedMessage();
+        return getStackTrace(event.getThrown())
+                .map(stackTrace -> MESSAGE_TEMPLATE.formatted(formattedMessage, stackTrace))
+                .orElse(formattedMessage);
+    }
 
-        try (var stringWriter = new StringWriter(); var printWriter = new PrintWriter(stringWriter)) {
-            throwable.printStackTrace(printWriter);
-            return stringWriter.toString();
-        }
+    private Optional<String> getStackTrace(Throwable throwable) {
+        return Optional.ofNullable(throwable).map(t -> {
+            try (var stringWriter = new StringWriter(); var printWriter = new PrintWriter(stringWriter)) {
+                t.printStackTrace(printWriter);
+                return stringWriter.toString();
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
+                return null;
+            }
+        });
     }
 }
