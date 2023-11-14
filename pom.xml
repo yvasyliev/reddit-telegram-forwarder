@@ -19,6 +19,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+        <surefire.timeout>60</surefire.timeout>
     </properties>
 
     <build>
@@ -29,11 +30,11 @@
                 <configuration>
                     <additionalProperties>
                         <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+                        <surefire.timeout>60</surefire.timeout>
                     </additionalProperties>
                     <arguments>
-                        <argument>
-                            --forkedProcessTimeoutInSeconds=60
-                        </argument>
+                        <argument>--forkedProcessTimeoutInSeconds=60</argument>
+                        <argument>--surefire.timeout=60</argument>
                     </arguments>
                 </configuration>
             </plugin>
