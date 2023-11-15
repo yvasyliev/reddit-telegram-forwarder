@@ -13,6 +13,55 @@ on:
           - provided
 
 jobs:
+  get-artifact-id:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.get-artifact-id.outputs.artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get artifactId
+        id: get-artifact-id
+        run: |
+          sudo apt-get install xmlstarlet
+          artifact_id=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:artifactId" pom.xml)
+          echo "\`artifactId\` is \`$artifact_id\`" >> $GITHUB_STEP_SUMMARY
+          artifact_id="artifact-id=$artifact_id"
+          echo "$artifact_id"
+          echo "$artifact_id" >> "$GITHUB_OUTPUT"
+
+  get-current-version:
+    runs-on: ubuntu-latest
+    outputs:
+      current-version: ${{ steps.get-current-version.outputs.current-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get current version
+        id: get-current-version
+        run: |
+          sudo apt-get install xmlstarlet
+          current_version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
+          echo "Current version is \`$current_version\`" >> $GITHUB_STEP_SUMMARY
+          current_version="current-version=$current_version"
+          echo "$current_version"
+          echo "$current_version" >> "$GITHUB_OUTPUT"
+
+  validate-current-version:
+    runs-on: ubuntu-latest
+    needs: get-current-version
+    if: github.event.inputs.release_type != 'provided'
+    steps:
+      - name: Validate current version
+        env:
+          CURRENT_VERSION: ${{ steps.get-current-version.outputs.current-version }}
+        run: |
+          if [[ ! $CURRENT_VERSION =~ ^([[:digit:]]+\.){2}[[:digit:]]+([\.-].+)?$ ]]
+          then
+            echo "::error::Unexpected artifact version found in pom.xml: $CURRENT_VERSION. Expected format: x.y.z*"
+            exit 1
+          fi
+  
   perform-tests:
     runs-on: ubuntu-latest
     environment: Test
@@ -42,35 +91,3 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
         run: mvn test
-
-  get-current-version:
-    runs-on: ubuntu-latest
-    outputs:
-      current-version: ${{ steps.get-current-version.outputs.current-version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Get current version
-        id: get-current-version
-        run: |
-          sudo apt-get install xmlstarlet
-          current_version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
-          echo "Current version is \`$current_version\`" >> $GITHUB_STEP_SUMMARY
-          current_version="current-version=$current_version"
-          echo "$current_version"
-          echo "$current_version" >> "$GITHUB_OUTPUT"
-
-  validate-current-version:
-    runs-on: ubuntu-latest
-    needs: get-current-version
-    if: github.event.inputs.release_type != 'provided'
-    steps:
-      - name: Validate current version
-        env:
-          CURRENT_VERSION: 1.2.3-a
-        run: |
-          if [[ ! $CURRENT_VERSION =~ ^([[:digit:]]+\.){2}[[:digit:]]+([\.-].+)?$ ]]
-          then
-            echo "::error::Unexpected artifact version found in pom.xml: $CURRENT_VERSION. Expected format: x.y.z*"
-            exit 1
-          fi
