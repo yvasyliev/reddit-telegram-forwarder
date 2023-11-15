@@ -113,12 +113,12 @@ jobs:
       - name: Increment minor version
         if: github.event.inputs.release_type == 'minor'
         run: |
-          minor_version=$(echo ${{ env.VERSION }} | grep -oP "^\d+\.\K\d+")
+          minor_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\K\d+")
           echo "minor_version=$minor_version"
           echo "Minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
           minor_version=$((minor_version + 1))
           echo "incremented_minor_version=$minor_version"
-          echo "NEW_VERSION=$(echo $CURRENT_VERSION | grep -oP '^\d+\.')$minor_version.0" >> $GITHUB_ENV
+          echo "NEW_VERSION=$(echo "$CURRENT_VERSION" | grep -oP '^\d+\.')$minor_version.0" >> $GITHUB_ENV
       - name: Get new version
         id: get-new-version
         env:
