@@ -54,14 +54,14 @@ jobs:
     steps:
       - name: Validate current version
         env:
-          CURRENT_VERSION: ${{ steps.get-current-version.outputs.current-version }}
+          CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
         run: |
           if [[ ! $CURRENT_VERSION =~ ^([[:digit:]]+\.){2}[[:digit:]]+([\.-].+)?$ ]]
           then
             echo "::error::Unexpected artifact version found in pom.xml: $CURRENT_VERSION. Expected format: x.y.z*"
             exit 1
           fi
-  
+
   perform-tests:
     runs-on: ubuntu-latest
     environment: Test
