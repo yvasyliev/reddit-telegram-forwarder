@@ -75,7 +75,7 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
           cache: maven
-      - name: Build with Maven
+      - name: Test with Maven
         env:
           REDDIT_SUBREDDIT: ${{ secrets.REDDIT_SUBREDDIT }}
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
@@ -110,6 +110,15 @@ jobs:
           echo "incremented_patch_version=patch_version"
           echo "New patch version is \`$patch_version\`" >> "$GITHUB_STEP_SUMMARY"
           echo "NEW_VERSION=$(echo "$CURRENT_VERSION" | grep -oP '^\d+\.\d+\.')$patch_version" >> "$GITHUB_ENV"
+      - name: Increment minor version
+        if: github.event.inputs.release_type == 'minor'
+        run: |
+          minor_version=$(echo ${{ env.VERSION }} | grep -oP "^\d+\.\K\d+")
+          echo "minor_version=$minor_version"
+          echo "Minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
+          minor_version=$((minor_version + 1))
+          echo "incremented_minor_version=$minor_version"
+          echo "NEW_VERSION=$(echo $CURRENT_VERSION | grep -oP '^\d+\.')$minor_version.0" >> $GITHUB_ENV
       - name: Get new version
         id: get-new-version
         env:
