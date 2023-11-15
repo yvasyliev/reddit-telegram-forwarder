@@ -130,6 +130,11 @@ jobs:
           echo "incremented_major_version=$major_version"
           echo "New major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
           echo "NEW_VERSION=$major_version.0.0" >> $GITHUB_ENV
+      - name: Set provided version
+        if: github.event.inputs.release_type == 'provided'
+        run: |
+          echo "Provided version is \`$CURRENT_VERSION\`"
+          echo "NEW_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
       - name: Get new version
         id: get-new-version
         env:
