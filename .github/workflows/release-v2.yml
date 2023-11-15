@@ -55,11 +55,11 @@ jobs:
         run: |
           sudo apt-get install xmlstarlet
           current_version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
-          echo "Current version is \`current_version\`" >> $GITHUB_STEP_SUMMARY
+          echo "Current version is \`$current_version\`" >> $GITHUB_STEP_SUMMARY
           current_version="current-version=$current_version"
           echo "$current_version"
           echo "$current_version" >> "$GITHUB_OUTPUT"
-  
+
   validate-current-version:
     runs-on: ubuntu-latest
     needs: get-current-version
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Validate current version
         env:
-          CURRENT_VERSION: 1.2.3a
+          CURRENT_VERSION: 1.2.3-a
         run: |
           if [[ ! $CURRENT_VERSION =~ ^([[:digit:]]+\.){2}[[:digit:]]+([\.-].+)?$ ]]
           then
