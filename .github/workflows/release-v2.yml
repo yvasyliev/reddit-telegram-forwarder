@@ -156,6 +156,7 @@ jobs:
       - name: Commit new version
         if: github.event.inputs.release_type != 'provided'
         run: |
+          sudo apt-get install xmlstarlet
           xmlstarlet ed -P -L -N pom=http://maven.apache.org/POM/4.0.0 -u "/pom:project/pom:version" -v "$NEW_VERSION" pom.xml
           sed -i 's/$CURRENT_VERSION/$NEW_VERSION/g' README.md
           git config user.email "github-actions@github.com"
