@@ -118,7 +118,18 @@ jobs:
           echo "Minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
           minor_version=$((minor_version + 1))
           echo "incremented_minor_version=$minor_version"
+          echo "New minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
           echo "NEW_VERSION=$(echo "$CURRENT_VERSION" | grep -oP '^\d+\.')$minor_version.0" >> $GITHUB_ENV
+      - name: Increment major version
+        if: github.event.inputs.release_type == 'major'
+        run: |
+          major_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+")
+          echo "major_version=$major_version"
+          echo "Major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
+          major_version=$((major_version + 1))
+          echo "incremented_major_version=$major_version"
+          echo "New major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "NEW_VERSION=$major_version.0.0" >> $GITHUB_ENV
       - name: Get new version
         id: get-new-version
         env:
