@@ -188,6 +188,7 @@ jobs:
             pom.xml
             README.md
           commit-message: v${{ env.NEW_VERSION }}
+      - run: git log origin/master..HEAD
 
   build-jar:
     runs-on: ubuntu-latest
@@ -216,6 +217,10 @@ jobs:
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
+      - run: |
+          ls
+          cd target
+          ls
       - run: |
           ls
           cd target
