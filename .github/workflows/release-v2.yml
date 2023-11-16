@@ -104,7 +104,7 @@ jobs:
         id: increment-patch-version
         if: github.event.inputs.release_type == 'patch'
         env:
-          LOG_MESSAGE: Increasing patch version.
+          LOG_MESSAGE: Increasing patch version
         run: |
           echo "$LOG_MESSAGE"
           echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
@@ -119,7 +119,7 @@ jobs:
         id: increment-minor-version
         if: github.event.inputs.release_type == 'minor'
         env:
-          LOG_MESSAGE: Increasing minor version.
+          LOG_MESSAGE: Increasing minor version
         run: |
           echo "$LOG_MESSAGE"
           echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
@@ -134,7 +134,7 @@ jobs:
         id: increment-major-version
         if: github.event.inputs.release_type == 'major'
         env:
-          LOG_MESSAGE: Increasing major version.
+          LOG_MESSAGE: Increasing major version
         run: |
           echo "$LOG_MESSAGE"
           echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
