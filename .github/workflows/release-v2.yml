@@ -189,6 +189,7 @@ jobs:
             README.md
           commit-message: v${{ env.NEW_VERSION }}
       - run: git log origin/master..HEAD
+      - run: git push
 
   build-jar:
     runs-on: ubuntu-latest
