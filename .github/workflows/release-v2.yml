@@ -66,6 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Test
     if: false #TODO: remove if
+    concurrency: perform-tests
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -158,8 +159,8 @@ jobs:
 
   commit-new-version:
     runs-on: ubuntu-latest
-    needs: [ get-current-version,get-new-version ] #TODO: add perform-tests
-    if: false #TODO: remove if
+    needs: [ perform-tests, get-new-version ]
+    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: remove if
     env:
       CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
       NEW_VERSION: ${{ needs.get-new-version.outputs.new-version }}
@@ -172,8 +173,12 @@ jobs:
           sudo apt-get install xmlstarlet
           xmlstarlet ed -P -L -N pom=http://maven.apache.org/POM/4.0.0 -u "/pom:project/pom:version" -v "$NEW_VERSION" pom.xml
           sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" README.md
-          git config user.email "github-actions@github.com"
-          git config user.name "github-actions"
-          git add pom.xml README.md
-          git commit -m "v$NEW_VERSION"
-          git push
+      - name: Commit changes
+        uses: tohgarashi/verified-commit@v2
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            pom.xml
+            README.md
+          commit-message: v${{ env.NEW_VERSION }}
