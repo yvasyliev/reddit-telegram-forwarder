@@ -103,7 +103,11 @@ jobs:
       - name: Increment patch version
         id: increment-patch-version
         if: github.event.inputs.release_type == 'patch'
+        env:
+          LOG_MESSAGE: Increasing patch version.
         run: |
+          echo "$LOG_MESSAGE"
+          echo "$LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           patch_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\d+\.\K\d+")
           echo "patch_version=$patch_version"
           echo "Patch version is \`$patch_version\`" >> "$GITHUB_STEP_SUMMARY"
@@ -114,7 +118,11 @@ jobs:
       - name: Increment minor version
         id: increment-minor-version
         if: github.event.inputs.release_type == 'minor'
+        env:
+          LOG_MESSAGE: Increasing minor version.
         run: |
+          echo "$LOG_MESSAGE"
+          echo "$LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           minor_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\K\d+")
           echo "minor_version=$minor_version"
           echo "Minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
@@ -125,7 +133,11 @@ jobs:
       - name: Increment major version
         id: increment-major-version
         if: github.event.inputs.release_type == 'major'
+        env:
+          LOG_MESSAGE: Increasing major version.
         run: |
+          echo "$LOG_MESSAGE"
+          echo "$LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           major_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+")
           echo "major_version=$major_version"
           echo "Major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
