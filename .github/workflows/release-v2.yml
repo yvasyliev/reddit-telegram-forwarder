@@ -95,7 +95,9 @@ jobs:
 
   get-new-version:
     runs-on: ubuntu-latest
-    needs: [ get-current-version, validate-current-version ]
+    needs:
+      - get-current-version
+      - validate-current-version
     if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
     outputs:
       new-version: ${{ steps.get-new-version.outputs.new-version }}
@@ -159,7 +161,11 @@ jobs:
 
   commit-new-version:
     runs-on: ubuntu-latest
-    needs: [ perform-tests, get-current-version, get-new-version ]
+    needs:
+      - perform-tests
+      - get-current-version
+      - get-new-version
+    #if: github.event.inputs.release_type != 'provided' #TODO: uncomment
     if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
     env:
       CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
@@ -182,3 +188,25 @@ jobs:
             pom.xml
             README.md
           commit-message: v${{ env.NEW_VERSION }}
+
+  build-jar:
+    runs-on: ubuntu-latest
+    needs:
+      - get-artifact-id
+      - get-new-version
+      - commit-new-version
+    if: ${{ !failed() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
+    outputs:
+      jar: ${{ env.JAR }}
+    env:
+      JAR: ${{ needs.get-artifact-id.outputs.artifact-id }}-${{ needs.get-new-version.outputs.new-version }}.jar
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build with maven
+        run: mvn package -Dmaven.test.skip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.JAR }}
+          path: target/${{ env.JAR }}
