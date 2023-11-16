@@ -188,8 +188,6 @@ jobs:
             pom.xml
             README.md
           commit-message: v${{ env.NEW_VERSION }}
-      - run: git log origin/master..HEAD
-      - run: git push
 
   build-jar:
     runs-on: ubuntu-latest
@@ -212,16 +210,14 @@ jobs:
           distribution: 'corretto'
           cache: maven
       - name: Build with maven
-        run: mvn package -Dmaven.test.skip
+        run: |
+          git pull
+          mvn package -Dmaven.test.skip
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
-      - run: |
-          ls
-          cd target
-          ls
       - run: |
           ls
           cd target
