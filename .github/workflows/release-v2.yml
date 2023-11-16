@@ -107,7 +107,7 @@ jobs:
           LOG_MESSAGE: Increasing patch version.
         run: |
           echo "$LOG_MESSAGE"
-          echo "$LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+          echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           patch_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\d+\.\K\d+")
           echo "patch_version=$patch_version"
           echo "Patch version is \`$patch_version\`" >> "$GITHUB_STEP_SUMMARY"
@@ -122,7 +122,7 @@ jobs:
           LOG_MESSAGE: Increasing minor version.
         run: |
           echo "$LOG_MESSAGE"
-          echo "$LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+          echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           minor_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\K\d+")
           echo "minor_version=$minor_version"
           echo "Minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
@@ -137,7 +137,7 @@ jobs:
           LOG_MESSAGE: Increasing major version.
         run: |
           echo "$LOG_MESSAGE"
-          echo "$LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+          echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
           major_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+")
           echo "major_version=$major_version"
           echo "Major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
