@@ -160,7 +160,7 @@ jobs:
   commit-new-version:
     runs-on: ubuntu-latest
     needs: [ perform-tests, get-new-version ]
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: remove if
+    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
     env:
       CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
       NEW_VERSION: ${{ needs.get-new-version.outputs.new-version }}
