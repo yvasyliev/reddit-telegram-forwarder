@@ -195,7 +195,7 @@ jobs:
       - get-artifact-id
       - get-new-version
       - commit-new-version
-    if: ${{ !failed() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
+    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
     outputs:
       jar: ${{ env.JAR }}
     env:
