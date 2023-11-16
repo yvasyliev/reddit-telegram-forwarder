@@ -216,3 +216,7 @@ jobs:
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
+      - run: |
+          ls
+          cd target
+          ls
