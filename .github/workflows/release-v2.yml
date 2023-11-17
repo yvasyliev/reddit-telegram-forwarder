@@ -214,18 +214,26 @@ jobs:
           cmd="
           cd $DIR
           if [ -f application.pid ]
-            echo "exists"
-          fi
-          if [ -f application.pid ]
-          then
-            echo "Application is running."
-            kill $(cat application.pid)
-            while [ -f application.pid ]
-            do
-              sleep 5
-            done
+            echo "application.pid exists"
           else
-            echo "Application is not running."
+            echo "application.pid doesn't exist"
           fi
           "
           sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
+#          cmd="
+#          cd $DIR
+#          if [ -f application.pid ]
+#            echo "exists"
+#          fi
+#          if [ -f application.pid ]
+#          then
+#            echo "Application is running."
+#            kill $(cat application.pid)
+#            while [ -f application.pid ]
+#            do
+#              sleep 5
+#            done
+#          else
+#            echo "Application is not running."
+#          fi
+#          "
