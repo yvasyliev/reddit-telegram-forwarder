@@ -213,6 +213,19 @@ jobs:
         run: |
           cmd="
           cd $DIR
-          ./stop.sh
+          if [ -f application.pid ]
+            echo "exists"
+          fi
+          if [ -f application.pid ]
+          then
+            echo "Application is running."
+            kill $(cat application.pid)
+            while [ -f application.pid ]
+            do
+              sleep 5
+            done
+          else
+            echo "Application is not running."
+          fi
           "
           sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
