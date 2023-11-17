@@ -98,7 +98,10 @@ jobs:
     needs:
       - get-current-version
       - validate-current-version
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+    if: ${{
+      !failure()
+      && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result)
+    }}
     outputs:
       new-version: ${{ steps.get-new-version.outputs.new-version }}
     env:
@@ -152,7 +155,12 @@ jobs:
       - name: Get new version
         id: get-new-version
         env:
-          NEW_VERSION: ${{ steps.increment-patch-version.outputs.new-version || steps.increment-minor-version.outputs.new-version || steps.increment-major-version.outputs.new-version || env.CURRENT_VERSION }}
+          NEW_VERSION: ${{
+            steps.increment-patch-version.outputs.new-version
+            || steps.increment-minor-version.outputs.new-version
+            || steps.increment-major-version.outputs.new-version
+            || env.CURRENT_VERSION
+          }}
         run: |
           echo "New version is \`$NEW_VERSION\`" >> "$GITHUB_STEP_SUMMARY"
           new_version="new-version=$NEW_VERSION"
@@ -166,7 +174,10 @@ jobs:
       - get-current-version
       - get-new-version
     #if: github.event.inputs.release_type != 'provided' #TODO: uncomment
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
+    if: ${{
+      !failure()
+      && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result)
+    }} #TODO: remove if
     env:
       CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
       NEW_VERSION: ${{ needs.get-new-version.outputs.new-version }}
@@ -195,7 +206,10 @@ jobs:
       - get-artifact-id
       - get-new-version
       - commit-new-version
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
+    if: ${{
+      !failure()
+      && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result)
+    }}
     outputs:
       jar: ${{ env.JAR }}
     env:
@@ -218,7 +232,3 @@ jobs:
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
-      - run: |
-          ls
-          cd target
-          ls
