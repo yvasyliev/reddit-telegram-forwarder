@@ -194,3 +194,37 @@ jobs:
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
+
+  stop-existing-app:
+    runs-on: ubuntu-latest
+    environment: Prod
+    needs:
+      - perform-tests
+      - validate-current-version
+#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: uncomment
+    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }} #TODO: remove if
+    steps:
+      - name: Stop existing app
+        env:
+          USERNAME: ${{ secrets.SSH_USERNAME }}
+          PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          HOST: ${{ secrets.SSH_HOST }}
+          PORT: ${{ secrets.SSH_PORT }}
+          DIR: ${{ secrets.SSH_DIR }}
+        run: |
+          sudo apt-get install sshpass
+          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST:$PORT"
+          cd $DIR
+          if [ -f application.pid ]
+          then
+            echo "Application is running."
+            echo "Application is running." >> "$GITHUB_STEP_SUMMARY"
+            kill $(cat application.pid)
+            while [ -f application.pid ]
+            do
+              sleep 5
+            done
+          else
+            echo "Application is not running."
+            echo "Application is not running." >> "$GITHUB_STEP_SUMMARY"
+          fi
