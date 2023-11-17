@@ -209,11 +209,10 @@ jobs:
           USERNAME: ${{ secrets.SSH_USERNAME }}
           PASSWORD: ${{ secrets.SSH_PASSWORD }}
           HOST: ${{ secrets.SSH_HOST }}
-          PORT: ${{ secrets.SSH_PORT }}
           DIR: ${{ secrets.SSH_DIR }}
         run: |
           sudo apt-get install sshpass
-          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST:$PORT"
+          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST"
           cd $DIR
           if [ -f application.pid ]
           then
