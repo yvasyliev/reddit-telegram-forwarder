@@ -16,7 +16,7 @@ jobs:
   get-artifact-id:
     runs-on: ubuntu-latest
     outputs:
-      artifact-id: steps.get-artifact-id.outputs.artifact-id
+      artifact-id: ${{ steps.get-artifact-id.outputs.artifact-id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
   get-current-version:
     runs-on: ubuntu-latest
     outputs:
-      current-version: steps.get-current-version.outputs.current-version
+      current-version: ${{ steps.get-current-version.outputs.current-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -152,10 +152,10 @@ jobs:
       - name: Get new version
         id: get-new-version
         env:
-          NEW_VERSION: steps.increment-patch-version.outputs.new-version
+          NEW_VERSION: ${{ steps.increment-patch-version.outputs.new-version
             || steps.increment-minor-version.outputs.new-version
             || steps.increment-major-version.outputs.new-version
-            || env.CURRENT_VERSION
+            || env.CURRENT_VERSION }}
         run: |
           echo "New version is \`$NEW_VERSION\`" >> "$GITHUB_STEP_SUMMARY"
           new_version="new-version=$NEW_VERSION"
@@ -200,7 +200,7 @@ jobs:
       - commit-new-version
     if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
     outputs:
-      jar: env.JAR
+      jar: ${{ env.JAR }}
     env:
       JAR: ${{ needs.get-artifact-id.outputs.artifact-id }}-${{ needs.get-new-version.outputs.new-version }}.jar
     steps:
