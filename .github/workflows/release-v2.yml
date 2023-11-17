@@ -211,13 +211,11 @@ jobs:
           HOST: ${{ secrets.SSH_HOST }}
           DIR: ${{ secrets.SSH_DIR }}
         run: |
-          sudo apt-get install sshpass
-          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "
+          cmd="
           cd $DIR
           if [ -f application.pid ]
           then
             echo "Application is running."
-            echo "Application is running." >> "$GITHUB_STEP_SUMMARY"
             kill $(cat application.pid)
             while [ -f application.pid ]
             do
@@ -225,6 +223,6 @@ jobs:
             done
           else
             echo "Application is not running."
-            echo "Application is not running." >> "$GITHUB_STEP_SUMMARY"
           fi
           "
+          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
