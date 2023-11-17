@@ -202,7 +202,7 @@ jobs:
       - perform-tests
       - validate-current-version
 #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: uncomment
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }} #TODO: remove if
+    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
     steps:
       - name: Stop existing app
         env:
