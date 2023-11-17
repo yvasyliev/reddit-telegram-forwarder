@@ -1,9 +1,13 @@
-name: Build
+name: Perform tests
 
-on: [ push, pull_request ]
+on:
+  - push
+  - pull_request
+  - workflow_call
 
 jobs:
-  build:
+  perform-tests:
+    concurrency: perform-tests
     runs-on: ubuntu-latest
     environment: Test
     steps:
@@ -30,4 +34,4 @@ jobs:
           TELEGRAM_CHANNEL_NAME: ${{ secrets.TELEGRAM_CHANNEL_NAME }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
-        run: mvn package
+        run: mvn test
