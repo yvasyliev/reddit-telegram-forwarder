@@ -226,3 +226,18 @@ jobs:
           result=$(sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD")
           echo "$result"
           echo "$result" >> "$GITHUB_STEP_SUMMARY"
+
+  delete-existing-jar:
+    runs-on: ubuntu-latest
+    environment: Prod
+    needs: stop-existing-app
+    steps:
+      - name: delete-existing-jar
+        env:
+          USERNAME: ${{ secrets.SSH_USERNAME }}
+          PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          HOST: ${{ secrets.SSH_HOST }}
+          CMD: |
+            cd ${{ secrets.SSH_DIR }}
+            find . -name "*.jar" -delete
+        run: sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
