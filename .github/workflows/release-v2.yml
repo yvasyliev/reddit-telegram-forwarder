@@ -212,7 +212,7 @@ jobs:
           DIR: ${{ secrets.SSH_DIR }}
         run: |
           cmd="cd $DIR; if [[ -f application.pid ]]; then; echo \"application.pid exists\"; else; echo \"application.pid doesn't exist\"; fi"
-          sshpass -p "$PASSWORD" ssh StrictHostKeyChecking=no "$USERNAME@$HOST" "pwd"
+          sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME@$HOST" "pwd"
 #          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
 #          cmd="
 #          cd $DIR
