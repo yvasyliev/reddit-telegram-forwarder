@@ -73,7 +73,7 @@ jobs:
     needs:
       - get-current-version
       - validate-current-version
-#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
     if: ${{ !failure() }}
     outputs:
       new-version: ${{ steps.get-new-version.outputs.new-version }}
@@ -173,7 +173,7 @@ jobs:
       - get-artifact-id
       - get-new-version
       - commit-new-version
-#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
+    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
     if: ${{ !failure() }}
     outputs:
       jar: ${{ env.JAR }}
@@ -204,7 +204,7 @@ jobs:
     needs:
       - perform-tests
       - validate-current-version
-#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
     if: ${{ !failure() }}
     steps:
       - name: Stop existing app
@@ -245,3 +245,24 @@ jobs:
             cd ${{ secrets.SSH_DIR }}
             find . -name "*.jar" -delete
         run: sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
+
+  deploy-to-remote:
+    runs-on: ubuntu-latest
+    environment: Prod
+    needs:
+      - build-jar
+      - delete-existing-jar
+    env:
+      JAR: ${{ needs.build-jar.outputs.jar }}
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.JAR }}
+      - name: deploy-to-remote
+        env:
+          USERNAME: ${{ secrets.SSH_USERNAME }}
+          PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          HOST: ${{ secrets.SSH_HOST }}
+          DIR: ${{ secrets.SSH_DIR }}
+        run: |
+          sshpass -p "$PASSWORD" scp "$JAR" scp "$USERNAME@$HOST:$DIR"
