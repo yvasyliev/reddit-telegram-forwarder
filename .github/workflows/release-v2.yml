@@ -216,7 +216,7 @@ jobs:
             if [ -f application.pid ]
               echo 'application.pid exists'
             else
-              echo 'application.pid doesn\'t exist'
+              echo 'application.pid doesnt exist'
             fi
           "
           sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd"
