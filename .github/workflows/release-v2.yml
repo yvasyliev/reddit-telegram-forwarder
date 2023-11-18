@@ -73,7 +73,8 @@ jobs:
     needs:
       - get-current-version
       - validate-current-version
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+    if: ${{ !failure() }}
     outputs:
       new-version: ${{ steps.get-new-version.outputs.new-version }}
     env:
@@ -172,7 +173,8 @@ jobs:
       - get-artifact-id
       - get-new-version
       - commit-new-version
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
+#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
+    if: ${{ !failure() }}
     outputs:
       jar: ${{ env.JAR }}
     env:
@@ -202,7 +204,8 @@ jobs:
     needs:
       - perform-tests
       - validate-current-version
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
+    if: ${{ !failure() }}
     steps:
       - name: Stop existing app
         env:
@@ -231,6 +234,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Prod
     needs: stop-existing-app
+    if: ${{ !failure() }}
     steps:
       - name: delete-existing-jar
         env:
