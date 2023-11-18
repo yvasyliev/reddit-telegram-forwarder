@@ -252,6 +252,7 @@ jobs:
     needs:
       - build-jar
       - delete-existing-jar
+    if: ${{ !failure() }}
     env:
       JAR: ${{ needs.build-jar.outputs.jar }}
     steps:
@@ -264,5 +265,4 @@ jobs:
           PASSWORD: ${{ secrets.SSH_PASSWORD }}
           HOST: ${{ secrets.SSH_HOST }}
           DIR: ${{ secrets.SSH_DIR }}
-        run: |
-          sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no "$JAR" "$USERNAME@$HOST:$DIR"
+        run: sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no -o LogLevel=quiet "$JAR" "$USERNAME@$HOST:$DIR"
