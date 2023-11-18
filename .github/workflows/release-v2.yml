@@ -213,14 +213,14 @@ jobs:
         run: |
           cmd="
             cd $DIR
-            if [ -f application.pid ]]
+            if [[ -f application.pid ]]
             then
-              echo 'application.pid exists'
+              echo "application.pid exists"
             else
-              echo 'application.pid doesnt exist'
+              echo "application.pid doesn't exist"
             fi
           "
-          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" $cmd
+          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd"
 #          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
 #          cmd="
 #          cd $DIR
