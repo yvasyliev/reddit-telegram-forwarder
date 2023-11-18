@@ -219,7 +219,7 @@ jobs:
               echo 'application.pid doesnt exist'
             fi
           "
-          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd"
+          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" bash $cmd
 #          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
 #          cmd="
 #          cd $DIR
