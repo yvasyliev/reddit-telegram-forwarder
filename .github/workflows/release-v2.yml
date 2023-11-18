@@ -265,4 +265,4 @@ jobs:
           HOST: ${{ secrets.SSH_HOST }}
           DIR: ${{ secrets.SSH_DIR }}
         run: |
-          sshpass -p "$PASSWORD" scp "$JAR" scp "$USERNAME@$HOST:$DIR"
+          sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no "$JAR" "$USERNAME@$HOST:$DIR"
