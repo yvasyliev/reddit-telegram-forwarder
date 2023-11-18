@@ -201,7 +201,7 @@ jobs:
     needs:
       - perform-tests
       - validate-current-version
-#    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: uncomment
+    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: uncomment
     if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
     steps:
       - name: Stop existing app
@@ -209,41 +209,20 @@ jobs:
           USERNAME: ${{ secrets.SSH_USERNAME }}
           PASSWORD: ${{ secrets.SSH_PASSWORD }}
           HOST: ${{ secrets.SSH_HOST }}
-          DIR: ${{ secrets.SSH_DIR }}
           CMD: |
             cd ${{ secrets.SSH_DIR }}
             if [[ -f application.pid ]]
             then
-              echo "application.pid exists"
+              echo "Application is running."
+              kill $(cat application.pid)
+              while [[ -f application.pid ]]
+              do
+                sleep 5
+              done
             else
-              echo "application.pid doesn't exist"
+              echo "Application is not running."
             fi
         run: |
-          cmd="
-          cd $DIR
-          if [[ -f application.pid ]]
-          then
-            echo \"application.pid exists\"
-          else
-            echo \"application.pid doesn't exist\"
-          fi
-          "
-          sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
-#          sshpass -p "$PASSWORD" ssh "$USERNAME@$HOST" "$cmd" >> "$GITHUB_STEP_SUMMARY"
-#          cmd="
-#          cd $DIR
-#          if [ -f application.pid ]
-#            echo "exists"
-#          fi
-#          if [ -f application.pid ]
-#          then
-#            echo "Application is running."
-#            kill $(cat application.pid)
-#            while [ -f application.pid ]
-#            do
-#              sleep 5
-#            done
-#          else
-#            echo "Application is not running."
-#          fi
-#          "
+          result=$(sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD")
+          echo "$result"
+          echo "$result" >> "$GITHUB_STEP_SUMMARY"
