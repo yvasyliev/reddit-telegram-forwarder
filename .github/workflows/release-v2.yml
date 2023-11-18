@@ -64,6 +64,8 @@ jobs:
 
   perform-tests:
     runs-on: ubuntu-latest #TODO: remove
+    steps:
+      - run: echo "perform-tests"
   #    uses: ./.github/workflows/perform-tests.yml #TODO: uncomment
 
   get-new-version:
