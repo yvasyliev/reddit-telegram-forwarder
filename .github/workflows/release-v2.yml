@@ -63,8 +63,8 @@ jobs:
           fi
 
   perform-tests:
-    if: false #TODO: remove if
-    uses: ./.github/workflows/perform-tests.yml
+    runs-on: ubuntu-latest #TODO: remove
+  #    uses: ./.github/workflows/perform-tests.yml #TODO: uncomment
 
   get-new-version:
     runs-on: ubuntu-latest
@@ -141,8 +141,7 @@ jobs:
       - perform-tests
       - get-current-version
       - get-new-version
-    #if: github.event.inputs.release_type != 'provided' #TODO: uncomment
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
+    if: github.event.inputs.release_type != 'provided'
     env:
       CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
       NEW_VERSION: ${{ needs.get-new-version.outputs.new-version }}
@@ -201,8 +200,7 @@ jobs:
     needs:
       - perform-tests
       - validate-current-version
-    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }} #TODO: uncomment
-    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.perform-tests.result) }} #TODO: remove if
+    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
     steps:
       - name: Stop existing app
         env:
