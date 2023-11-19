@@ -25,10 +25,7 @@ jobs:
         run: |
           sudo apt-get install xmlstarlet
           artifact_id=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:artifactId" pom.xml)
-          echo "\`artifactId\` is \`$artifact_id\`" >> $GITHUB_STEP_SUMMARY
-          artifact_id="artifact-id=$artifact_id"
-          echo "$artifact_id"
-          echo "$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "artifact-id=$artifact_id" >> "$GITHUB_OUTPUT"
 
   get-current-version:
     runs-on: ubuntu-latest
@@ -215,17 +212,9 @@ jobs:
           name: ${{ env.JAR }}
       - name: Draft release
         id: draft-release
-        uses: softprops/action-gh-release@v1
+        uses: meeDamian/github-release@2.0
         with:
-          tag_name: ${{ env.TAG }}
+          tag: ${{ env.TAG }}
           name: ${{ env.TAG }}
           draft: true
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.draft-release.outputs.upload_url }}
-          asset_path: ${{ env.JAR }}
-          asset_name: ${{ env.JAR }}
-          asset_content_type: application/java-archive
+          files: ${{ env.JAR }}
