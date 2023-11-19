@@ -215,12 +215,10 @@ jobs:
           name: ${{ env.JAR }}
       - name: Draft release
         id: draft-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG }}
-          release_name: ${{ env.TAG }}
+          name: ${{ env.TAG }}
           draft: true
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
