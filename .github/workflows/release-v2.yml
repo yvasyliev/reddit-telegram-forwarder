@@ -33,7 +33,7 @@ jobs:
   get-current-version:
     runs-on: ubuntu-latest
     outputs:
-      current-version: ${{ steps.get-current-version.outputs.current-version }}
+      version: ${{ steps.get-current-version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,26 +41,8 @@ jobs:
         id: get-current-version
         run: |
           sudo apt-get install xmlstarlet
-          current_version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
-          echo "Current version is \`$current_version\`" >> $GITHUB_STEP_SUMMARY
-          current_version="current-version=$current_version"
-          echo "$current_version"
-          echo "$current_version" >> "$GITHUB_OUTPUT"
-
-  validate-current-version:
-    runs-on: ubuntu-latest
-    needs: get-current-version
-    if: github.event.inputs.release_type != 'provided'
-    steps:
-      - name: Validate current version
-        env:
-          CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
-        run: |
-          if [[ ! $CURRENT_VERSION =~ ^([[:digit:]]+\.){2}[[:digit:]]+([\.-].+)?$ ]]
-          then
-            echo "::error::Unexpected artifact version found in pom.xml: $CURRENT_VERSION. Expected format: x.y.z*"
-            exit 1
-          fi
+          version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
   perform-tests:
     runs-on: ubuntu-latest #TODO: remove
@@ -68,89 +50,69 @@ jobs:
       - run: echo "perform-tests"
   #    uses: ./.github/workflows/perform-tests.yml #TODO: uncomment
 
-  get-new-version:
+  get-release-version:
     runs-on: ubuntu-latest
-    needs:
-      - get-current-version
-      - validate-current-version
-    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
-    if: ${{ !failure() }}
+    needs: get-current-version
     outputs:
-      new-version: ${{ steps.get-new-version.outputs.new-version }}
+      version: ${{ steps.increment-patch-version.outputs.version
+        || steps.increment-minor-version.outputs.version
+        || steps.increment-major-version.outputs.version
+        || needs.get-current-version.outputs.version }}
     env:
-      CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
+      VERSION: ${{ needs.get-current-version.outputs.version }}
     steps:
+      - name: Split current version
+        id: split-current-version
+        run: |
+          version=$(echo "$VERSION" | grep -Po '^(\d+\.){2}\d+')
+          version=${version//./ }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Fail on invalid current version
+        if: ${{ !steps.split-current-version.outputs.version }}
+        run: |
+          echo "::error::Unexpected artifact version found in pom.xml: $CURRENT_VERSION. Expected format: x.y.z"
+          exit 1
       - name: Increment patch version
         id: increment-patch-version
         if: github.event.inputs.release_type == 'patch'
         env:
-          LOG_MESSAGE: Increasing patch version
+          VERSION: ${{ steps.split-current-version.outputs.version }}
         run: |
-          echo "$LOG_MESSAGE"
-          echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
-          patch_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\d+\.\K\d+")
-          echo "patch_version=$patch_version"
-          echo "Patch version is \`$patch_version\`" >> "$GITHUB_STEP_SUMMARY"
-          patch_version=$((patch_version + 1))
-          echo "incremented_patch_version=patch_version"
-          echo "New patch version is \`$patch_version\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "new-version=$(echo "$CURRENT_VERSION" | grep -oP '^\d+\.\d+\.')$patch_version" >> "$GITHUB_OUTPUT"
+          parts=($VERSION)
+          patch=$((parts[2] + 1))
+          echo "version=${parts[0]}.${parts[1]}.$patch" >> "$GITHUB_OUTPUT"
       - name: Increment minor version
         id: increment-minor-version
         if: github.event.inputs.release_type == 'minor'
         env:
-          LOG_MESSAGE: Increasing minor version
+          VERSION: ${{ steps.split-current-version.outputs.version }}
         run: |
-          echo "$LOG_MESSAGE"
-          echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
-          minor_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+\.\K\d+")
-          echo "minor_version=$minor_version"
-          echo "Minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
-          minor_version=$((minor_version + 1))
-          echo "incremented_minor_version=$minor_version"
-          echo "New minor version is \`$minor_version\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "new-version=$(echo "$CURRENT_VERSION" | grep -oP '^\d+\.')$minor_version.0" >> "$GITHUB_OUTPUT"
+          parts=($VERSION)
+          minor=$((parts[1] + 1))
+          echo "version=${parts[0]}.$minor.0" >> "$GITHUB_OUTPUT"
       - name: Increment major version
         id: increment-major-version
         if: github.event.inputs.release_type == 'major'
         env:
-          LOG_MESSAGE: Increasing major version
+          VERSION: ${{ steps.split-current-version.outputs.version }}
         run: |
-          echo "$LOG_MESSAGE"
-          echo "# $LOG_MESSAGE" >> "$GITHUB_STEP_SUMMARY"
-          major_version=$(echo "$CURRENT_VERSION" | grep -oP "^\d+")
-          echo "major_version=$major_version"
-          echo "Major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
-          major_version=$((major_version + 1))
-          echo "incremented_major_version=$major_version"
-          echo "New major version is \`$major_version\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "new-version=$major_version.0.0" >> "$GITHUB_OUTPUT"
-      - name: Get new version
-        id: get-new-version
-        env:
-          NEW_VERSION: ${{ steps.increment-patch-version.outputs.new-version
-            || steps.increment-minor-version.outputs.new-version
-            || steps.increment-major-version.outputs.new-version
-            || env.CURRENT_VERSION }}
-        run: |
-          echo "New version is \`$NEW_VERSION\`" >> "$GITHUB_STEP_SUMMARY"
-          new_version="new-version=$NEW_VERSION"
-          echo "$new_version"
-          echo "$new_version" >> "$GITHUB_OUTPUT"
+          parts=($VERSION)
+          major=$((parts[0] + 1))
+          echo "version=$major.0.0" >> "$GITHUB_OUTPUT"
 
   commit-new-version:
     runs-on: ubuntu-latest
     needs:
       - perform-tests
       - get-current-version
-      - get-new-version
-    if: github.event.inputs.release_type != 'provided'
+      - get-release-version
     env:
       CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
-      NEW_VERSION: ${{ needs.get-new-version.outputs.new-version }}
+      NEW_VERSION: ${{ needs.get-release-version.outputs.new-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        if: github.event.inputs.release_type != 'provided'
       - name: Set new version
         if: github.event.inputs.release_type != 'provided'
         run: |
@@ -159,6 +121,7 @@ jobs:
           sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" README.md
       - name: Commit changes
         uses: tohgarashi/verified-commit@v2.x
+        if: github.event.inputs.release_type != 'provided'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -171,14 +134,14 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - get-artifact-id
-      - get-new-version
+      - get-release-version
       - commit-new-version
     #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
-    if: ${{ !failure() }}
+    #    if: ${{ !failure() }}
     outputs:
       jar: ${{ env.JAR }}
     env:
-      JAR: ${{ needs.get-artifact-id.outputs.artifact-id }}-${{ needs.get-new-version.outputs.new-version }}.jar
+      JAR: ${{ needs.get-artifact-id.outputs.artifact-id }}-${{ needs.get-release-version.outputs.new-version }}.jar
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -198,22 +161,24 @@ jobs:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
 
-  stop-existing-app:
+  deploy-to-remote:
     runs-on: ubuntu-latest
     environment: Prod
     needs:
-      - perform-tests
-      - validate-current-version
+      - build-jar
     #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
-    if: ${{ !failure() }}
+    #    if: ${{ !failure() }}
+    env:
+      USERNAME: ${{ secrets.SSH_USERNAME }}
+      PASSWORD: ${{ secrets.SSH_PASSWORD }}
+      HOST: ${{ secrets.SSH_HOST }}
+      DIR: ${{ secrets.SSH_DIR }}
+      JAR: ${{ needs.build-jar.outputs.jar }}
     steps:
       - name: Stop existing app
         env:
-          USERNAME: ${{ secrets.SSH_USERNAME }}
-          PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          HOST: ${{ secrets.SSH_HOST }}
           CMD: |
-            cd ${{ secrets.SSH_DIR }}
+            cd ${{ env.DIR }}
             if [[ -f application.pid ]]
             then
               echo "Application is running."
@@ -225,44 +190,16 @@ jobs:
             else
               echo "Application is not running."
             fi
-        run: |
-          result=$(sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD")
-          echo "$result"
-          echo "$result" >> "$GITHUB_STEP_SUMMARY"
-
-  delete-existing-jar:
-    runs-on: ubuntu-latest
-    environment: Prod
-    needs: stop-existing-app
-    if: ${{ !failure() }}
-    steps:
-      - name: delete-existing-jar
+        run: sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
+      - name: Delete existing jar
         env:
-          USERNAME: ${{ secrets.SSH_USERNAME }}
-          PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          HOST: ${{ secrets.SSH_HOST }}
           CMD: |
-            cd ${{ secrets.SSH_DIR }}
+            cd ${{ env.DIR }}
             find . -name "*.jar" -delete
         run: sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
-
-  deploy-to-remote:
-    runs-on: ubuntu-latest
-    environment: Prod
-    needs:
-      - build-jar
-      - delete-existing-jar
-    if: ${{ !failure() }}
-    env:
-      JAR: ${{ needs.build-jar.outputs.jar }}
-    steps:
-      - uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
           name: ${{ env.JAR }}
-      - name: deploy-to-remote
-        env:
-          USERNAME: ${{ secrets.SSH_USERNAME }}
-          PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          HOST: ${{ secrets.SSH_HOST }}
-          DIR: ${{ secrets.SSH_DIR }}
+      - name: Upload to remote
         run: sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no -o LogLevel=quiet "$JAR" "$USERNAME@$HOST:$DIR"
