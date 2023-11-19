@@ -136,8 +136,6 @@ jobs:
       - get-artifact-id
       - get-release-version
       - commit-new-version
-    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.commit-new-version.result) }}
-    #    if: ${{ !failure() }}
     outputs:
       jar: ${{ env.JAR }}
     env:
@@ -166,8 +164,6 @@ jobs:
     environment: Prod
     needs:
       - build-jar
-    #    if: ${{ !failure() && contains(fromJSON('["success", "skipped"]'), needs.validate-current-version.result) }}
-    #    if: ${{ !failure() }}
     env:
       USERNAME: ${{ secrets.SSH_USERNAME }}
       PASSWORD: ${{ secrets.SSH_PASSWORD }}
@@ -203,3 +199,35 @@ jobs:
           name: ${{ env.JAR }}
       - name: Upload to remote
         run: sshpass -p "$PASSWORD" scp -o StrictHostKeyChecking=no -o LogLevel=quiet "$JAR" "$USERNAME@$HOST:$DIR"
+
+  draft-release:
+    runs-on: ubuntu-latest
+    needs:
+      - get-release-version
+      - build-jar
+    env:
+      JAR: ${{ needs.build-jar.outputs.jar }}
+      TAG: v${{ needs.get-release-version.outputs.version }}
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.JAR }}
+      - name: Draft release
+        id: draft-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG }}
+          release_name: ${{ env.TAG }}
+          draft: true
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.draft-release.outputs.upload_url }}
+          asset_path: ${{ env.JAR }}
+          asset_name: ${{ env.JAR }}
+          asset_content_type: application/java-archive
