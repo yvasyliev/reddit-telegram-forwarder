@@ -214,6 +214,7 @@ jobs:
         id: draft-release
         uses: meeDamian/github-release@2.0
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.TAG }}
           name: ${{ env.TAG }}
           draft: true
