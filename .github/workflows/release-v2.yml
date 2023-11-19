@@ -141,7 +141,7 @@ jobs:
     outputs:
       jar: ${{ env.JAR }}
     env:
-      JAR: ${{ needs.get-artifact-id.outputs.artifact-id }}-${{ needs.get-release-version.outputs.new-version }}.jar
+      JAR: ${{ needs.get-artifact-id.outputs.artifact-id }}-${{ needs.get-release-version.outputs.version }}.jar
     steps:
       - name: Checkout
         uses: actions/checkout@v4
