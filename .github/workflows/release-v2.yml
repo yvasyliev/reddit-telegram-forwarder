@@ -107,8 +107,8 @@ jobs:
       - get-current-version
       - get-release-version
     env:
-      CURRENT_VERSION: ${{ needs.get-current-version.outputs.current-version }}
-      NEW_VERSION: ${{ needs.get-release-version.outputs.new-version }}
+      CURRENT_VERSION: ${{ needs.get-current-version.outputs.version }}
+      NEW_VERSION: ${{ needs.get-release-version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
