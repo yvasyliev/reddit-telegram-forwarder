@@ -211,7 +211,6 @@ jobs:
             --telegram.bot.token=${{ secrets.TELEGRAM_BOT_TOKEN }} \
             --telegram.bot.username=${{ secrets.TELEGRAM_BOT_USERNAME }} \
             --telegram.channel.id=${{ secrets.TELEGRAM_CHANNEL_ID }} \
-            --telegram.channel.name=${{ secrets.TELEGRAM_CHANNEL_NAME }} \
             --telegram.chat.id=${{ secrets.TELEGRAM_CHAT_ID }}
         run: nohup sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD" &
 

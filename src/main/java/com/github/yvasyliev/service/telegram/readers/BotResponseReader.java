@@ -15,8 +15,7 @@ public class BotResponseReader implements ThrowingFunction<String, String> {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
                     .replace(".", "\\.")
                     .replace("!", "\\!")
-                    .replace("-", "\\-")
-                    .replace("_", "\\_");
+                    .replace("-", "\\-");
         }
     }
 }
