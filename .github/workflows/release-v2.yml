@@ -212,7 +212,7 @@ jobs:
           name: ${{ env.JAR }}
       - name: Draft release
         id: draft-release
-        uses: shogo82148/actions-create-release
+        uses: shogo82148/actions-create-release@v1
         with:
           tag_name: ${{ env.TAG }}
           release_name: ${{ env.TAG }}
