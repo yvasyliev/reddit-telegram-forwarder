@@ -7,9 +7,9 @@ on:
 
 jobs:
   perform-tests:
-    concurrency: perform-tests
     runs-on: ubuntu-latest
     environment: Test
+    concurrency: perform-tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
