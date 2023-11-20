@@ -1,4 +1,4 @@
-![reddit-telegram-forwarder-logo](assests/reddit-telegram-forwarder-logo.png)
+![reddit-telegram-forwarder-logo](assets/reddit-telegram-forwarder-logo.png)
 
 # Reddit-Telegram Forwarder
 
@@ -18,7 +18,7 @@ Spring Boot-based Java application to forward Reddit posts to Telegram channel.
 1. Go to https://www.reddit.com/prefs/apps and create an app.
     * Application type must be `script`.
 
-      ![create-reddit-app](assests/create-reddit-app.gif)
+      ![create-reddit-app](assets/create-reddit-app.gif)
 2. Create Telegram Bot. You'll need a bot token.
     * [How Do I Create a Bot?](https://core.telegram.org/bots#how--o-i-create-a-bot)
 3. Get the app.
