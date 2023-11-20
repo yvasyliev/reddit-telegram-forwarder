@@ -8,6 +8,7 @@ import com.github.yvasyliev.model.dto.ExternalMessageData;
 import com.github.yvasyliev.model.events.NewChannelPostEvent;
 import com.github.yvasyliev.service.async.DelayedBlockingExecutor;
 import com.github.yvasyliev.service.telegram.callbacks.Callback;
+import com.github.yvasyliev.service.telegram.commands.AdminCommand;
 import com.github.yvasyliev.service.telegram.commands.Command;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
@@ -20,11 +21,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.starter.AfterBotRegistration;
 
@@ -150,31 +153,57 @@ public class RedditTelegramForwarderBot extends TelegramLongPollingBot {
     }
 
     public void onUserMessageReceived(Message message) {
-        getCommand(message).ifPresent(command -> onCommandReceived(command, message));
+        getCommand(message).ifPresentOrElse(
+                command -> onCommandReceived(command, message),
+                () -> {
+                    if (message.isCommand()) {
+                        try {
+                            execute(new SendMessage(
+                                    message.getChatId().toString(),
+                                    """
+                                            🤷‍♀️ Unknown command.
+                                            Send /help to see available commands."""
+                            ));
+                        } catch (TelegramApiException e) {
+                            LOGGER.error("Failed to send Unknown command response.", e);
+                        }
+                    }
+                }
+        );
     }
 
     public boolean isAdmin(User user) {
         return user.getId().toString().equals(getAdminId());
     }
 
-    private Optional<String> getCommand(Message message) {
+    private Optional<String> getCommandName(Message message) {
         var userId = message.getFrom().getId();
         if (message.isCommand()) {
-            return Optional.ofNullable(removeUserCommand(userId))
-                    .or(() -> Optional.of(message.getText().trim()));
+            removeUserCommand(userId);
+            return Optional.of(message.getText().trim());
         }
         return Optional.ofNullable(userCommands.get(userId));
     }
 
-    public void onCommandReceived(String command, Message message) {
-        if (context.containsBean(command)) {
-            try {
-                context.getBean(command, Command.class).acceptWithException(message);
-            } catch (Exception e) {
-                LOGGER.error("Failed to perform command {}", command, e);
-            }
-        } else {
-            LOGGER.info("Unknown command: {}", command);
+    public Optional<Command> getCommand(Message message) {
+        return getCommandName(message)
+                .map(commandName -> {
+                    if (context.containsBean(commandName)) {
+                        var command = context.getBean(commandName, Command.class);
+                        if (!(command instanceof AdminCommand) || isAdmin(message.getFrom())) {
+                            return command;
+                        }
+                    }
+
+                    return null;
+                });
+    }
+
+    public void onCommandReceived(Command command, Message message) {
+        try {
+            command.acceptWithException(message);
+        } catch (Exception e) {
+            LOGGER.error("Failed to perform command {}", command, e);
         }
     }
 
