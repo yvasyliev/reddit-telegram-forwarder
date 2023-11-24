@@ -3,6 +3,7 @@
     <Appenders>
         <Console name="stdout" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false" pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level} %style{%logger{36}}{magenta} - %msg%n"/>
+<!--            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
         </Console>
         <RollingFile name="roll-by-time-and-size"
                      fileName="reddit-telegram-forwarder.log"
@@ -32,7 +33,7 @@
         <Logger name="org.springframework" level="warn"/>
         <Logger name="org.apache.http" level="warn"/>
         <Logger name="org.hibernate" level="warn"/>
-        <Logger name="org.hibernate.SQL" level="debug"/>
+<!--        <Logger name="org.hibernate.SQL" level="debug"/>-->
         <Logger name="org.jboss.logging" level="warn"/>
         <Logger name="org.sqlite.core" level="warn"/>
         <Logger name="com.zaxxer.hikari" level="warn"/>
