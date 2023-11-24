@@ -1,4 +1,4 @@
-👋 Hello, I'm %s \(ver. %s\), and I'm the manager bot of %s channel!
+👋 Hello, I'm %s \(ver. `%s`\), and I'm the manager bot of %s channel!
 
 🤓 I can duplicate Subreddit posts to Telegram channel.
 
