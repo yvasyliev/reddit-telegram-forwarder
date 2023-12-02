@@ -45,7 +45,7 @@ public class PostManager {
         posts.forEach(this::publishPost);
     }
 
-    public <T extends Post> void publishPost(T post) {
+    public void publishPost(Post post) {
         if (context.containsBean(post.getType())) {
             try {
                 publishPost(post, post.getType());

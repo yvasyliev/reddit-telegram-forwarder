@@ -22,7 +22,11 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
-        <TelegramBotAppender name="telegramBotAppender"/>
+        <TelegramBotAppender name="telegramBotAppender">
+            <IgnoredExceptions>
+                <IgnoredException>org.apache.http.NoHttpResponseException</IgnoredException>
+            </IgnoredExceptions>
+        </TelegramBotAppender>
     </Appenders>
     <Loggers>
         <Root level="ALL">
