@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +30,9 @@ public class RedditAccessTokenRequestFactoryBean implements FactoryBean<HttpRequ
     @Value("java:${project.artifactId}:${project.version} (by /u/${reddit.username})")
     private String userAgent;
 
+    @Value("#{T(java.time.Duration).ofMinutes(${http.request.timeout.in.minutes:2})}")
+    private Duration timeout;
+
     @Override
     public HttpRequest getObject() {
         var credentials = "%s:%s".formatted(redditClientId, redditClientSecret);
@@ -43,6 +47,7 @@ public class RedditAccessTokenRequestFactoryBean implements FactoryBean<HttpRequ
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("User-Agent", userAgent)
                 .POST(HttpRequest.BodyPublishers.ofString(encode(payload)))
+                .timeout(timeout)
                 .build();
     }
 
