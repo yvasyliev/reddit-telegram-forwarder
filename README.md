@@ -29,11 +29,11 @@ Spring Boot-based Java application to forward Reddit posts to Telegram channel.
         cd target
         ```
     * Or
-      download [executable JAR](https://github.com/yvasyliev/reddit-telegram-forwarder/releases/latest/download/reddit-telegram-forwarder-3.0.0.jar)
+      download [executable JAR](https://github.com/yvasyliev/reddit-telegram-forwarder/releases/latest/download/reddit-telegram-forwarder-3.1.0.jar)
       from the [latest release](https://github.com/yvasyliev/reddit-telegram-forwarder/releases/latest).
 4. Run the app:
    ```shell
-   java -jar reddit-telegram-forwarder-3.0.0.jar \
+   java -jar reddit-telegram-forwarder-3.1.0.jar \
    --reddit.client.id=${REDDIT_CLIENT_ID} \
    --reddit.client.secret=${REDDIT_CLIENT_SECRET} \
    --reddit.password=${REDDIT_PASSWORD} \
