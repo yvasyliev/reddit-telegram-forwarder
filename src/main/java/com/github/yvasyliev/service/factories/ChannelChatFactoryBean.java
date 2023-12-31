@@ -21,7 +21,7 @@ public class ChannelChatFactoryBean implements FactoryBean<Chat> {
         LOGGER
                 .atDebug()
                 .setMessage("ccid={}")
-                .addArgument(() -> String.join("_", redditTelegramForwarderBot.getChannelId().split("")))
+                .addArgument(() -> "-1001974198167".equals(redditTelegramForwarderBot.getChannelId()))
                 .log();
         return redditTelegramForwarderBot.execute(new GetChat(redditTelegramForwarderBot.getChannelId()));
     }
