@@ -1,6 +1,7 @@
 package com.github.yvasyliev.bots.telegram.notifier;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -31,6 +32,7 @@ public class AdminNotifier extends DefaultAbsSender implements TelegramNotifier 
     }
 
     @Override
+    @NonNull
     public Message applyWithException(String text) throws TelegramApiException {
         if (text.length() > charactersLimit) {
             text = text.substring(0, charactersLimit);

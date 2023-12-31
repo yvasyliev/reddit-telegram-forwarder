@@ -8,7 +8,8 @@ public class NewChannelPostEvent extends ApplicationEvent {
         super(channelPost);
     }
 
-    public ChannelPost getChannelPost() {
-        return (ChannelPost) getSource();
+    @Override
+    public ChannelPost getSource() {
+        return (ChannelPost) super.getSource();
     }
 }

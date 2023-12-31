@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.post.PollPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -12,7 +13,8 @@ import java.util.Optional;
 @Order(6)
 public class PollPostMapper implements PostMapper {
     @Override
-    public Optional<Post> applyWithException(JsonNode jsonPost) {
+    @NonNull
+    public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) {
         return Optional
                 .ofNullable(jsonPost.path("poll_data").get("options"))
                 .map(redditOptions -> {

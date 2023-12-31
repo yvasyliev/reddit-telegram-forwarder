@@ -6,6 +6,7 @@ import com.github.yvasyliev.model.dto.post.VideoPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.function.ThrowingFunction;
 
@@ -19,7 +20,8 @@ public class VideoPostMapper implements PostMapper {
     private ThrowingFunction<String, String> redditVideoDownloadUrlProvider;
 
     @Override
-    public Optional<Post> applyWithException(JsonNode jsonPost) throws Exception {
+    @NonNull
+    public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) throws Exception {
         return extractVideoUrl(jsonPost).map(videoUrl -> {
             var post = new VideoPost();
             post.setText(jsonPost.get("title").textValue());

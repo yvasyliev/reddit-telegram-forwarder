@@ -5,6 +5,7 @@ import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.model.dto.post.TextPost;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -26,7 +27,8 @@ public class TextPostMapper implements PostMapper {
     private String postTextTemplate;
 
     @Override
-    public Optional<Post> applyWithException(JsonNode jsonPost) {
+    @NonNull
+    public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) {
         if (!isTextPost(jsonPost)) {
             return Optional.empty();
         }

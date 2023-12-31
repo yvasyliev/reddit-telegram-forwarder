@@ -8,11 +8,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,7 +24,7 @@ public class PhotoGroupPostMapper implements PostMapper {
     @NonNull
     public Optional<Post> applyWithException(JsonNode jsonPost) {
         if (jsonPost.has("gallery_data")) {
-            var photoUrlsPages = extractPhotoUrlsPages(jsonPost);
+            List<List<String>> photoUrlsPages = extractPhotoUrlsPages(jsonPost);
             var title = jsonPost.get("title").textValue();
             var post = new PhotoGroupPost();
             post.setText(title);
@@ -37,14 +35,14 @@ public class PhotoGroupPostMapper implements PostMapper {
         return Optional.empty();
     }
 
-    private Queue<Queue<String>> extractPhotoUrlsPages(JsonNode post) {
+    private List<List<String>> extractPhotoUrlsPages(JsonNode post) {
         var photoUrls = extractPhotoUrls(post);
-        return new ArrayDeque<>(IntStream
+        return List.copyOf(IntStream
                 .range(0, photoUrls.size())
                 .boxed()
                 .collect(Collectors.groupingBy(
                         i -> i / pageSize,
-                        Collectors.mapping(photoUrls::get, Collectors.toCollection(ArrayDeque::new))
+                        Collectors.mapping(photoUrls::get, Collectors.toList())
                 ))
                 .values());
     }
