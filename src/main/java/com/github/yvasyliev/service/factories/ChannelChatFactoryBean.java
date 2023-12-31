@@ -23,7 +23,7 @@ public class ChannelChatFactoryBean implements FactoryBean<Chat> {
     public Chat getObject() throws TelegramApiException {
         LOGGER
                 .atDebug()
-                .setMessage("channel.chat.id={}")
+                .setMessage("ccid={}")
                 .addArgument(() -> Base64
                         .getEncoder()
                         .encodeToString(redditTelegramForwarderBot
