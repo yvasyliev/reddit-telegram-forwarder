@@ -10,9 +10,6 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
 @Component
 public class ChannelChatFactoryBean implements FactoryBean<Chat> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelChatFactoryBean.class);
@@ -24,13 +21,7 @@ public class ChannelChatFactoryBean implements FactoryBean<Chat> {
         LOGGER
                 .atDebug()
                 .setMessage("ccid={}")
-                .addArgument(() -> Base64
-                        .getEncoder()
-                        .encodeToString(redditTelegramForwarderBot
-                                .getChannelId()
-                                .getBytes(StandardCharsets.UTF_8)
-                        )
-                )
+                .addArgument(() -> String.join("_", redditTelegramForwarderBot.getChannelId().split("")))
                 .log();
         return redditTelegramForwarderBot.execute(new GetChat(redditTelegramForwarderBot.getChannelId()));
     }
