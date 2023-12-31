@@ -42,10 +42,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
   perform-tests:
-    runs-on: ubuntu-latest #TODO: remove
-    steps:
-      - run: echo "perform-tests"
-  #    uses: ./.github/workflows/perform-tests.yml #TODO: uncomment
+    uses: ./.github/workflows/perform-tests.yml
 
   get-release-version:
     runs-on: ubuntu-latest
