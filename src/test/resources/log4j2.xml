@@ -4,7 +4,11 @@
         <Console name="stdout" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false" pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level} %style{%logger{36}}{magenta} - %msg%n"/>
         </Console>
-        <TelegramBotAppender name="telegramBotAppender"/>
+        <TelegramBotAppender name="telegramBotAppender">
+            <IgnoredExceptions>
+                <IgnoredException>org.apache.http.NoHttpResponseException</IgnoredException>
+            </IgnoredExceptions>
+        </TelegramBotAppender>
     </Appenders>
     <Loggers>
         <Root level="ALL">
