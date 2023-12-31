@@ -9,8 +9,6 @@ jobs:
   perform-tests:
     runs-on: ubuntu-latest
     environment: Test
-    env:
-      TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
     concurrency: perform-tests
     steps:
       - name: Checkout
@@ -32,7 +30,7 @@ jobs:
           TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
-#          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
         run: mvn test
