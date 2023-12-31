@@ -15,8 +15,7 @@ public class ChannelChatFactoryBean implements FactoryBean<Chat> {
 
     @Override
     public Chat getObject() throws TelegramApiException {
-        return redditTelegramForwarderBot.execute(new GetChat("-1001974198167"));
-//        return redditTelegramForwarderBot.execute(new GetChat(redditTelegramForwarderBot.getChannelId()));
+        return redditTelegramForwarderBot.execute(new GetChat(redditTelegramForwarderBot.getChannelId()));
     }
 
     @Override
