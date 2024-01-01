@@ -5,7 +5,6 @@ import com.github.yvasyliev.model.dto.post.Post;
 import com.github.yvasyliev.model.dto.post.TextPost;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 @Component
 @Order(1)
-public class TextPostMapper implements PostMapper {
+public class TextPostMapper extends JsonNodeToPostConverter {
     @Value("#{{'.gifv'}}")
     private Set<String> videoExtensions;
 
@@ -27,20 +26,19 @@ public class TextPostMapper implements PostMapper {
     private String postTextTemplate;
 
     @Override
-    @NonNull
-    public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) {
+    public Post convertThrowing(JsonNode jsonPost) {
         if (!isTextPost(jsonPost)) {
-            return Optional.empty();
+            return convertNext(jsonPost);
         }
 
         var text = postTextTemplate.formatted(
-                jsonPost.get("title").textValue(),
+                title(jsonPost),
                 jsonPost.get("url_overridden_by_dest").textValue()
         );
 
         var post = new TextPost();
         post.setText(text);
-        return Optional.of(post);
+        return post;
     }
 
     private boolean isTextPost(JsonNode post) {

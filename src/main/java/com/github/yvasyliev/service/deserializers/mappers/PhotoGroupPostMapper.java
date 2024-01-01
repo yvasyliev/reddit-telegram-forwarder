@@ -5,7 +5,6 @@ import com.github.yvasyliev.model.dto.post.PhotoGroupPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -16,23 +15,22 @@ import java.util.stream.IntStream;
 
 @Component
 @Order(3)
-public class PhotoGroupPostMapper implements PostMapper {
+public class PhotoGroupPostMapper extends JsonNodeToPostConverter {
     @Value("10")
     private int pageSize;
 
     @Override
-    @NonNull
-    public Optional<Post> applyWithException(JsonNode jsonPost) {
-        if (jsonPost.has("gallery_data")) {
-            List<List<String>> photoUrlsPages = extractPhotoUrlsPages(jsonPost);
-            var title = jsonPost.get("title").textValue();
-            var post = new PhotoGroupPost();
-            post.setText(title);
-            post.setPhotoUrlsPages(photoUrlsPages);
-            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
-            return Optional.of(post);
+    public Post convertThrowing(JsonNode jsonPost) {
+        if (!jsonPost.has("gallery_data")) {
+            return convertNext(jsonPost);
         }
-        return Optional.empty();
+
+        var photoUrlsPages = extractPhotoUrlsPages(jsonPost);
+        var post = new PhotoGroupPost();
+        post.setText(title(jsonPost));
+        post.setPhotoUrlsPages(photoUrlsPages);
+        post.setHasSpoiler(nsfw(jsonPost));
+        return post;
     }
 
     private List<List<String>> extractPhotoUrlsPages(JsonNode post) {

@@ -6,39 +6,41 @@ import com.github.yvasyliev.model.dto.post.VideoPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.function.ThrowingFunction;
 
-import java.util.Optional;
-
 @Component
 @Order(5)
-public class VideoPostMapper implements PostMapper {
+public class VideoPostMapper extends JsonNodeToPostConverter {
     @Autowired
     @Qualifier("redditVideoDownloader")
     private ThrowingFunction<String, String> redditVideoDownloadUrlProvider;
 
     @Override
-    @NonNull
-    public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) throws Exception {
-        return extractVideoUrl(jsonPost).map(videoUrl -> {
-            var post = new VideoPost();
-            post.setText(jsonPost.get("title").textValue());
-            post.setMediaUrl(videoUrl);
-            post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
-            return post;
-        });
-    }
+    public Post convertThrowing(JsonNode jsonPost) throws Exception {
+        var videoUrl = extractVideoUrl(jsonPost);
 
-    private Optional<String> extractVideoUrl(JsonNode jsonPost) throws Exception {
-        if (jsonPost.get("is_video").booleanValue()) {
-            var redditPostUrl = "https://www.reddit.com%s".formatted(jsonPost.get("permalink").textValue());
-            return redditVideoDownloadUrlProvider.applyWithException(redditPostUrl).describeConstable();
+        if (videoUrl == null) {
+            return convertNext(jsonPost);
         }
 
-        return Optional
-                .ofNullable(jsonPost.at("/media/reddit_video/fallback_url").textValue())
-                .or(() -> Optional.ofNullable(jsonPost.at("/preview/reddit_video_preview/fallback_url").textValue()));
+        var post = new VideoPost();
+        post.setText(title(jsonPost));
+        post.setMediaUrl(videoUrl);
+        post.setHasSpoiler(nsfw(jsonPost));
+        return post;
+    }
+
+    private String extractVideoUrl(JsonNode jsonPost) throws Exception {
+        if (jsonPost.get("is_video").booleanValue()) {
+            var redditPostUrl = "https://www.reddit.com%s".formatted(jsonPost.get("permalink").textValue());
+            return redditVideoDownloadUrlProvider.applyWithException(redditPostUrl);
+        }
+
+        var videoUrl = jsonPost.at("/media/reddit_video/fallback_url").textValue();
+        if (videoUrl == null) {
+            videoUrl = jsonPost.at("/preview/reddit_video_preview/fallback_url").textValue();
+        }
+        return videoUrl;
     }
 }

@@ -56,11 +56,11 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 : text;
 
         var sendMediaGroup = sendMediaGroup(chatId, pages.getFirst(), hasSpoiler, null);
-        sendMediaGroup.getMedias().get(0).setCaption(caption);
+        sendMediaGroup.getMedias().getFirst().setCaption(caption);
 
         var publishedPost = redditTelegramForwarderBot.executeDelayed(sendMediaGroup).get();
         var messages = new ArrayList<>(publishedPost);
-        var messageId = publishedPost.get(0).getMessageId();
+        var messageId = publishedPost.getFirst().getMessageId();
 
         if (!post.isApproved()) {
             messages.addAll(sendDelayed(chatId, messageId, post));
@@ -91,7 +91,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     }
 
     private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws ExecutionException, InterruptedException {
-        var pages = List.copyOf(post.getPhotoUrlsPages());
+        var pages = new ArrayList<>(post.getPhotoUrlsPages());
         var hasSpoiler = post.isHasSpoiler();
         var messages = new ArrayList<Message>();
         pages.removeFirst();
