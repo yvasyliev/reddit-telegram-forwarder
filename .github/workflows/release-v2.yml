@@ -42,6 +42,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
   perform-tests:
+    environment: Test
     uses: ./.github/workflows/perform-tests.yml
 
   get-release-version:
