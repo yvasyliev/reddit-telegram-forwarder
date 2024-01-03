@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Spliterator;
@@ -45,6 +46,9 @@ public class SubredditNewSupplier implements ThrowingSupplier<List<Post>> {
 
     @Autowired
     private HttpClient httpClient;
+
+    @Value("5")
+    private long timeout;
 
     @Override
     @NonNull
@@ -83,6 +87,7 @@ public class SubredditNewSupplier implements ThrowingSupplier<List<Post>> {
                 .header("Authorization", authorization)
                 .header("User-Agent", userAgent)
                 .GET()
+                .timeout(Duration.ofMinutes(timeout))
                 .build();
         var jsonBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
         return objectMapper.readTree(jsonBody);
