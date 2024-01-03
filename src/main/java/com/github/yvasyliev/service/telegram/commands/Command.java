@@ -3,6 +3,7 @@ package com.github.yvasyliev.service.telegram.commands;
 import com.github.yvasyliev.bots.telegram.RedditTelegramForwarderBot;
 import com.github.yvasyliev.service.telegram.readers.BotResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.util.function.ThrowingConsumer;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,7 +21,7 @@ public abstract class Command implements ThrowingConsumer<Message> {
     protected BotResponseReader responseReader;
 
     @Override
-    public void acceptWithException(Message message) throws Exception {
+    public void acceptWithException(@NonNull Message message) throws Exception {
         if (hasPermission(message)) {
             execute(message);
         }

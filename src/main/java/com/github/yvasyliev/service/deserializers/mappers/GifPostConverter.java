@@ -4,28 +4,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.yvasyliev.model.dto.post.GifPost;
 import com.github.yvasyliev.model.dto.post.Post;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 @Order(4)
-public class GifPostMapper implements PostMapper {
+public class GifPostConverter extends JsonNodeToPostConverter {
     @Override
-    @NonNull
-    public Optional<Post> applyWithException(@NonNull JsonNode jsonPost) {
+    public Post convertThrowing(JsonNode jsonPost) {
         var url = jsonPost.at("/preview/images/0/variants/mp4/source/url");
 
         if (url.isMissingNode()) {
-            return Optional.empty();
+            return convertNext(jsonPost);
         }
 
-        var gifUrl = url.textValue();
         var post = new GifPost();
-        post.setText(jsonPost.get("title").textValue());
-        post.setMediaUrl(gifUrl);
-        post.setHasSpoiler("nsfw".equals(jsonPost.get("thumbnail").textValue()));
-        return Optional.of(post);
+        post.setText(title(jsonPost));
+        post.setMediaUrl(url.textValue());
+        post.setHasSpoiler(nsfw(jsonPost));
+        return post;
     }
 }

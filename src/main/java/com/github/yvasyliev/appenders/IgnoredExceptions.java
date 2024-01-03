@@ -20,6 +20,9 @@ public class IgnoredExceptions {
 
     @PluginFactory
     public static IgnoredExceptions createAppender(@PluginElement("IgnoredException") IgnoredException[] ignoredExceptions) {
+        if (ignoredExceptions == null) {
+            ignoredExceptions = new IgnoredException[0];
+        }
         return new IgnoredExceptions(
                 Arrays
                         .stream(ignoredExceptions)

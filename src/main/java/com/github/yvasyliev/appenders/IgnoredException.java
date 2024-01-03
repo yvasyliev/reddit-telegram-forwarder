@@ -16,7 +16,7 @@ public class IgnoredException {
 
     @PluginFactory
     public static IgnoredException createAppender(@PluginValue("value") String name) throws ClassNotFoundException {
-        return new IgnoredException(Class.forName(name).asSubclass(Throwable.class));
+        return new IgnoredException(name != null ? Class.forName(name).asSubclass(Throwable.class) : null);
     }
 
     public Class<? extends Throwable> getExceptionClass() {

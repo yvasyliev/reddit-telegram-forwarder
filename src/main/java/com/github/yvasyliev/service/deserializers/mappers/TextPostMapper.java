@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Component
 @Order(1)
-public class TextPostMapper implements PostMapper {
+public class TextPostMapper extends JsonNodeToPostConverter {
     @Value("#{{'.gifv'}}")
     private Set<String> videoExtensions;
 
@@ -26,19 +26,19 @@ public class TextPostMapper implements PostMapper {
     private String postTextTemplate;
 
     @Override
-    public Optional<Post> applyWithException(JsonNode jsonPost) {
+    public Post convertThrowing(JsonNode jsonPost) {
         if (!isTextPost(jsonPost)) {
-            return Optional.empty();
+            return convertNext(jsonPost);
         }
 
         var text = postTextTemplate.formatted(
-                jsonPost.get("title").textValue(),
+                title(jsonPost),
                 jsonPost.get("url_overridden_by_dest").textValue()
         );
 
         var post = new TextPost();
         post.setText(text);
-        return Optional.of(post);
+        return post;
     }
 
     private boolean isTextPost(JsonNode post) {

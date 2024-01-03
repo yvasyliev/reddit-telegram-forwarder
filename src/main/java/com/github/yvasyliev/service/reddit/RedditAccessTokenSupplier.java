@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.yvasyliev.model.dto.RedditAccessToken;
 import org.apache.http.client.HttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingSupplier;
 
@@ -27,6 +28,7 @@ public class RedditAccessTokenSupplier implements ThrowingSupplier<RedditAccessT
     private RedditAccessToken redditAccessToken;
 
     @Override
+    @NonNull
     public RedditAccessToken getWithException() throws IOException, InterruptedException {
         if (redditAccessToken == null || redditAccessToken.isExpired()) {
             var response = httpClient.send(redditAccessTokenRequest, HttpResponse.BodyHandlers.ofString());

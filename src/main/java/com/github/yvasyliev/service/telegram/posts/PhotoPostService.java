@@ -2,6 +2,7 @@ package com.github.yvasyliev.service.telegram.posts;
 
 import com.github.yvasyliev.model.dto.post.PhotoPost;
 import com.github.yvasyliev.model.dto.post.Post;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingBiFunction;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -18,7 +19,8 @@ import java.util.function.Predicate;
 @Service(Post.Type.PHOTO)
 public class PhotoPostService extends PostService<PhotoPost, Message> {
     @Override
-    public Optional<Message> applyWithException(String chatId, PhotoPost post) throws TelegramApiException {
+    @NonNull
+    public Optional<Message> applyWithException(@NonNull String chatId, @NonNull PhotoPost post) throws TelegramApiException {
         return Optional.ofNullable(sendPhoto(chatId, post));
     }
 

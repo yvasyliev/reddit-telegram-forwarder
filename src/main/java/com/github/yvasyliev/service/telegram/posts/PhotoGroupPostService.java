@@ -22,12 +22,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
@@ -57,12 +55,12 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
                 ? responseReader.applyWithException("responses/photogroup.md").formatted(text)
                 : text;
 
-        var sendMediaGroup = sendMediaGroup(chatId, pages.element(), hasSpoiler, null);
-        sendMediaGroup.getMedias().get(0).setCaption(caption);
+        var sendMediaGroup = sendMediaGroup(chatId, pages.getFirst(), hasSpoiler, null);
+        sendMediaGroup.getMedias().getFirst().setCaption(caption);
 
         var publishedPost = redditTelegramForwarderBot.executeDelayed(sendMediaGroup).get();
         var messages = new ArrayList<>(publishedPost);
-        var messageId = publishedPost.get(0).getMessageId();
+        var messageId = publishedPost.getFirst().getMessageId();
 
         if (!post.isApproved()) {
             messages.addAll(sendDelayed(chatId, messageId, post));
@@ -73,7 +71,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
         return Optional.of(messages);
     }
 
-    private SendMediaGroup sendMediaGroup(String chatId, Queue<String> page, boolean hasSpoiler, Integer replyToMessageId) {
+    private SendMediaGroup sendMediaGroup(String chatId, List<String> page, boolean hasSpoiler, Integer replyToMessageId) {
         var inputMediaPhotos = page
                 .stream()
                 .map(photoUrl -> (InputMedia) InputMediaPhoto
@@ -93,14 +91,14 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
     }
 
     private List<Message> sendDelayed(String chatId, int replyToMessageId, PhotoGroupPost post) throws ExecutionException, InterruptedException {
-        var pages = new ArrayDeque<>(post.getPhotoUrlsPages());
+        var pages = new ArrayList<>(post.getPhotoUrlsPages());
         var hasSpoiler = post.isHasSpoiler();
         var messages = new ArrayList<Message>();
         pages.removeFirst();
         for (var page : pages) {
             messages.addAll(page.size() > 1
                     ? redditTelegramForwarderBot.executeDelayed(sendMediaGroup(chatId, page, hasSpoiler, replyToMessageId)).get()
-                    : List.of(redditTelegramForwarderBot.executeDelayed(sendPhoto(chatId, page.element(), hasSpoiler, replyToMessageId)).get())
+                    : List.of(redditTelegramForwarderBot.executeDelayed(sendPhoto(chatId, page.getFirst(), hasSpoiler, replyToMessageId)).get())
             );
         }
         return messages;
@@ -117,7 +115,7 @@ public class PhotoGroupPostService extends PostService<PhotoGroupPost, List<Mess
 
     @EventListener
     public void onNewChannelPostEvent(NewChannelPostEvent newChannelPostEvent) {
-        var channelPost = newChannelPostEvent.getChannelPost();
+        var channelPost = newChannelPostEvent.getSource();
         Optional
                 .ofNullable(extraPhotos.remove(channelPost.forwardFromMessageId()))
                 .ifPresent(post -> {

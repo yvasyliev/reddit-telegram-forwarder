@@ -2,6 +2,7 @@ package com.github.yvasyliev.service.reddit;
 
 import com.github.yvasyliev.exceptions.VideoUrlParseException;
 import org.jsoup.Jsoup;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingFunction;
 
@@ -11,7 +12,8 @@ import java.util.Optional;
 @Service
 public class RedditVideoDownloader implements ThrowingFunction<String, String> {
     @Override
-    public String applyWithException(String redditPostUrl) throws IOException {
+    @NonNull
+    public String applyWithException(@NonNull String redditPostUrl) throws IOException {
         var url = "https://rapidsave.com/info?url=%s".formatted(redditPostUrl);
         return Optional.ofNullable(Jsoup
                         .connect(url)

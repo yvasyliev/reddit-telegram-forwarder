@@ -1,9 +1,11 @@
 package com.github.yvasyliev;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.Converter;
 import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.service.deserializers.mappers.JsonNodeToPostConverter;
 import com.github.yvasyliev.service.telegram.commands.Start;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -20,6 +22,7 @@ import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
 import java.net.http.HttpClient;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -48,9 +51,9 @@ public class RedditTelegramForwarderApplication {
     }
 
     @Bean
-    public ObjectMapper objectMapper(JsonDeserializer<Post> postJsonDeserializer) {
+    public ObjectMapper objectMapper(StdDelegatingDeserializer<Post> jsonPostDeserializer) {
         var module = new SimpleModule();
-        module.addDeserializer(Post.class, postJsonDeserializer);
+        module.addDeserializer(Post.class, jsonPostDeserializer);
 
         var mapper = new ObjectMapper();
         mapper.registerModule(module);
@@ -71,5 +74,13 @@ public class RedditTelegramForwarderApplication {
                 return size() >= maxSize;
             }
         });
+    }
+
+    @Bean
+    public Converter<?, Post> jsonNodeToPostConverter(List<JsonNodeToPostConverter> chain) {
+        return JsonNodeToPostConverter.createChain(
+                chain.removeFirst(),
+                chain.toArray(JsonNodeToPostConverter[]::new)
+        );
     }
 }
