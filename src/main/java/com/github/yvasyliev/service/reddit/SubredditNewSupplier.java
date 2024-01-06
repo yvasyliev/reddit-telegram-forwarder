@@ -14,6 +14,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.function.ThrowingSupplier;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,6 +24,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -53,7 +57,7 @@ public class SubredditNewSupplier implements ThrowingSupplier<List<Post>> {
     @Override
     @NonNull
     public List<Post> getWithException() throws Exception {
-        var subredditPosts = fetchNewPosts();
+        var subredditPosts = fetchNewPosts().get(timeout, TimeUnit.MINUTES);
         var children = subredditPosts.withArray("/data/children").elements();
         var lastCreated = propertyService.findLastCreated().orElse(0);
         return StreamSupport
@@ -79,7 +83,7 @@ public class SubredditNewSupplier implements ThrowingSupplier<List<Post>> {
                 .toList();
     }
 
-    private JsonNode fetchNewPosts() throws Exception {
+    private CompletableFuture<JsonNode> fetchNewPosts() throws Exception {
         var redditAccessToken = redditAccessTokenSupplier.getWithException();
         var authorization = "Bearer %s".formatted(redditAccessToken.token());
         var api = "https://oauth.reddit.com/r/%s/new?raw_json=1".formatted(subreddit);
@@ -89,7 +93,14 @@ public class SubredditNewSupplier implements ThrowingSupplier<List<Post>> {
                 .GET()
                 .timeout(Duration.ofMinutes(timeout))
                 .build();
-        var jsonBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
-        return objectMapper.readTree(jsonBody);
+        return httpClient
+                .sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+                .thenApply(httpResponse -> {
+                    try (var body = httpResponse.body()) {
+                        return objectMapper.readTree(body);
+                    } catch (IOException e) {
+                        throw new CompletionException(e);
+                    }
+                });
     }
 }

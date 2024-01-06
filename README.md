@@ -6,7 +6,7 @@ Spring Boot-based Java application to forward Reddit posts to Telegram channel.
 
 # Requirements
 
-- `Java 17`
+- `Java 21`
 - `Maven`
 - [Reddit](https://www.reddit.com/login/) profile
 - [Telegram](https://web.telegram.org/a/) profile
