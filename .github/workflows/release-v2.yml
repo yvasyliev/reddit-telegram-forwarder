@@ -175,7 +175,7 @@ jobs:
           git pull
           mvn package -Dmaven.test.skip
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
