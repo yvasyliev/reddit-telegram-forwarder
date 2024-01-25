@@ -215,7 +215,7 @@ jobs:
             find . -name "*.jar" -delete
         run: sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.JAR }}
       - name: Upload to remote
@@ -248,7 +248,7 @@ jobs:
       TAG: v${{ needs.get-release-version.outputs.version }}
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.JAR }}
       - name: Draft release
