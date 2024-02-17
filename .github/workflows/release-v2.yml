@@ -50,7 +50,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'corretto'
@@ -165,7 +165,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'corretto'
@@ -175,7 +175,7 @@ jobs:
           git pull
           mvn package -Dmaven.test.skip
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.JAR }}
           path: target/${{ env.JAR }}
@@ -215,7 +215,7 @@ jobs:
             find . -name "*.jar" -delete
         run: sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o LogLevel=quiet "$USERNAME@$HOST" "$CMD"
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.JAR }}
       - name: Upload to remote
@@ -248,7 +248,7 @@ jobs:
       TAG: v${{ needs.get-release-version.outputs.version }}
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.JAR }}
       - name: Draft release
