@@ -25,6 +25,7 @@
         <TelegramBotAppender name="telegramBotAppender">
             <IgnoredExceptions>
                 <IgnoredException>org.apache.http.NoHttpResponseException</IgnoredException>
+                <IgnoredException>java.net.http.HttpConnectTimeoutException</IgnoredException>
             </IgnoredExceptions>
         </TelegramBotAppender>
     </Appenders>

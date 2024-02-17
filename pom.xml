@@ -10,7 +10,7 @@
 
     <groupId>com.github.yvasyliev</groupId>
     <artifactId>reddit-telegram-forwarder</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
 
     <properties>
         <java.version>21</java.version>
