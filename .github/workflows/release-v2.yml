@@ -41,35 +41,35 @@ jobs:
           version=$(xmlstarlet sel -N pom=http://maven.apache.org/POM/4.0.0 -t -v "/pom:project/pom:version" pom.xml)
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-#   perform-tests:
-# #    uses: ./.github/workflows/perform-tests.yml
-#     runs-on: ubuntu-latest
-#     environment: Test
-#     concurrency: perform-tests
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
-#       - name: Set up JDK 21
-#         uses: actions/setup-java@v4
-#         with:
-#           java-version: '21'
-#           distribution: 'corretto'
-#           cache: maven
-#       - name: Build with Maven
-#         env:
-#           REDDIT_SUBREDDIT: ${{ secrets.REDDIT_SUBREDDIT }}
-#           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
-#           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
-#           REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
-#           REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
-#           SPRING_JPA_HIBERNATE_DDL_AUTO: ${{ vars.SPRING_JPA_HIBERNATE_DDL_AUTO }}
-#           TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
-#           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-#           TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
-#           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
-#           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-#           TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
-#         run: mvn test
+  perform-tests:
+#    uses: ./.github/workflows/perform-tests.yml
+    runs-on: ubuntu-latest
+    environment: Test
+    concurrency: perform-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: maven
+      # - name: Build with Maven
+      #   env:
+      #     REDDIT_SUBREDDIT: ${{ secrets.REDDIT_SUBREDDIT }}
+      #     REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+      #     REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+      #     REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
+      #     REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+      #     SPRING_JPA_HIBERNATE_DDL_AUTO: ${{ vars.SPRING_JPA_HIBERNATE_DDL_AUTO }}
+      #     TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
+      #     TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      #     TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
+      #     TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+      #     TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      #     TELEGRAM_SCHEDULE_POSTING_ENABLED: ${{ vars.TELEGRAM_SCHEDULE_POSTING_ENABLED }}
+      #   run: mvn test
 
   get-release-version:
     runs-on: ubuntu-latest
