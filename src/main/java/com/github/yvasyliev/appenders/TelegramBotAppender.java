@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @Plugin(name = "TelegramBotAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TelegramBotAppender extends AbstractAppender {
@@ -45,7 +46,9 @@ public class TelegramBotAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        var thrown = event.getThrown();
+        var thrown = event.getThrown() instanceof ExecutionException executionException
+                ? executionException.getCause()
+                : event.getThrown();
         if (thrown == null || !ignoredExceptions.contains(thrown.getClass())) {
             RedditTelegramForwarderApplication.withContext(applicationContext -> {
                 try {
