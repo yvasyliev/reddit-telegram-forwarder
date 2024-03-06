@@ -26,6 +26,7 @@
             <IgnoredExceptions>
                 <IgnoredException>org.apache.http.NoHttpResponseException</IgnoredException>
                 <IgnoredException>java.net.http.HttpConnectTimeoutException</IgnoredException>
+                <IgnoredException>java.net.ConnectException</IgnoredException>
             </IgnoredExceptions>
         </TelegramBotAppender>
     </Appenders>
