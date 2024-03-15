@@ -10,7 +10,7 @@
                      filePattern="reddit-telegram-forwarder.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
                      ignoreExceptions="false">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %p %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="128 KB"/>

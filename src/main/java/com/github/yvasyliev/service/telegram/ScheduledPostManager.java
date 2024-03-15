@@ -1,6 +1,7 @@
 package com.github.yvasyliev.service.telegram;
 
 import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.service.data.RedditTelegramForwarderPropertyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,16 @@ public class ScheduledPostManager extends PostManager {
     @Autowired
     private ThrowingSupplier<List<Post>> subredditNewSupplier;
 
+    @Autowired
+    private RedditTelegramForwarderPropertyService propertyService;
+
 
     @Scheduled(fixedDelayString = "${telegram.schedule.posting.delay.in.minutes:1}", timeUnit = TimeUnit.MINUTES)
     public void shareNewPosts() {
         if (isPosting.get()) {
             try {
+                var lastCreated = propertyService.findLastCreated().orElse(0);
+                LOGGER.debug("lastCreated={}", lastCreated);
                 var newPosts = subredditNewSupplier.getWithException();
                 LOGGER.debug("New posts: {}", newPosts);
                 publishPosts(newPosts);
