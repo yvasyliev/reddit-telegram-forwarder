@@ -29,11 +29,11 @@ Spring Boot-based Java application to forward Reddit posts to Telegram channel.
         cd target
         ```
     * Or
-      download [executable JAR](https://github.com/yvasyliev/reddit-telegram-forwarder/releases/latest/download/reddit-telegram-forwarder-3.2.0.jar)
+      download [executable JAR](https://github.com/yvasyliev/reddit-telegram-forwarder/releases/latest/download/reddit-telegram-forwarder-3.2.7.jar)
       from the [latest release](https://github.com/yvasyliev/reddit-telegram-forwarder/releases/latest).
 4. Run the app:
    ```shell
-   java -jar reddit-telegram-forwarder-3.2.0.jar \
+   java -jar reddit-telegram-forwarder-3.2.7.jar \
    --reddit.client.id=${REDDIT_CLIENT_ID} \
    --reddit.client.secret=${REDDIT_CLIENT_SECRET} \
    --reddit.password=${REDDIT_PASSWORD} \
@@ -86,11 +86,11 @@ for more details).
 |              `reddit.password`               |  `true`  |       -       | Reddit profile password.                                                                                                                                                                                                                                  | `ETD1fqx%cfk6odj#boj`                            |
 |              `reddit.subreddit`              |  `true`  |       -       | Subreddit name without `r/` prefix.                                                                                                                                                                                                                       | `cats`                                           |
 |              `reddit.username`               |  `true`  |       -       | Reddit profile username.                                                                                                                                                                                                                                  | `RedditProfileUsername000`                       |
-|             `telegram.admin.id`              |  `true`  |       -       | Telegram user ID (Telegram channel admin ID). Bot will send error logs directly to user. <ul><li>[How to find your User ID in Telegram?](https://www.google.com/search?q=How+to+find+your+User+ID+in+Telegram%3F)</li></ul>                               | `28053.2.0`                                      |
+|             `telegram.admin.id`              |  `true`  |       -       | Telegram user ID (Telegram channel admin ID). Bot will send error logs directly to user. <ul><li>[How to find your User ID in Telegram?](https://www.google.com/search?q=How+to+find+your+User+ID+in+Telegram%3F)</li></ul>                               | `280531210`                                      |
 |           `telegram.bot.username`            |  `true`  |       -       | Telegram bot username.                                                                                                                                                                                                                                    | `SubredditForwarderBot`                          |
 |             `telegram.bot.token`             |  `true`  |       -       | Telegram bot token.                                                                                                                                                                                                                                       | `4336854599:BBFqVLRq9ixVdxORFWQgaSywzCfRo5-tBus` |
 |            `telegram.channel.id`             |  `true`  |       -       | Telegram channel ID. Subreddit posts will be sent to this channel. <ul><li>[How to get the channel ID](https://gist.github.com/mraaroncruz/e76d19f7d61d59419002db54030ebe35#new-improved-next-steps)</li></ul>                                            | `-1001572613876` or `@SubredditPostChannel`      |
-|              `telegram.chat.id`              |  `true`  |       -       | The ID of the chat where users can leave comments under posts. Bot will send additional photos to this chat if orginal subreddit post contains more than 10 images. <ul><li>[How to get chat ID](https://stackoverflow.com/a/69302407/21234935)</li></ul> | `-1003.2.089009` or `@SubbredditPostChannelChat` |
+|              `telegram.chat.id`              |  `true`  |       -       | The ID of the chat where users can leave comments under posts. Bot will send additional photos to this chat if orginal subreddit post contains more than 10 images. <ul><li>[How to get chat ID](https://stackoverflow.com/a/69302407/21234935)</li></ul> | `-1003121089009` or `@SubbredditPostChannelChat` |
 | `telegram.schedule.posting.delay.in.minutes` | `false`  |      `1`      | How often (in minutes) the application should scan subreddit for new posts.                                                                                                                                                                               | `5`                                              |
 |     `telegram.schedule.posting.enabled`      | `false`  |    `true`     | Should application start forwarding right after startup or not. Can be paused/resumed via [Bot commands](#bot-commands).                                                                                                                                  | `false`                                          |
 
