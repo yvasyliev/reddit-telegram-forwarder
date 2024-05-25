@@ -10,7 +10,7 @@
                      filePattern="reddit-telegram-forwarder.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
                      ignoreExceptions="false">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %p %logger{36} %m%n</Pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="128 KB"/>
@@ -39,9 +39,10 @@
         <Logger name="org.springframework" level="warn"/>
         <Logger name="org.apache.http" level="warn"/>
         <Logger name="org.hibernate" level="warn"/>
-<!--        <Logger name="org.hibernate.SQL" level="debug"/>-->
+        <Logger name="org.hibernate.SQL" level="debug"/>
         <Logger name="org.jboss.logging" level="warn"/>
         <Logger name="org.sqlite.core" level="warn"/>
         <Logger name="com.zaxxer.hikari" level="warn"/>
+        <Logger name="io.micrometer.observation" level="debug"/>
     </Loggers>
 </Configuration>

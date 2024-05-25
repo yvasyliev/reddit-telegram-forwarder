@@ -108,6 +108,8 @@ public class PostManager {
     }
 
     public Post rejectPostCandidate(int created) {
-        return postCandidates.remove(created);
+        var removed = postCandidates.remove(created);
+        LOGGER.debug("Rejected: {}", removed);
+        return removed;
     }
 }

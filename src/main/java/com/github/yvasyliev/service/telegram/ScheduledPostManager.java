@@ -1,13 +1,16 @@
 package com.github.yvasyliev.service.telegram;
 
-import com.github.yvasyliev.service.reddit.SubredditNewSupplier;
+import com.github.yvasyliev.model.dto.post.Post;
+import com.github.yvasyliev.service.data.RedditTelegramForwarderPropertyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.function.ThrowingSupplier;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,14 +22,20 @@ public class ScheduledPostManager extends PostManager {
     private AtomicBoolean isPosting;
 
     @Autowired
-    private SubredditNewSupplier subredditNewSupplier;
+    private ThrowingSupplier<List<Post>> subredditNewSupplier;
+
+    @Autowired
+    private RedditTelegramForwarderPropertyService propertyService;
 
 
     @Scheduled(fixedDelayString = "${telegram.schedule.posting.delay.in.minutes:1}", timeUnit = TimeUnit.MINUTES)
     public void shareNewPosts() {
         if (isPosting.get()) {
             try {
+                var lastCreated = propertyService.findLastCreated().orElse(0);
+                LOGGER.debug("lastCreated={}", lastCreated);
                 var newPosts = subredditNewSupplier.getWithException();
+                LOGGER.debug("New posts: {}", newPosts);
                 publishPosts(newPosts);
             } catch (Exception e) {
                 LOGGER.error("Failed to find new posts.", e);

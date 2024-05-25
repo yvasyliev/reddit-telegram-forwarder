@@ -36,10 +36,12 @@ public abstract class JsonNodeToPostConverter extends StdConverter<JsonNode, Pos
     public Post convert(JsonNode jsonPost) {
         try {
             var post = convertThrowing(extractRootPost(jsonPost));
-            post.setAuthor(jsonPost.get("author").textValue());
-            post.setCreated(jsonPost.get("created").intValue());
-            post.setApproved(!authorsBlockedByDefault && !blockedAuthorService.isBlocked(post.getAuthor()));
-            post.setPostUrl(jsonPost.path("url_overridden_by_dest").asText(jsonPost.get("url").textValue()));
+            if (post != null) {
+                post.setAuthor(jsonPost.get("author").textValue());
+                post.setCreated(jsonPost.get("created").intValue());
+                post.setApproved(!authorsBlockedByDefault && !blockedAuthorService.isBlocked(post.getAuthor()));
+                post.setPostUrl(jsonPost.path("url_overridden_by_dest").asText(jsonPost.get("url").textValue()));
+            }
             return post;
         } catch (Exception e) {
             throw new ConverterException(e);

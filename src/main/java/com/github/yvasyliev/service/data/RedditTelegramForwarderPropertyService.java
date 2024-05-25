@@ -20,7 +20,7 @@ public class RedditTelegramForwarderPropertyService {
 
     @Transactional
     public RedditTelegramForwarderProperty saveLastCreated(int lastCreated) {
-        return propertyRepository.save(new RedditTelegramForwarderProperty(
+        return propertyRepository.saveAndFlush(new RedditTelegramForwarderProperty(
                 RedditTelegramForwarderPropertyName.LAST_CREATED,
                 String.valueOf(lastCreated))
         );
