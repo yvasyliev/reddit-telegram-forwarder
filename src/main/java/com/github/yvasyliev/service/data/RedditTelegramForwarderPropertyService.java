@@ -20,9 +20,13 @@ public class RedditTelegramForwarderPropertyService {
 
     @Transactional
     public RedditTelegramForwarderProperty saveLastCreated(int lastCreated) {
-        return propertyRepository.saveAndFlush(new RedditTelegramForwarderProperty(
-                RedditTelegramForwarderPropertyName.LAST_CREATED,
-                String.valueOf(lastCreated))
-        );
+        var existingLastCreated = findLastCreated().orElse(0);
+        if (existingLastCreated < lastCreated) {
+            return propertyRepository.saveAndFlush(new RedditTelegramForwarderProperty(
+                    RedditTelegramForwarderPropertyName.LAST_CREATED,
+                    String.valueOf(lastCreated))
+            );
+        }
+        return null;
     }
 }
