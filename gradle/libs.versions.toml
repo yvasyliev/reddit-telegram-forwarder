@@ -1,5 +1,5 @@
 [versions]
-commons-collections4 = "4.5.0"
+commons-collections4 = "4.6.0"
 commons-io = "2.22.0"
 freefair = "9.5.0"
 mapstruct = "1.6.3"
