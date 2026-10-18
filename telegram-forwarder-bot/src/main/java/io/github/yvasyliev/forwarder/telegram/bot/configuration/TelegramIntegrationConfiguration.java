@@ -37,6 +37,6 @@ public class TelegramIntegrationConfiguration {
             MessageChannel postSourceChannel,
             GenericHandler<CloseableSupplier<PartialBotApiMethodDTO>> postSendingHandler
     ) {
-        return IntegrationFlow.from(postSourceChannel).handle(postSendingHandler).get();
+        return IntegrationFlow.from(postSourceChannel).handle(postSendingHandler).nullChannel();
     }
 }

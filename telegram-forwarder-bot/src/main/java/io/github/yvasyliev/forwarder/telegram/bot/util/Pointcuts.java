@@ -29,18 +29,13 @@ public class Pointcuts {
     public void executeCallbackQueryCommand() {}
 
     /**
-     * Pointcut for sending a post message.
+     * Pointcut for sending a post or a media group, either directly through {@code PostSender} or through
+     * {@code PostSendingHandler} of the post sending integration flow. Both methods are matched with a wildcard
+     * return type, because the advised return value is bound to an {@link Object} advice parameter anyway.
      */
-    @Pointcut("execution(org.telegram.telegrambots.meta.api.objects.message.Message "
-            + "io.github.yvasyliev.forwarder.telegram.core.service.PostSender.send(..))")
-    public void sendPost() {}
-
-    /**
-     * Pointcut for sending a media group.
-     */
-    @Pointcut("execution(java.util.List<org.telegram.telegrambots.meta.api.objects.message.Message> "
-            + "io.github.yvasyliev.forwarder.telegram.core.service.PostSender.send(..))")
-    public void sendMediaGroup() {}
+    @Pointcut("execution(* io.github.yvasyliev.forwarder.telegram.core.service.PostSender.send(..))"
+            + " || execution(* io.github.yvasyliev.forwarder.telegram.bot.service.PostSendingHandler.handle(..))")
+    public void postSent() {}
 
     /**
      * Pointcut for executing the post controls command.
