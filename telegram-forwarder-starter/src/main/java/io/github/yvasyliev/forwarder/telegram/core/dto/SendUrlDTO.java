@@ -7,6 +7,7 @@ import java.net.URL;
  *
  * @param url  the URL to be sent
  * @param text the optional accompanying text
+ * @deprecated use {@link SendMessageDTO} instead
  */
 @Deprecated(forRemoval = true)
 public record SendUrlDTO(URL url, String text) {}

@@ -15,6 +15,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.SubclassExhaustiveStrategy;
 import org.mapstruct.SubclassMapping;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.botapimethods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
@@ -46,6 +47,17 @@ public interface PartialBotApiMethodMapper {
     @SubclassMapping(target = SendVideo.class, source = SendVideoDTO.class)
     @Mapping(target = "chatId", expression = "java(adminProperties.id())")
     PartialBotApiMethod<?> map(PartialBotApiMethodDTO methodDTO, @Context TelegramAdminProperties adminProperties);
+
+    /**
+     * Maps a {@link SendMessageDTO} to a {@link SendMessage} using the provided {@link TelegramAdminProperties}.
+     *
+     * @param sendMessageDTO  the source {@link SendMessageDTO}
+     * @param adminProperties the {@link TelegramAdminProperties} containing the chat ID
+     * @return the mapped {@link SendMessage}
+     */
+    @Mapping(target = "parseMode", constant = ParseMode.HTML)
+    @Mapping(target = "chatId", expression = "java(adminProperties.id())")
+    SendMessage map(SendMessageDTO sendMessageDTO, @Context TelegramAdminProperties adminProperties);
 
     /**
      * Sets the caption for the first media in the {@link SendMediaGroup} after mapping.
