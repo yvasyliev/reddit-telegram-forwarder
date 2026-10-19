@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.yvasyliev.forwarder.telegram.reddit.deser.EditedDeserializer;
 import io.github.yvasyliev.forwarder.telegram.reddit.deser.PermalinkDeserializer;
+import lombok.Builder;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.CollectionUtils;
 import tools.jackson.databind.JsonNode;
@@ -133,6 +134,7 @@ import java.util.Map;
  * @param media                      the media associated with the post, if any
  * @param isVideo                    indicates if the post is a video
  */
+@Builder
 public record Link(
         @JsonProperty("approved_at_utc") String approvedAtUtc,
         @JsonProperty("subreddit") String subreddit,
@@ -329,6 +331,7 @@ public record Link(
      * @param enabled            indicates if the preview is enabled
      * @param redditVideoPreview the Reddit video preview, if available
      */
+    @Builder
     public record Preview(
             @JsonProperty("images") List<Metadata> images,
             @JsonProperty("enabled") Boolean enabled,
@@ -366,6 +369,7 @@ public record Link(
      * @param nsfw       the NSFW variant, if available
      * @param obfuscated the obfuscated variant, if available
      */
+    @Builder
     public record Variants(
             @JsonProperty("gif") Variant gif,
             @JsonProperty("mp3") Variant mp3,
@@ -389,6 +393,7 @@ public record Link(
      * @param source      the source resolution of the variant
      * @param resolutions the list of resolutions available for the variant
      */
+    @Builder
     public record Variant(
             @JsonProperty("source") Resolution source,
             @JsonProperty("resolutions") List<Resolution> resolutions
@@ -421,6 +426,7 @@ public record Link(
      * @param id          the unique identifier of the post
      * @param variants    the variants of the post's media (e.g., GIF, MP4)
      */
+    @Builder
     public record Metadata(
             @JsonProperty("status") Status status,
             @JsonProperty("e") Type type,
@@ -548,6 +554,7 @@ public record Link(
      * @param isGif             indicates if the video is a GIF
      * @param transcodingStatus the status of transcoding for the video
      */
+    @Builder
     public record RedditVideo(
             @JsonProperty("bitrate_kbps") Integer bitrateKbps,
             @JsonProperty("fallback_url") URL fallbackUrl,

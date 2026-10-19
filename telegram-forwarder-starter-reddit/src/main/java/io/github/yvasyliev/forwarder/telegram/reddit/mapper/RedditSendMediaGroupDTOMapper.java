@@ -1,10 +1,12 @@
 package io.github.yvasyliev.forwarder.telegram.reddit.mapper;
 
+import io.github.yvasyliev.forwarder.telegram.core.dto.InputMediaDTO;
 import io.github.yvasyliev.forwarder.telegram.core.dto.SendMediaGroupDTO;
 import io.github.yvasyliev.forwarder.telegram.reddit.dto.Link;
-import io.github.yvasyliev.forwarder.telegram.reddit.util.RedditMetadataInputMediaDTOConverter;
+import lombok.Setter;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,8 +14,13 @@ import java.util.List;
 /**
  * {@link SendMediaGroupDTO} mapper.
  */
-@Mapper(uses = RedditMetadataInputMediaDTOConverter.class)
-public interface RedditSendMediaGroupDTOMapper {
+@Mapper
+@Setter(onMethod_ = @Autowired)
+@SuppressWarnings("checkstyle:AbstractClassName")
+public abstract class RedditSendMediaGroupDTOMapper {
+    private RedditInputMediaVideoDTOMapper inputMediaVideoDTOMapper;
+    private RedditInputMediaPhotoDTOMapper inputMediaPhotoDTOMapper;
+
     /**
      * Maps a list of {@link Link.Metadata} to {@link SendMediaGroupDTO}.
      *
@@ -23,5 +30,13 @@ public interface RedditSendMediaGroupDTOMapper {
      * @return the mapped {@link SendMediaGroupDTO}
      * @throws IOException if an I/O error occurs during mapping
      */
-    SendMediaGroupDTO map(List<Link.Metadata> medias, @Context boolean hasSpoiler, String caption) throws IOException;
+    public abstract SendMediaGroupDTO map(List<Link.Metadata> medias, @Context boolean hasSpoiler, String caption)
+            throws IOException;
+
+    protected InputMediaDTO map(Link.Metadata metadata, @Context boolean hasSpoiler) throws IOException {
+        return switch (metadata.type()) {
+            case ANIMATED_IMAGE -> inputMediaVideoDTOMapper.map(metadata, hasSpoiler);
+            case IMAGE -> inputMediaPhotoDTOMapper.map(metadata, hasSpoiler);
+        };
+    }
 }

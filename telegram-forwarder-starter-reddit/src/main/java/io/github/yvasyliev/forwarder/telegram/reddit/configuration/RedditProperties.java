@@ -16,7 +16,7 @@ import java.net.URI;
  * @param username  developer username
  * @param userAgent User-Agent HTTP header
  */
-@ConfigurationProperties(prefix = "reddit")
+@ConfigurationProperties("reddit")
 @Validated
 @Builder
 public record RedditProperties(

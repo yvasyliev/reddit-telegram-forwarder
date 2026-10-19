@@ -1,6 +1,8 @@
 package io.github.yvasyliev.forwarder.telegram.reddit.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Singular;
 
 import java.util.List;
 
@@ -14,11 +16,12 @@ import java.util.List;
  * @param children  child elements of the listing, each containing a {@link Thing} with a {@link Link} object
  * @param before    the name of the first element in the listing, used for pagination
  */
+@Builder
 public record Listing(
         @JsonProperty("after") String after,
         @JsonProperty("dist") Integer dist,
         @JsonProperty("modhash") String modhash,
         @JsonProperty("geo_filter") String geoFilter,
-        @JsonProperty("children") List<Thing<Link>> children,
+        @JsonProperty("children") @Singular List<Thing<Link>> children,
         @JsonProperty("before") String before
 ) {}

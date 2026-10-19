@@ -6,8 +6,7 @@ import io.github.yvasyliev.forwarder.telegram.reddit.dto.Thing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Service for interacting with Reddit links.
@@ -15,27 +14,21 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class RedditLinkService {
-    private final RedditLastFetchedPostService redditLastFetchedPostService;
     private final RedditClient redditClient;
     private final RedditProperties redditProperties;
 
     /**
-     * Retrieves new links from a specified subreddit that were created after the last recorded creation time.
+     * Fetches the new posts from the configured subreddit.
      *
-     * @return a stream of new links
+     * @return a list of new Reddit links sorted by their natural order
      */
-    public Stream<Link> getNewLinks() {
-        return getNewLinks(redditLastFetchedPostService.getLastPublishedAt(redditProperties.subreddit()));
-    }
-
-    private Stream<Link> getNewLinks(Instant lastPublishedAt) {
+    public List<Link> getSubredditNew() {
         return redditClient.getSubredditNew(redditProperties.subreddit())
                 .data()
                 .children()
                 .stream()
                 .map(Thing::data)
-                .filter(link -> link.created().isAfter(lastPublishedAt))
                 .sorted()
-                .map(Link::sourceLink);
+                .toList();
     }
 }

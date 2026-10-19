@@ -5,9 +5,12 @@ plugins {
 
 dependencies {
     api project(':telegram-forwarder-starter')
+    api project(':telegram-forwarder-starter-thymeleaf')
 
     api 'org.springframework.boot:spring-boot-starter-oauth2-client'
     api 'org.springframework.boot:spring-boot-starter-restclient'
+
+    implementation 'org.springframework.integration:spring-integration-jdbc'
 
     annotationProcessor libs.mapstruct.processor
 }
